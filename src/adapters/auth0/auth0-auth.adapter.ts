@@ -74,7 +74,7 @@ export class Auth0AuthAdapter implements IAuthProvider {
 
   async signOut(): Promise<void> {
     try {
-      await fetch('/auth/logout');
+      await fetch('/auth/logout', { redirect: 'manual' });
     } catch (e) {
       console.error('Logout error:', e);
     }
