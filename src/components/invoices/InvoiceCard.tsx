@@ -1,0 +1,105 @@
+'use client';
+import { useState } from 'react';
+import { StatusBadge, StatusType } from '@/components/shared/StatusBadge';
+import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
+import { MaterialIcon } from '@/components/shared/MaterialIcon';
+
+interface InvoiceCardProps {
+  id: string;
+  clientName: string;
+  amount: number;
+  status: StatusType;
+  date: string;
+  phone: string;
+  currency?: string | null;
+  currencySymbol?: string | null;
+}
+
+export function InvoiceCard({ id, clientName, amount, status, date, phone, currency, currencySymbol }: Readonly<InvoiceCardProps>) {
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState(amount);
+
+  const resolvedCurrency = currency || 'USD';
+  const resolvedCurrencySymbol = currencySymbol || (() => {
+    try {
+      const parts = new Intl.NumberFormat('en', { style: 'currency', currency: resolvedCurrency, currencyDisplay: 'narrowSymbol' }).formatToParts(0);
+      return parts.find(p => p.type === 'currency')?.value || resolvedCurrency;
+    } catch {
+      return resolvedCurrency;
+    }
+  })();
+
+  return (
+    <div className="bg-surface-container-lowest rounded-xl p-md border border-outline-variant shadow-[0_4px_12px_rgba(26,43,60,0.05)] flex flex-col gap-sm hover:border-primary-fixed-dim transition-colors cursor-pointer">
+      <div className="flex justify-between items-start">
+        <div className="flex flex-col">
+          <span className="font-headline-md text-headline-md text-on-surface">{clientName}</span>
+          <span className="font-body-md text-body-md text-on-surface-variant">#{id}</span>
+        </div>
+        <StatusBadge status={status} />
+      </div>
+      
+      <div className="h-px w-full bg-surface-variant"></div>
+      
+      <div className="flex justify-between items-end">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1.5 text-on-surface-variant">
+            <MaterialIcon icon="call" className="text-[16px]" />
+            <span className="font-body-md text-body-md">{phone}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-on-surface-variant">
+            <MaterialIcon icon="calendar_today" className="text-[16px]" />
+            <span className="font-label-sm text-label-sm">{date}</span>
+          </div>
+        </div>
+        <CurrencyDisplay amount={amount} currency={resolvedCurrency} currencySymbol={resolvedCurrencySymbol} className="font-headline-md text-headline-md text-primary" />
+      </div>
+
+      {status === 'UNPAID' && (
+        <div className="flex flex-col gap-sm pt-xs">
+          <div className="h-px w-full bg-surface-variant"></div>
+          <div className="flex flex-col gap-sm">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowPaymentForm(!showPaymentForm);
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-full border border-outline text-primary font-label-sm hover:bg-surface-container-low transition-colors"
+            >
+              <MaterialIcon icon="payments" className="text-[18px]" />
+              Record Payment
+              <MaterialIcon 
+                icon="expand_more" 
+                className={`transition-transform duration-200 ml-auto ${showPaymentForm ? 'rotate-180' : ''}`} 
+              />
+            </button>
+            
+            {showPaymentForm && (
+              <div 
+                className="flex flex-col gap-xs p-sm bg-surface-container-low rounded-xl border border-outline-variant"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <label className="font-label-sm text-on-surface-variant">Amount to Pay</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-body-md">{resolvedCurrencySymbol}</span>
+                    <input 
+                      className="w-full h-10 pl-7 pr-3 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-md" 
+                      type="number" 
+                      value={paymentAmount}
+                      onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                    />
+                  </div>
+                  <button className="px-4 py-2 bg-primary text-on-primary rounded-lg font-label-sm shadow-sm active:opacity-90">
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
