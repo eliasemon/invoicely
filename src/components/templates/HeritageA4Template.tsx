@@ -41,6 +41,11 @@ export function HeritageA4Template({ invoice, profile, showGroups , publicUrl }:
               <p className="text-sm" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">No:</span> {invoice.invoiceNumber}</p>
               <p className="text-sm mt-1" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">Date:</span> {formatDate(invoice.createdAt)}</p>
               <p className="text-sm mt-1" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">Due:</span> {formatDate(dueDate)}</p>
+              {profile?.qr_code_enabled && publicUrl && (
+                <div className="mt-4 flex justify-start sm:justify-end print:justify-end">
+                  <QRCodeSVG value={publicUrl} size={54} />
+                </div>
+              )}
             </div>
           </div>
 

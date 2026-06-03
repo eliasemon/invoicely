@@ -32,6 +32,11 @@ export function EnterpriseA4Template({ invoice, profile, showGroups , publicUrl 
               <div className="text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto">
                 <h2 className="text-xs text-[#94a3b8] uppercase tracking-[0.2em] mb-1">Tax Invoice</h2>
                 <p className="text-2xl font-bold text-[#1e40af] font-mono">{invoice.invoiceNumber}</p>
+                {profile?.qr_code_enabled && publicUrl && (
+                  <div className="mt-4 flex justify-start sm:justify-end print:justify-end">
+                    <QRCodeSVG value={publicUrl} size={54} />
+                  </div>
+                )}
               </div>
             </div>
 

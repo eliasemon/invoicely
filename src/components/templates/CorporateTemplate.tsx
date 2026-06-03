@@ -73,6 +73,11 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups , pu
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-left md:text-right print:text-right">
                       <div className="text-[12px] text-[#45464d] uppercase font-bold">Invoice Number:</div>
                       <div className="text-sm font-semibold text-black" style={{ fontFamily: 'Geist, monospace' }}>{invoice.invoiceNumber}</div>
+                      {profile?.qr_code_enabled && publicUrl && (
+                        <div className="col-span-2 flex justify-start md:justify-end print:justify-end mt-4">
+                          <QRCodeSVG value={publicUrl} size={64} />
+                        </div>
+                      )}
                       <div className="text-[12px] text-[#45464d] uppercase font-bold">Date Issued:</div>
                       <div className="text-sm text-black" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(invoice.createdAt)}</div>
                       <div className="text-[12px] text-[#45464d] uppercase font-bold">Date Due:</div>

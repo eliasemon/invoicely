@@ -43,6 +43,11 @@ export function GeometricA4Template({ invoice, profile, showGroups , publicUrl }
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider">Invoice</p>
               <p className="text-lg font-bold text-[#3b82f6] font-mono">{invoice.invoiceNumber}</p>
               <p className="text-xs text-[#64748b] mt-2 font-mono">{formatDate(invoice.createdAt)}</p>
+              {profile?.qr_code_enabled && publicUrl && (
+                <div className="mt-4 flex justify-start sm:justify-end print:justify-end">
+                  <QRCodeSVG value={publicUrl} size={54} />
+                </div>
+              )}
             </div>
           </div>
 

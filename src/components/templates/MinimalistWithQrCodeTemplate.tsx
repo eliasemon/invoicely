@@ -32,6 +32,11 @@ export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, show
           <div className="text-left md:text-right print:text-right w-full md:w-auto print:w-auto">
             <h1 className="text-[40px] leading-[48px] font-bold text-black mb-2" style={{ fontFamily: 'Work Sans, sans-serif', letterSpacing: '-0.02em' }}>Invoice</h1>
             <p className="text-sm text-[#45464d] mb-6" style={{ fontFamily: 'Geist, monospace' }}>{invoice.invoiceNumber}</p>
+            {profile?.qr_code_enabled && publicUrl && (
+              <div className="mt-4 flex justify-start md:justify-end print:justify-end mb-4">
+                <QRCodeSVG value={publicUrl} size={54} />
+              </div>
+            )}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#e2e8f0] text-[12px] bg-[#f1f5f9]">
               <span className="w-2 h-2 rounded-full bg-[#4edea3]"></span>
               {invoice.status}

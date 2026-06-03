@@ -49,6 +49,11 @@ export function ElegantTemplate({ invoice, profile, isPreview, showGroups , publ
               <span className="text-[12px] text-[#76777d] text-left md:text-right print:text-right">Due Date</span>
               <span className="text-sm font-semibold" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(dueDate)}</span>
             </div>
+            {profile?.qr_code_enabled && publicUrl && (
+              <div className="mt-4 flex justify-start md:justify-end print:justify-end">
+                <QRCodeSVG value={publicUrl} size={54} />
+              </div>
+            )}
           </div>
         </header>
 

@@ -21,6 +21,11 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups , publi
           </div>
           <div className="text-center sm:text-right print:text-right w-full sm:w-auto print:w-auto">
             <span className="text-2xl font-bold font-mono">{invoice.invoiceNumber}</span>
+            {profile?.qr_code_enabled && publicUrl && (
+              <div className="mt-4 flex justify-center sm:justify-end print:justify-end">
+                <QRCodeSVG value={publicUrl} size={54} />
+              </div>
+            )}
           </div>
         </div>
 

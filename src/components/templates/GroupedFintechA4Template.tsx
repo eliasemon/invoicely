@@ -88,8 +88,13 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl }: Templ
           ))}
 
           {/* Totals */}
-          <div className="flex justify-end mt-4">
-            <div className="w-full sm:w-64 print:w-64 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
+          <div className="flex justify-between items-end mt-4 w-full">
+            {profile?.qr_code_enabled && publicUrl && (
+              <div className="mb-2 hidden sm:block print:block">
+                <QRCodeSVG value={publicUrl} size={64} />
+              </div>
+            )}
+            <div className="w-full sm:w-64 print:w-64 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 ml-auto">
               <div className="flex justify-between py-1.5 text-sm text-[#475569] font-mono"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
               <div className="flex justify-between py-1.5 text-sm text-[#475569] font-mono"><span>Tax</span><span>{formatMoney(0, sym)}</span></div>
               <div className="flex justify-between py-2 mt-2 border-t border-[#e2e8f0] text-lg font-bold text-[#0891b2] font-mono"><span>Total</span><span>{formatMoney(subtotal, sym)}</span></div>
