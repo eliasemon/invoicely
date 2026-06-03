@@ -134,21 +134,24 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups , publi
               </div>
             ) : <div className="flex-1"></div>}
 
-            {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
+            <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-full">
+                    {profile?.qr_code_enabled && publicUrl && (
+                      <div className="flex flex-col items-center mb-1">
+                        <p className="text-[8px] text-gray-400 uppercase tracking-widest mb-1">Scan to View</p>
+                        <QRCodeSVG value={publicUrl} size={54} />
+                      </div>
+                    )}
+                    {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
               <div className="flex flex-col items-start md:items-end print:items-end min-w-[160px]">
                 {(invoice.signature_url || profile?.signature_url) && (
                   <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-8 mb-1 object-contain" />
                 )}
-                <div className="w-36 border-b border-[#e2e8f0] mb-1"></div>
+                <div className="w-full border-b border-[#e2e8f0] mb-1"></div>
                 <p className="text-[10px] text-[#64748b] font-semibold">{invoice.signatory_name || profile?.signatory_name || 'Authorized Signatory'}</p>
               </div>
             )}
-            {profile?.qr_code_enabled && publicUrl && (
-              <div className="flex flex-col items-start md:items-end print:items-end mt-4 break-inside-avoid">
-                <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Scan to View Online</p>
-                <QRCodeSVG value={publicUrl} size={64} />
-              </div>
-            )}
+                  </div>
+            
           </div>
         </div>
       </div>

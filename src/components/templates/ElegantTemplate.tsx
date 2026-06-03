@@ -161,21 +161,24 @@ export function ElegantTemplate({ invoice, profile, isPreview, showGroups , publ
             )}
           </div>
           <div className="w-full md:w-1/2 print:w-1/2 flex justify-start md:justify-end print:justify-end">
-            {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
+            <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-full">
+                    {profile?.qr_code_enabled && publicUrl && (
+                      <div className="flex flex-col items-center mb-1">
+                        <p className="text-[8px] text-gray-400 uppercase tracking-widest mb-1">Scan to View</p>
+                        <QRCodeSVG value={publicUrl} size={54} />
+                      </div>
+                    )}
+                    {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
               <div className="flex flex-col items-start md:items-end print:items-end">
                 {(invoice.signature_url || profile?.signature_url) && (
                   <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-12 mb-2 object-contain" />
                 )}
-                <div className="w-48 border-b border-[#565e74] mb-2"></div>
+                <div className="w-full border-b border-[#565e74] mb-2"></div>
                 <p className="text-[12px] text-[#76777d]">{invoice.signatory_name || profile?.signatory_name || 'Authorized Signature'}</p>
               </div>
             )}
-            {profile?.qr_code_enabled && publicUrl && (
-              <div className="flex flex-col items-start md:items-end print:items-end mt-4 break-inside-avoid">
-                <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Scan to View Online</p>
-                <QRCodeSVG value={publicUrl} size={64} />
-              </div>
-            )}
+                  </div>
+            
           </div>
         </footer>
       </main>

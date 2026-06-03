@@ -164,21 +164,24 @@ export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, show
           ) : <div></div>}
 
           <div className="flex flex-col items-start md:items-end print:items-end gap-4">
-            {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
+            <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-full">
+                    {profile?.qr_code_enabled && publicUrl && (
+                      <div className="flex flex-col items-center mb-1">
+                        <p className="text-[8px] text-gray-400 uppercase tracking-widest mb-1">Scan to View</p>
+                        <QRCodeSVG value={publicUrl} size={54} />
+                      </div>
+                    )}
+                    {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
               <div className="flex flex-col items-start md:items-end print:items-end">
                 {(invoice.signature_url || profile?.signature_url) && (
                   <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-10 mb-2 object-contain" />
                 )}
-                <div className="w-40 border-b border-[#e2e8f0] mb-1"></div>
+                <div className="w-full border-b border-[#e2e8f0] mb-1"></div>
                 <p className="text-xs text-[#76777d]">{invoice.signatory_name || profile?.signatory_name || 'Authorized Signatory'}</p>
               </div>
             )}
-            {profile?.qr_code_enabled && publicUrl && (
-              <div className="flex flex-col items-start md:items-end print:items-end mt-4 break-inside-avoid">
-                <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Scan to View Online</p>
-                <QRCodeSVG value={publicUrl} size={64} />
-              </div>
-            )}
+                  </div>
+            
 
             {!isPreview && (
               <button onClick={() => window.print()} className="print:hidden flex items-center gap-2 px-6 py-3 bg-black text-white rounded-lg text-[12px]">
