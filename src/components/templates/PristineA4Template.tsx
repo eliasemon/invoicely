@@ -32,6 +32,11 @@ export function PristineA4Template({ invoice, profile, showGroups , publicUrl }:
             <div className="text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto">
               <p className="text-[12px] text-[#94a3b8] uppercase tracking-[0.15em] mb-1">Invoice</p>
               <p className="text-lg font-bold text-black" style={{ fontFamily: 'Geist, monospace' }}>{invoice.invoiceNumber}</p>
+              {profile?.qr_code_enabled && publicUrl && (
+                <div className="mt-3 flex justify-end sm:justify-start print:justify-end">
+                  <QRCodeSVG value={publicUrl} size={54} />
+                </div>
+              )}
               <div className={`inline-block mt-3 px-3 py-1 rounded text-[11px] font-semibold uppercase ${
                 invoice.status === 'PAID' ? 'bg-emerald-50 text-emerald-700' : invoice.status === 'DRAFT' ? 'bg-gray-100 text-gray-600' : 'bg-amber-50 text-amber-700'
               }`}>{invoice.status}</div>
@@ -138,11 +143,7 @@ export function PristineA4Template({ invoice, profile, showGroups , publicUrl }:
             ) : <div className="flex-1"></div>}
 
             <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-full">
-                    {profile?.qr_code_enabled && publicUrl && (
-                      <div className="flex flex-col items-center mb-1">
-                        <QRCodeSVG value={publicUrl} size={54} />
-                      </div>
-                    )}
+                    
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
               <div className="flex flex-col items-start md:items-end print:items-end min-w-[200px]">
                 {(invoice.signature_url || profile?.signature_url) && (

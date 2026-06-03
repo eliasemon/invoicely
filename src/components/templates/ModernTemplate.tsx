@@ -72,6 +72,13 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl }: Temp
               </div>
             </div>
           )}
+          {profile?.qr_code_enabled && publicUrl && (
+                <div className="mt-auto pt-8 flex justify-center">
+                  <div className="bg-white p-2 rounded-lg">
+                    <QRCodeSVG value={publicUrl} size={64} />
+                  </div>
+                </div>
+              )}
         </div>
 
         {/* Main Content */}
@@ -153,11 +160,7 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl }: Temp
               <p className="text-xs text-[#45464d]">{invoice.notes || 'Thank you for your business. Please process payment within 30 days of receiving this invoice.'}</p>
             </div>
             <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-full">
-                    {profile?.qr_code_enabled && publicUrl && (
-                      <div className="flex flex-col items-center mb-1">
-                        <QRCodeSVG value={publicUrl} size={54} />
-                      </div>
-                    )}
+                    
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
               <div className="flex flex-col items-start md:items-end min-w-[160px]">
                 {(invoice.signature_url || profile?.signature_url) && (

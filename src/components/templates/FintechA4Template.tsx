@@ -112,7 +112,12 @@ export function FintechA4Template({ invoice, profile, showGroups , publicUrl }: 
           </div>
 
           {/* Totals */}
-          <div className="flex justify-end">
+          <div className="flex justify-between items-end w-full">
+              {profile?.qr_code_enabled && publicUrl && (
+                <div className="mb-2 hidden sm:block print:block">
+                  <QRCodeSVG value={publicUrl} size={64} />
+                </div>
+              )}
             <div className="w-full sm:w-64 print:w-64 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
               <div className="flex justify-between py-1 text-xs text-[#64748b] font-mono border-b border-[#e2e8f0]/60"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
               <div className="flex justify-between py-1 text-xs text-[#64748b] font-mono border-b border-[#e2e8f0]/60"><span>Tax</span><span>{formatMoney(0, sym)}</span></div>
@@ -146,11 +151,7 @@ export function FintechA4Template({ invoice, profile, showGroups , publicUrl }: 
             ) : <div className="flex-1"></div>}
 
             <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-full">
-                    {profile?.qr_code_enabled && publicUrl && (
-                      <div className="flex flex-col items-center mb-1">
-                        <QRCodeSVG value={publicUrl} size={54} />
-                      </div>
-                    )}
+                    
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
               <div className="flex flex-col items-start md:items-end min-w-[160px]">
                 {(invoice.signature_url || profile?.signature_url) && (
