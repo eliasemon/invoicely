@@ -164,7 +164,6 @@ export function ElegantTemplate({ invoice, profile, isPreview, showGroups , publ
             <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-full">
                     {profile?.qr_code_enabled && publicUrl && (
                       <div className="flex flex-col items-center mb-1">
-                        <p className="text-[8px] text-gray-400 uppercase tracking-widest mb-1">Scan to View</p>
                         <QRCodeSVG value={publicUrl} size={54} />
                       </div>
                     )}
