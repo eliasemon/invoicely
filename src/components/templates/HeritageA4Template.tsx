@@ -8,8 +8,8 @@ export function HeritageA4Template({ invoice, profile }: TemplateProps) {
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f5f0eb] min-h-screen py-8 px-4" style={{ fontFamily: 'Georgia, serif' }}>
-      <div className="max-w-[800px] mx-auto bg-[#fffdf8] shadow-lg border border-[#d4c5b0]" style={{ minHeight: '1123px' }}>
+    <div className="bg-[#f5f0eb] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Georgia, serif' }}>
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-[#fffdf8] shadow-lg border border-[#d4c5b0] print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
         <div className="p-10 md:p-16">
           {/* Header with ornamental line */}
           <div className="text-center mb-12">

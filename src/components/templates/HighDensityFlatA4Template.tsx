@@ -8,8 +8,8 @@ export function HighDensityFlatA4Template({ invoice, profile }: TemplateProps) {
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f1f5f9] min-h-screen py-8 px-4" style={{ fontFamily: 'Geist, sans-serif' }}>
-      <div className="max-w-[800px] mx-auto bg-white shadow-md" style={{ minHeight: '1123px' }}>
+    <div className="bg-[#f1f5f9] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Geist, sans-serif' }}>
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-md print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
         {/* Dense header bar */}
         <div className="bg-[#0f172a] text-white px-8 py-6 flex justify-between items-center">
           <div className="flex items-center gap-4">

@@ -8,7 +8,7 @@ export function ElegantTemplate({ invoice, profile, isPreview }: TemplateProps) 
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#cbdbf5] min-h-screen text-[#0b1c30] py-8 px-4 print:py-0 print:px-0" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
+    <div className="bg-[#cbdbf5] min-h-screen text-[#0b1c30] py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
       {/* Floating Actions */}
       {!isPreview && (
         <div className="fixed top-6 right-6 md:right-12 z-50 flex gap-4 print:hidden">
@@ -20,7 +20,7 @@ export function ElegantTemplate({ invoice, profile, isPreview }: TemplateProps) 
       )}
 
       {/* Invoice Canvas */}
-      <main className="w-full max-w-[800px] mx-auto bg-white shadow-[0_4px_40px_rgba(11,28,48,0.06)] rounded-sm overflow-hidden p-8 md:p-16 relative">
+      <main className="w-full max-w-[210mm] min-h-[297mm] mx-auto bg-white shadow-[0_4px_40px_rgba(11,28,48,0.06)] rounded-sm overflow-hidden p-8 md:p-16 relative print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
         {/* Header */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
           <div>

@@ -9,10 +9,10 @@ export function ModernTemplate({ invoice, profile, isPreview }: TemplateProps) {
   const total = subtotal + tax;
 
   return (
-    <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] py-8 px-4 md:py-16" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
+    <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] py-8 px-4 md:py-16 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
       {/* Action Bar - hidden in print */}
       {!isPreview && (
-        <div className="max-w-[800px] mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 print:hidden">
+        <div className="max-w-[210mm] mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 print:hidden">
           <span className="text-2xl font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>Invoicely</span>
           <button onClick={() => window.print()} className="px-4 py-2 border border-[#c6c6cd] rounded-lg text-xs hover:bg-[#eff4ff] transition-colors flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px]">download</span>
@@ -22,7 +22,7 @@ export function ModernTemplate({ invoice, profile, isPreview }: TemplateProps) {
       )}
 
       {/* Invoice Paper */}
-      <div className="max-w-[800px] mx-auto bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col md:flex-row">
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col md:flex-row print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
         {/* Sidebar */}
         <div className="bg-[#0058be] text-white w-full md:w-[30%] p-8 flex flex-col justify-between">
           <div>

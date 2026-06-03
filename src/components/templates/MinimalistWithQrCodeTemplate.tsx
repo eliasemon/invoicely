@@ -8,8 +8,8 @@ export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview }: Te
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f8f9ff] text-[#0f172a] min-h-screen py-8 md:py-16" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
-      <main className="w-full max-w-[800px] mx-auto px-6 md:px-16 bg-white border border-[#e2e8f0] rounded-xl py-16 relative">
+    <div className="bg-[#f8f9fa] min-h-screen text-[#2d3748] py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Inter, sans-serif' }}>
+      <main className="w-full max-w-[210mm] min-h-[297mm] mx-auto bg-white shadow-md rounded-lg p-8 md:p-12 relative print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
         {/* Header */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16">
           <div>
