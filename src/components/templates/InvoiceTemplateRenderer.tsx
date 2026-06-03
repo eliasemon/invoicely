@@ -33,7 +33,7 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
   'fintech-a4': FintechA4Template,
 };
 
-export function InvoiceTemplateRenderer({ templateId, invoice, profile, isPreview }: InvoiceTemplateRendererProps) {
+export function InvoiceTemplateRenderer({ templateId, invoice, profile, isPreview, publicUrl }: InvoiceTemplateRendererProps) {
   const [showGroups, setShowGroups] = useState(false);
   const TemplateComponent = TEMPLATE_MAP[templateId || 'modern-template'] || ModernTemplate;
 
@@ -74,7 +74,7 @@ export function InvoiceTemplateRenderer({ templateId, invoice, profile, isPrevie
           </button>
         </div>
       )}
-      <TemplateComponent invoice={invoice} profile={normalizedProfile} isPreview={isPreview} showGroups={showGroups} />
+      <TemplateComponent invoice={invoice} profile={normalizedProfile} isPreview={isPreview} showGroups={showGroups} publicUrl={publicUrl} />
     </div>
   );
 }

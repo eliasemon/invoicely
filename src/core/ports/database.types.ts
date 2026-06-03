@@ -32,6 +32,7 @@ export interface Invoice {
   bank_account_holder?: string | null;
   bank_account_number?: string | null;
   bank_swift?: string | null;
+  qr_code_enabled?: boolean;
   
   // Template
   template?: string;
@@ -87,6 +88,9 @@ export interface UserProfile {
   signature_enabled: boolean;
   signature_url: string | null;
   signatory_name: string | null;
+  
+  // QR Code
+  qr_code_enabled: boolean;
   
   created_at: Date;
   updated_at: Date;

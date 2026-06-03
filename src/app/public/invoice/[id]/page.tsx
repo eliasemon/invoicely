@@ -27,6 +27,9 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
     status: invoice.status,
   };
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const publicUrl = `${baseUrl}/public/invoice/${id}`;
+
   return (
     <div className="bg-surface-container-lowest min-h-screen flex flex-col print:block print:bg-white print:min-h-0 print:p-0 print:m-0 print:w-[210mm]">
       <PublicInvoiceHeader invoiceNumber={invoice.invoice_number} />
@@ -35,6 +38,7 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
           templateId={invoice.template} 
           invoice={fullInvoice as any} 
           profile={invoice.profile} 
+          publicUrl={publicUrl}
         />
       </div>
     </div>

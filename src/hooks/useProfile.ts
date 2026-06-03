@@ -39,6 +39,7 @@ export interface UserProfile {
   signature_enabled: boolean;
   signature_url: string | null;
   signatory_name: string | null;
+  qr_code_enabled: boolean;
 }
 
 export function useProfile() {

@@ -21,9 +21,11 @@ export interface TemplateProps {
     signature_enabled?: boolean;
     signature_url?: string | null;
     signatory_name?: string | null;
+    qr_code_enabled?: boolean;
   } | null;
   isPreview?: boolean;
   showGroups?: boolean;
+  publicUrl?: string;
 }
 
 export function formatDate(date: Date | string): string {

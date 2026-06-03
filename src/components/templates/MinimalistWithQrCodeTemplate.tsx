@@ -1,7 +1,8 @@
 import React from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal, getAllItems } from './templateUtils';
 
-export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, showGroups }: TemplateProps) {
+export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, showGroups , publicUrl }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
   const dueDate = getDueDate(invoice.createdAt);
   const subtotal = getSubtotal(invoice);
@@ -170,6 +171,12 @@ export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, show
                 )}
                 <div className="w-40 border-b border-[#e2e8f0] mb-1"></div>
                 <p className="text-xs text-[#76777d]">{invoice.signatory_name || profile?.signatory_name || 'Authorized Signatory'}</p>
+              </div>
+            )}
+            {profile?.qr_code_enabled && publicUrl && (
+              <div className="flex flex-col items-start md:items-end print:items-end mt-4 break-inside-avoid">
+                <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Scan to View Online</p>
+                <QRCodeSVG value={publicUrl} size={64} />
               </div>
             )}
 
