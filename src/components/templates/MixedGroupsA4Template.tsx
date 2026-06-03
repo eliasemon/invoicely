@@ -5,6 +5,8 @@ export function MixedGroupsA4Template({ invoice, profile }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
   const dueDate = getDueDate(invoice.createdAt);
   const subtotal = getSubtotal(invoice);
+  const amountPaid = invoice.amountPaid || 0;
+  const balanceDue = Math.max(0, subtotal - amountPaid);
 
   return (
     <div className="bg-[#f8fafc] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
@@ -83,6 +85,18 @@ export function MixedGroupsA4Template({ invoice, profile }: TemplateProps) {
               <div className="flex justify-between py-3 mt-2 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8e] text-white px-4 rounded-lg font-bold font-mono text-lg">
                 <span>Total</span><span>{formatMoney(subtotal, sym)}</span>
               </div>
+              {amountPaid > 0 && (
+                <>
+                  <div className="flex justify-between py-2 text-sm text-gray-500 font-medium">
+                    <span>Amount Paid</span>
+                    <span>{formatMoney(amountPaid, sym)}</span>
+                  </div>
+                  <div className="flex justify-between py-3 mt-2 border-t-2 border-gray-800 text-lg font-bold text-gray-900">
+                    <span>Balance Due</span>
+                    <span>{formatMoney(balanceDue, sym)}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
           {/* Bank Details & Signature Section */}

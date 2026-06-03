@@ -23,6 +23,8 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
     clientPhone: invoice.client_phone,
     clientAddress: invoice.client_address,
     amount: invoice.total_amount,
+    amountPaid: invoice.amount_paid || 0,
+    status: invoice.status,
   };
 
   return (

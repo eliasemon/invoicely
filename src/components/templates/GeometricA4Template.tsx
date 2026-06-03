@@ -5,6 +5,8 @@ export function GeometricA4Template({ invoice, profile, showGroups }: TemplatePr
   const sym = invoice.currency_symbol || '$';
   const dueDate = getDueDate(invoice.createdAt);
   const subtotal = getSubtotal(invoice);
+  const amountPaid = invoice.amountPaid || 0;
+  const balanceDue = Math.max(0, subtotal - amountPaid);
   const items = getAllItems(invoice);
 
   return (
@@ -112,6 +114,18 @@ export function GeometricA4Template({ invoice, profile, showGroups }: TemplatePr
               <div className="flex justify-between py-1 text-xs text-[#64748b] font-mono"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
               <div className="flex justify-between py-1 text-xs text-[#64748b] font-mono"><span>Tax</span><span>{formatMoney(0, sym)}</span></div>
               <div className="flex justify-between py-2 mt-2 border-t-2 border-[#3b82f6] text-sm font-bold text-[#1e293b] font-mono"><span>Total</span><span>{formatMoney(subtotal, sym)}</span></div>
+              {amountPaid > 0 && (
+                <>
+                  <div className="flex justify-between py-2 text-sm text-gray-500 font-medium">
+                    <span>Amount Paid</span>
+                    <span>{formatMoney(amountPaid, sym)}</span>
+                  </div>
+                  <div className="flex justify-between py-3 mt-2 border-t-2 border-gray-800 text-lg font-bold text-gray-900">
+                    <span>Balance Due</span>
+                    <span>{formatMoney(balanceDue, sym)}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
           {/* Bank Details & Signature Section */}

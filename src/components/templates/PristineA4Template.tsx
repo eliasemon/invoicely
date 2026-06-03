@@ -5,6 +5,8 @@ export function PristineA4Template({ invoice, profile, showGroups }: TemplatePro
   const sym = invoice.currency_symbol || '$';
   const dueDate = getDueDate(invoice.createdAt);
   const subtotal = getSubtotal(invoice);
+  const amountPaid = invoice.amountPaid || 0;
+  const balanceDue = Math.max(0, subtotal - amountPaid);
   const items = getAllItems(invoice);
 
   return (
@@ -106,6 +108,18 @@ export function PristineA4Template({ invoice, profile, showGroups }: TemplatePro
               <div className="flex justify-between py-3 mt-2 border-t-2 border-[#0058be] text-lg font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>
                 <span>Total</span><span>{formatMoney(subtotal, sym)}</span>
               </div>
+              {amountPaid > 0 && (
+                <>
+                  <div className="flex justify-between py-2 text-sm text-gray-500 font-medium">
+                    <span>Amount Paid</span>
+                    <span>{formatMoney(amountPaid, sym)}</span>
+                  </div>
+                  <div className="flex justify-between py-3 mt-2 border-t-2 border-gray-800 text-lg font-bold text-gray-900">
+                    <span>Balance Due</span>
+                    <span>{formatMoney(balanceDue, sym)}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

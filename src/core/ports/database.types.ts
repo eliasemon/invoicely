@@ -19,7 +19,8 @@ export interface Invoice {
   clientPhone: string;
   clientAddress?: string | null;
   amount: number;
-  status: 'DRAFT' | 'PENDING' | 'PAID' | 'UNPAID';
+  status: 'DRAFT' | 'PENDING' | 'PAID' | 'UNPAID' | 'PARTIAL';
+  amountPaid?: number;
   groups: InvoiceGroup[];
   
   // Snapshots from Profile at generation time

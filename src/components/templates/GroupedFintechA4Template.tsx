@@ -5,6 +5,8 @@ export function GroupedFintechA4Template({ invoice, profile }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
   const dueDate = getDueDate(invoice.createdAt);
   const subtotal = getSubtotal(invoice);
+  const amountPaid = invoice.amountPaid || 0;
+  const balanceDue = Math.max(0, subtotal - amountPaid);
 
   return (
     <div className="bg-[#f1f5f9] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}>
@@ -90,6 +92,18 @@ export function GroupedFintechA4Template({ invoice, profile }: TemplateProps) {
               <div className="flex justify-between py-1.5 text-sm text-[#475569] font-mono"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
               <div className="flex justify-between py-1.5 text-sm text-[#475569] font-mono"><span>Tax</span><span>{formatMoney(0, sym)}</span></div>
               <div className="flex justify-between py-2 mt-2 border-t border-[#e2e8f0] text-lg font-bold text-[#0891b2] font-mono"><span>Total</span><span>{formatMoney(subtotal, sym)}</span></div>
+              {amountPaid > 0 && (
+                <>
+                  <div className="flex justify-between py-2 text-sm text-gray-500 font-medium">
+                    <span>Amount Paid</span>
+                    <span>{formatMoney(amountPaid, sym)}</span>
+                  </div>
+                  <div className="flex justify-between py-3 mt-2 border-t-2 border-gray-800 text-lg font-bold text-gray-900">
+                    <span>Balance Due</span>
+                    <span>{formatMoney(balanceDue, sym)}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
           {/* Bank Details & Signature Section */}

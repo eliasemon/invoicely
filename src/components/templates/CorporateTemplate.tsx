@@ -5,6 +5,8 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups }: T
   const sym = invoice.currency_symbol || '$';
   const dueDate = getDueDate(invoice.createdAt);
   const subtotal = getSubtotal(invoice);
+  const amountPaid = invoice.amountPaid || 0;
+  const balanceDue = Math.max(0, subtotal - amountPaid);
   const items = getAllItems(invoice);
 
   return (
@@ -154,6 +156,18 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups }: T
                     <span className="font-bold text-black uppercase">Total</span>
                     <span className="text-xl font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(subtotal, sym)}</span>
                   </div>
+              {amountPaid > 0 && (
+                <>
+                  <div className="flex justify-between py-2 text-sm text-gray-500 font-medium">
+                    <span>Amount Paid</span>
+                    <span>{formatMoney(amountPaid, sym)}</span>
+                  </div>
+                  <div className="flex justify-between py-3 mt-2 border-t-2 border-gray-800 text-lg font-bold text-gray-900">
+                    <span>Balance Due</span>
+                    <span>{formatMoney(balanceDue, sym)}</span>
+                  </div>
+                </>
+              )}
                 </div>
               </div>
 

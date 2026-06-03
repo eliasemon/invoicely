@@ -7,6 +7,8 @@ export function ModernTemplate({ invoice, profile, isPreview }: TemplateProps) {
   const subtotal = getSubtotal(invoice);
   const tax = 0;
   const total = subtotal + tax;
+  const amountPaid = invoice.amountPaid || 0;
+  const balanceDue = Math.max(0, total - amountPaid);
 
   return (
     <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
@@ -121,10 +123,26 @@ export function ModernTemplate({ invoice, profile, isPreview }: TemplateProps) {
             </div>
             <div className="flex justify-end">
               <div className="w-full md:w-2/3 print:w-2/3 bg-[#131b2e] py-3 px-4 rounded-lg flex justify-between items-center">
-                <p className="text-[10px] uppercase tracking-wider text-[#bec6e0]">Total Due</p>
+                <p className="text-[10px] uppercase tracking-wider text-[#bec6e0]">Total</p>
                 <p className="text-xl font-bold text-white" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(total, sym)}</p>
               </div>
             </div>
+            {amountPaid > 0 && (
+              <>
+                <div className="flex justify-end mt-2">
+                  <div className="w-full md:w-2/3 print:w-2/3 py-2 px-4 flex justify-between items-center text-sm">
+                    <p className="text-[10px] uppercase tracking-wider text-[#76777d]">Amount Paid</p>
+                    <p className="text-sm font-medium text-green-600" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(amountPaid, sym)}</p>
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <div className="w-full md:w-2/3 print:w-2/3 bg-[#eff6ff] py-3 px-4 rounded-lg flex justify-between items-center border border-[#bfdbfe]">
+                    <p className="text-[10px] uppercase tracking-wider text-[#1e40af]">Balance Due</p>
+                    <p className="text-xl font-bold text-[#1e40af]" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(balanceDue, sym)}</p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Notes and Signature */}
