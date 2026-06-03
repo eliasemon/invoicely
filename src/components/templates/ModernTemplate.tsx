@@ -25,7 +25,7 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl }: Temp
       )}
 
       {/* Invoice Paper */}
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col md:flex-row print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col md:flex-row print:flex-row print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         {/* Sidebar */}
         <div className="bg-[#0058be] text-white w-full md:w-[30%] print:w-[30%] p-6 flex flex-col justify-between">
           <div>
@@ -147,7 +147,7 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl }: Temp
           </div>
 
           {/* Notes and Signature */}
-          <div className="mt-4 pt-3 border-t border-[#dce9ff] flex flex-col md:flex-row justify-between items-start gap-4">
+          <div className="mt-4 pt-3 border-t border-[#dce9ff] flex flex-col md:flex-row print:flex-row justify-between items-start gap-4">
             <div className="flex-1">
               <p className="text-[10px] uppercase text-[#76777d] mb-1">Notes</p>
               <p className="text-xs text-[#45464d]">{invoice.notes || 'Thank you for your business. Please process payment within 30 days of receiving this invoice.'}</p>
