@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { getProfile } from '@/app/actions/profileActions';
 
 export interface UserProfile {
   id: string;
@@ -60,17 +60,10 @@ export function useProfile() {
       }
 
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.uid)
-          .maybeSingle();
-
-        if (error) throw error;
+        const data = await getProfile();
         
         if (mounted) {
-          setProfile(data || null);
+          setProfile(data);
           setError(null);
         }
       } catch (err: any) {

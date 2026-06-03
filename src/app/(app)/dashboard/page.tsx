@@ -55,6 +55,7 @@ export default async function DashboardPage() {
     .sort((a, b) => (b[1].paidCount + b[1].unpaidCount) - (a[1].paidCount + a[1].unpaidCount));
 
   const recentInvoices = allInvoices.slice(0, 5).map(inv => ({
+    invoiceId: inv.id,
     id: inv.invoice_number,
     clientName: inv.client_name,
     clientInitials: inv.client_name.substring(0, 2).toUpperCase(),

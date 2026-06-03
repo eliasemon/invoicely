@@ -4,15 +4,52 @@ import { LineItemGroup } from '@/components/create/LineItemGroup';
 import { AddActions } from '@/components/create/AddActions';
 import { InvoiceTotalFooter } from '@/components/create/InvoiceTotalFooter';
 import { useCreateInvoice } from '@/core/contexts/CreateInvoiceContext';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, Suspense, useState } from 'react';
+import { getInvoice } from '@/app/actions/invoiceActions';
 
-export default function CreateInvoicePage() {
+function CreateInvoiceForm() {
   const { 
+    draftInvoiceId, setDraftInvoiceId,
     clientName, setClientName,
     mobileNumber, setMobileNumber,
     groups, setGroups,
     currency, currencySymbol,
-    clientAddress, setClientAddress
+    clientAddress, setClientAddress,
+    setSelectedTemplate
   } = useCreateInvoice();
+
+  const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const id = searchParams.get('id');
+    if (id && id !== draftInvoiceId) {
+      setIsLoading(true);
+      getInvoice(id).then(invoice => {
+        if (invoice && invoice.status === 'DRAFT') {
+          setDraftInvoiceId(invoice.id);
+          setClientName(invoice.client_name || '');
+          setMobileNumber(invoice.client_phone || '');
+          setClientAddress(invoice.client_address || '');
+          setGroups((invoice.line_items_snapshot as any) || []);
+          if (invoice.template) setSelectedTemplate(invoice.template);
+        }
+      }).catch(err => {
+        console.error('Failed to load draft invoice', err);
+      }).finally(() => {
+        setIsLoading(false);
+      });
+    }
+  }, [searchParams]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   const updateGroupName = (id: string, name: string) => {
     setGroups(groups.map(g => g.id === id ? { ...g, name } : g));
@@ -104,5 +141,17 @@ export default function CreateInvoicePage() {
 
       <InvoiceTotalFooter totalAmount={totalAmount} currency={currency} currencySymbol={currencySymbol} />
     </div>
+  );
+}
+
+export default function CreateInvoicePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <CreateInvoiceForm />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export type StatusType = "PAID" | "UNPAID" | "PENDING" | "DRAFT" | "PARTIAL";
+export type StatusType = "PAID" | "UNPAID" | "PARTIAL" | "DRAFT";
 
 interface StatusBadgeProps {
   status: StatusType;
@@ -11,7 +11,6 @@ export function StatusBadge({ status, className }: Readonly<StatusBadgeProps>) {
   const statusConfig = {
     PAID: "bg-success-container text-on-tertiary-container",
     UNPAID: "bg-error-container text-error",
-    PENDING: "bg-warning-container text-warning",
     PARTIAL: "bg-surface-container-high text-primary",
     DRAFT: "bg-surface-container text-on-surface-variant border border-outline-variant",
   };

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Invoicely - Enterprise Invoice Template</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-tertiary-container": "#00a572",
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-surface": "#2d3133",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#191c1e",
+                        "secondary-container": "#cee2f9",
+                        "on-secondary-fixed": "#081d2e",
+                        "on-primary-fixed": "#0b1d2d",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-container": "#516578",
+                        "tertiary": "#001a0f",
+                        "surface-dim": "#d8dadc",
+                        "outline-variant": "#c4c6cd",
+                        "outline": "#74777d",
+                        "on-surface-variant": "#44474c",
+                        "on-primary-container": "#8192a7",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-background": "#191c1e",
+                        "surface-tint": "#4f6073",
+                        "primary": "#041627",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#38485a",
+                        "secondary-fixed": "#d1e5fb",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed-dim": "#b5c9df",
+                        "background": "#f7f9fb",
+                        "tertiary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#d2e4fb",
+                        "tertiary-container": "#00311f",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container": "#eceef0",
+                        "secondary": "#4d6073",
+                        "primary-container": "#1a2b3c",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8ea",
+                        "surface": "#f7f9fb",
+                        "on-secondary-fixed-variant": "#36495b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "sm": "16px",
+                        "margin-mobile": "16px",
+                        "xl": "48px",
+                        "margin-desktop": "40px",
+                        "lg": "32px",
+                        "xs": "8px",
+                        "gutter": "24px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        @media print {
+            body { background: white; }
+            .no-print { display: none; }
+            .print-container { 
+                width: 210mm; 
+                height: 297mm; 
+                margin: 0; 
+                padding: 15mm; 
+                box-shadow: none;
+                border: none;
+            }
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
+        .a4-container {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            margin: 2rem auto;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(26, 43, 60, 0.05);
+            border: 1px solid #E2E8F0;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- Top AppBar (Navigation Shell) -->
+<header class="bg-surface sticky top-0 z-50 border-b border-outline-variant shadow-sm no-print">
+<div class="flex justify-between items-center px-margin-desktop h-16 w-full max-w-[1280px] mx-auto">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+<span class="font-headline-md text-headline-md font-bold text-primary ml-xs">Invoicely</span>
+</div>
+<nav class="hidden md:flex gap-md">
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg font-label-sm text-label-sm" href="#">Dashboard</a>
+<a class="text-primary font-semibold transition-colors px-3 py-2 rounded-lg font-label-sm text-label-sm" href="#">Invoices</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg font-label-sm text-label-sm" href="#">Templates</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg font-label-sm text-label-sm" href="#">Reports</a>
+</nav>
+<div class="flex items-center gap-sm">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg flex items-center gap-xs text-label-sm font-semibold hover:opacity-90 transition-opacity" onclick="window.print()">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+                    Export PDF
+                </button>
+<img alt="Profile" class="w-10 h-10 rounded-full border border-outline-variant" data-alt="A professional headshot of a financial corporate executive in a sharp navy suit, clean corporate background, bright professional studio lighting, high trust fintech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS4iaVNGW7aRrd32D83x6mXER-GG935Dm8ygF6uki55ZULhQA_JAXHejkRsVFBQ4JLb30eovcwHGNNMYYSLLEuRinIAk6YaaMJxPOHiNCv9AWEVF4E52O3_CCJS9ab3pnpotJfkZ_J_ho0XyarllW52EzLwfVXtC2hLJbddLTecdAb4BMTMT1lKzKUO1pE39Jo5e_PSy0zPQh8korUwV5tMhXREgoYR7acvtTAov3wKTI2gdyaRuJMqFuNINxDTwNm-sYlcEvDAFMW"/>
+</div>
+</div>
+</header>
+<main class="flex justify-center p-md">
+<!-- A4 Page Layout -->
+<article class="a4-container flex flex-col">
+<!-- Header Section -->
+<section class="flex justify-between items-start mb-lg">
+<div class="flex flex-col gap-xs">
+<div class="bg-primary text-on-primary p-2 w-fit rounded-lg mb-xs">
+<span class="material-symbols-outlined text-[32px]" data-icon="business">business</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-primary">Invoicely Global Ltd.</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant max-w-[240px]">
+                        Enterprise Financial District<br/>
+                        Level 42, Sky Tower One<br/>
+                        New York, NY 10001
+                    </p>
+</div>
+<div class="text-right">
+<h2 class="font-headline-lg text-headline-lg text-primary uppercase tracking-tight mb-xs">Invoice</h2>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Invoice Number: <span class="font-semibold text-on-surface">INV-2024-0892</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Issue Date: <span class="font-semibold text-on-surface">Oct 24, 2023</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Due Date: <span class="font-semibold text-on-surface">Nov 24, 2023</span></span>
+<div class="mt-xs">
+<span class="bg-tertiary-fixed-dim bg-opacity-20 text-on-tertiary-container px-3 py-1 rounded-full text-label-sm font-semibold border border-tertiary-fixed-dim border-opacity-30">
+                                PAYMENT PENDING
+                            </span>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-2 gap-xl mb-lg border-y border-outline-variant py-md">
+<div class="flex flex-col gap-xs">
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-70">BILL TO:</span>
+<h3 class="font-headline-md text-headline-md">Nexus Dynamics Corp.</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Attn: Accounts Payable<br/>
+                        888 Innovation Way<br/>
+                        San Francisco, CA 94105<br/>
+                        USA
+                    </p>
+</div>
+<div class="flex flex-col gap-xs items-end text-right">
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-70">PAYMENT SUMMARY:</span>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Currency: <span class="font-semibold text-on-surface">USD ($)</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">PO Reference: <span class="font-semibold text-on-surface">#PO-88219-X</span></span>
+<span class="font-headline-md text-headline-md text-primary mt-xs">$12,450.00</span>
+</div>
+</div>
+</div>
+<!-- Invoice Content - Mixed Item Handling -->
+<section class="flex-grow">
+<!-- Grouped Section: Project Phases -->
+<div class="mb-lg">
+<h4 class="font-label-caps text-label-caps text-primary border-b border-outline-variant pb-xs mb-sm">Phase 01: Infrastructure Discovery</h4>
+<table class="w-full text-left">
+<thead>
+<tr class="text-on-surface-variant border-b border-surface-container-highest">
+<th class="py-2 font-label-sm text-label-sm font-semibold w-1/2">Description</th>
+<th class="py-2 font-label-sm text-label-sm font-semibold text-right">Hours</th>
+<th class="py-2 font-label-sm text-label-sm font-semibold text-right">Rate</th>
+<th class="py-2 font-label-sm text-label-sm font-semibold text-right">Amount</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 font-body-md text-body-md">On-site Systems Architecture Audit</td>
+<td class="py-3 font-body-md text-body-md text-right">24.0</td>
+<td class="py-3 font-body-md text-body-md text-right">$185.00</td>
+<td class="py-3 font-body-md text-body-md text-right font-semibold">$4,440.00</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 font-body-md text-body-md">Cloud Readiness Assessment Report</td>
+<td class="py-3 font-body-md text-body-md text-right">12.0</td>
+<td class="py-3 font-body-md text-body-md text-right">$150.00</td>
+<td class="py-3 font-body-md text-body-md text-right font-semibold">$1,800.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mb-lg">
+<h4 class="font-label-caps text-label-caps text-primary border-b border-outline-variant pb-xs mb-sm">Phase 02: Implementation &amp; Deployment</h4>
+<table class="w-full text-left">
+<thead>
+<tr class="text-on-surface-variant border-b border-surface-container-highest">
+<th class="py-2 font-label-sm text-label-sm font-semibold w-1/2">Description</th>
+<th class="py-2 font-label-sm text-label-sm font-semibold text-right">Hours</th>
+<th class="py-2 font-label-sm text-label-sm font-semibold text-right">Rate</th>
+<th class="py-2 font-label-sm text-label-sm font-semibold text-right">Amount</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 font-body-md text-body-md">Primary Database Migration (PostgreSQL)</td>
+<td class="py-3 font-body-md text-body-md text-right">16.0</td>
+<td class="py-3 font-body-md text-body-md text-right">$210.00</td>
+<td class="py-3 font-body-md text-body-md text-right font-semibold">$3,360.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Flat List: Miscellaneous Expenses -->
+<div class="mb-lg">
+<h4 class="font-label-caps text-label-caps text-secondary border-b border-outline-variant pb-xs mb-sm">Miscellaneous &amp; Expenses</h4>
+<table class="w-full text-left">
+<thead>
+<tr class="text-on-surface-variant border-b border-surface-container-highest">
+<th class="py-2 font-label-sm text-label-sm font-semibold w-1/2">Expense Item</th>
+<th class="py-2 font-label-sm text-label-sm font-semibold text-right">Qty</th>
+<th class="py-2 font-label-sm text-label-sm font-semibold text-right">Unit Price</th>
+<th class="py-2 font-label-sm text-label-sm font-semibold text-right">Total</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 font-body-md text-body-md">Enterprise SSL Certificate (2-Year Wildcard)</td>
+<td class="py-3 font-body-md text-body-md text-right">1</td>
+<td class="py-3 font-body-md text-body-md text-right">$850.00</td>
+<td class="py-3 font-body-md text-body-md text-right font-semibold">$850.00</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 font-body-md text-body-md">Travel Reimbursement (NYC-SF Roundtrip)</td>
+<td class="py-3 font-body-md text-body-md text-right">2</td>
+<td class="py-3 font-body-md text-body-md text-right">$1,000.00</td>
+<td class="py-3 font-body-md text-body-md text-right font-semibold">$2,000.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Totals & Banking -->
+<section class="mt-xl border-t-2 border-primary pt-md">
+<div class="flex justify-between">
+<div class="w-1/2 flex flex-col gap-md">
+<div class="bg-surface-container-low p-md rounded-xl border border-outline-variant border-opacity-30">
+<h5 class="font-label-caps text-label-caps text-primary mb-xs">Bank Details</h5>
+<p class="font-label-sm text-label-sm text-on-surface-variant leading-relaxed">
+                                Bank Name: Global Sterling Bank<br/>
+                                Account Name: Invoicely Global Ltd.<br/>
+                                Account No: 0098 7721 4452<br/>
+                                SWIFT/BIC: GSTERLNY42<br/>
+                                IBAN: US44 GSTR 0098 7721 4452 01
+                            </p>
+</div>
+<div class="flex items-center gap-sm">
+<div class="bg-white p-1 border border-outline-variant rounded-lg">
+<img alt="QR Code" class="w-20 h-20 opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWjeqDzCXa7Ck3gid1fRxMxHLzcuVAN04dNDKD342_0bgyftZfwBMDTcXvOyGqzSeDTJMPEI-jXKSk8Y8AH8822BWmKbozSwJA7DcxkMeIBg7XLZ0Sh0H70rkoQ6uTsjNt2tyjWzcWH3SOYEngudqZiE7uwHUvEbL4WALodZLhEa9IJVTkRwu4i8qKy8bZSYSnKkBAUNTn5zHAqXUtopu3KIDW7YD3nLD7KYmcfl0s8daojGVm3Zb-mUyLcmcTCalibZdSeSIPAXvu"/>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Scan to Pay</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Secure crypto or bank<br/>transfer payment portal.</span>
+</div>
+</div>
+</div>
+<div class="w-1/3 flex flex-col gap-2">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Subtotal</span>
+<span class="font-semibold">$12,450.00</span>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Tax (VAT 0% - Export)</span>
+<span class="font-semibold">$0.00</span>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm border-b border-outline-variant pb-2">
+<span class="text-on-surface-variant">Processing Fees</span>
+<span class="font-semibold">$0.00</span>
+</div>
+<div class="flex justify-between items-center pt-2">
+<span class="font-label-caps text-label-caps text-primary font-bold">Total Due</span>
+<span class="font-headline-md text-headline-md text-primary">$12,450.00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer & Signature -->
+<footer class="mt-xl pt-lg border-t border-outline-variant border-dashed">
+<div class="flex justify-between items-end">
+<div class="flex flex-col gap-xs">
+<h6 class="font-label-caps text-label-caps text-on-surface-variant mb-xl">Authorized Signature</h6>
+<div class="border-b border-primary w-48 pb-1">
+<span class="font-serif italic text-xl text-primary opacity-80 select-none">Julian Sterling</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Julian Sterling, CFO</span>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant">
+                            Thank you for your business. Terms: Net 30 days.<br/>
+                            Late payments are subject to a 1.5% monthly fee.<br/>
+<span class="font-semibold">invoicely.io</span>
+</p>
+</div>
+</div>
+</footer>
+</article>
+</main>
+<!-- Bottom NavBar (Mobile) -->
+<nav class="fixed bottom-0 w-full z-50 lg:hidden bg-surface border-t border-outline-variant shadow-[0_-4px_12px_rgba(26,43,60,0.05)] no-print">
+<div class="flex justify-around items-center h-16 px-margin-mobile pb-safe">
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm-mobile">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-sm text-label-sm-mobile">Invoices</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-sm text-label-sm-mobile">Create</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm-mobile">Profile</span>
+</div>
+</div>
+</nav>
+<script>
+        // Micro-interaction for hover states
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+                row.style.transition = 'transform 0.2s ease-out';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body></html>

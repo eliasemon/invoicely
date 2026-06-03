@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Invoice IN-2023-085</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Work+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "background": "#f8f9ff",
+                        "surface-container-high": "#dce9ff",
+                        "surface": "#f8f9ff",
+                        "on-tertiary-container": "#009668",
+                        "on-primary-fixed": "#131b2e",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "tertiary": "#000000",
+                        "on-surface-variant": "#45464d",
+                        "on-primary-container": "#7c839b",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-container": "#fefcff",
+                        "primary-fixed": "#dae2fd",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#d3e4fe",
+                        "inverse-surface": "#213145",
+                        "surface-container": "#e5eeff",
+                        "outline": "#76777d",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#6ffbbe",
+                        "primary": "#000000",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#bec6e0",
+                        "surface-tint": "#565e74",
+                        "surface-dim": "#cbdbf5",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#0b1c30",
+                        "primary-container": "#131b2e",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-container": "#002113",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "secondary-container": "#2170e4",
+                        "secondary": "#0058be",
+                        "on-secondary-fixed": "#001a42",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c6c6cd",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#0b1c30"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-desktop": "48px",
+                        "container-max": "800px",
+                        "margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Work Sans"],
+                        "data-mono": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg": ["Work Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .invoice-shadow { box-shadow: 0px 4px 20px rgba(0,0,0,0.05); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen text-on-surface font-body-md py-8 px-4 md:py-16">
+<!-- Top Action Bar (Outside Invoice Paper) -->
+<div class="max-w-container-max mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-bold text-primary">Invoicely</span>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-outline-variant text-on-surface rounded-lg font-label-sm text-label-sm hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">download</span>
+                Download PDF
+            </button>
+<button class="px-6 py-2 bg-secondary text-on-secondary rounded-lg font-label-sm text-label-sm hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-[0_4px_14px_rgba(33,112,228,0.39)] flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">payment</span>
+                Pay $4,250.00
+            </button>
+</div>
+</div>
+<!-- Invoice Paper Container -->
+<div class="max-w-container-max mx-auto bg-surface-container-lowest rounded-xl invoice-shadow overflow-hidden flex flex-col md:flex-row">
+<!-- Modern Sidebar / Left Column -->
+<div class="bg-secondary text-on-secondary w-full md:w-[30%] p-8 flex flex-col justify-between">
+<div>
+<div class="mb-12">
+<img alt="Brand Logo Placeholder" class="w-16 h-16 rounded-full bg-surface-container-lowest mb-4 object-cover" data-alt="A clean, modern geometric brand logo featuring abstract intersecting lines in vibrant blue and stark white. The design is sleek, tech-forward, and highly professional, set against a pristine white background. The lighting is bright and even, highlighting the crisp vector style of the icon. The overall mood is innovative, trustworthy, and minimal, reflecting a modern corporate identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyLS6lGIeGDSSGX8qaYByyifIIY4OQYoY_LhyRsiIu36_n8qzWqMcXg0Mjn4OjKSjRfnJ2LzJy4d9v6OTi-lDdDg_ugPaq6exRqauUn9XZhuTMUYLqadBUy20KSHGtXi0OZ-Cc0oDKpRmDFVLbZUvOFCloDDA0b7C5gnR4VfyULmTenQ_97X4LiMmw4tBm042Hxa5Ddhe_AEnavRqFdIof96YbEfEcghBdI2KxyTKTaASCzpTA8ediadbPzRQAV3D_1APCGUhskF0D">
+<h2 class="font-headline-md text-headline-md text-on-secondary mb-1">Nexus Design Co.</h2>
+<p class="font-data-mono text-data-mono text-secondary-fixed-dim">contact@nexusdesign.io</p>
+</div>
+<div class="mb-8">
+<p class="font-label-sm text-label-sm uppercase text-secondary-fixed mb-1">Invoice Number</p>
+<p class="font-headline-md text-[20px] font-semibold text-on-secondary">IN-2023-085</p>
+</div>
+<div class="mb-8">
+<p class="font-label-sm text-label-sm uppercase text-secondary-fixed mb-1">Date Issued</p>
+<p class="font-data-mono text-data-mono text-on-secondary">Oct 24, 2023</p>
+</div>
+<div class="mb-8">
+<p class="font-label-sm text-label-sm uppercase text-secondary-fixed mb-1">Due Date</p>
+<p class="font-data-mono text-data-mono text-on-secondary">Nov 23, 2023</p>
+</div>
+</div>
+<div class="mt-8 hidden md:block">
+<p class="font-label-sm text-label-sm uppercase text-secondary-fixed mb-2">Scan to Pay</p>
+<div class="bg-on-secondary p-2 rounded-lg inline-block">
+<img alt="QR Code" class="w-16 h-16 grayscale" data-alt="A high-contrast, perfectly square QR code rendered in sharp black and white. The intricate pixel pattern is crisp and clearly defined, intended for mobile scanning. It is set within a subtle, pristine white rounded container to provide clear margins. The overall aesthetic is purely functional, modern, and tech-driven, fitting seamlessly into a digital payment workflow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCmwZKSk30dc2olx2yYD4Q2wzucPA7dJYwqVUxoPdrrTN4EdTw4yqbjPA8JkEvwGnhMPMdpHoKAy1nGP-zfmkGwzqNwjP76NQGcQFP-xnlaOwkrhSKoYf66QRxVaeW7CdZ7k4JEUbUv2AnMfXDaLwG1QY0RvwMDIqrW9aVFhFtTyJ8hBdZLWjcr65VdrhR1adHiwwPisT69IUxCPRylxqICnaMPB-ucoJO2jRf9xS_x78Q8rdNMQLz7ozPUefoJ1_x1Ksnn1_8RK6v">
+</div>
+</div>
+</div>
+<!-- Main Content Area / Right Column -->
+<div class="w-full md:w-[70%] p-8 md:p-12">
+<!-- Header row inside main content -->
+<div class="flex justify-between items-start mb-16">
+<div>
+<p class="font-label-sm text-label-sm uppercase text-outline mb-2">Billed To</p>
+<h3 class="font-headline-md text-[20px] font-semibold text-on-surface mb-1">Acme Corporation</h3>
+<p class="font-data-mono text-data-mono text-on-surface-variant">123 Business Avenue<br>Suite 400<br>Metropolis, NY 10001</p>
+</div>
+<div class="text-right">
+<div class="inline-block bg-tertiary-fixed text-on-tertiary-fixed-variant px-3 py-1 rounded-full font-label-sm text-label-sm font-bold tracking-wide uppercase">
+                         Pending
+                     </div>
+</div>
+</div>
+<!-- Line Items Area -->
+<div class="mb-12">
+<p class="font-label-sm text-label-sm uppercase text-outline mb-4 border-b border-surface-container-high pb-2">Description</p>
+<!-- Item 1 -->
+<div class="flex justify-between items-start mb-6">
+<div class="pr-4">
+<h4 class="font-body-md font-semibold text-on-surface">Website Redesign Phase 1</h4>
+<p class="font-data-mono text-data-mono text-on-surface-variant mt-1">UX/UI design, wireframes, and high-fidelity mockups for core pages.</p>
+</div>
+<div class="text-right whitespace-nowrap">
+<p class="font-data-mono text-data-mono text-on-surface">$2,500.00</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex justify-between items-start mb-6">
+<div class="pr-4">
+<h4 class="font-body-md font-semibold text-on-surface">Brand Identity System</h4>
+<p class="font-data-mono text-data-mono text-on-surface-variant mt-1">Logo refinement, color palette selection, and typography guidelines.</p>
+</div>
+<div class="text-right whitespace-nowrap">
+<p class="font-data-mono text-data-mono text-on-surface">$1,500.00</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex justify-between items-start mb-6">
+<div class="pr-4">
+<h4 class="font-body-md font-semibold text-on-surface">Asset Export</h4>
+<p class="font-data-mono text-data-mono text-on-surface-variant mt-1">Preparation and delivery of all final graphical assets in required formats.</p>
+</div>
+<div class="text-right whitespace-nowrap">
+<p class="font-data-mono text-data-mono text-on-surface">$250.00</p>
+</div>
+</div>
+</div>
+<!-- Totals Area -->
+<div class="border-t border-surface-container-high pt-6">
+<div class="flex justify-end mb-3">
+<div class="w-1/2 flex justify-between">
+<p class="font-label-sm text-label-sm text-outline">Subtotal</p>
+<p class="font-data-mono text-data-mono text-on-surface">$4,250.00</p>
+</div>
+</div>
+<div class="flex justify-end mb-6">
+<div class="w-1/2 flex justify-between">
+<p class="font-label-sm text-label-sm text-outline">Tax (0%)</p>
+<p class="font-data-mono text-data-mono text-on-surface">$0.00</p>
+</div>
+</div>
+<!-- Grand Total Box -->
+<div class="flex justify-end">
+<div class="w-full md:w-2/3 bg-primary-container text-on-primary-container p-6 rounded-lg flex justify-between items-center">
+<p class="font-label-sm text-label-sm uppercase tracking-wider text-primary-fixed-dim">Total Due</p>
+<p class="font-display-lg text-[32px] md:text-display-lg text-on-primary font-bold">$4,250.00</p>
+</div>
+</div>
+</div>
+<!-- Notes -->
+<div class="mt-16 pt-8 border-t border-surface-container-high">
+<p class="font-label-sm text-label-sm uppercase text-outline mb-2">Notes</p>
+<p class="font-data-mono text-data-mono text-on-surface-variant">Thank you for your business. Please process payment within 30 days of receiving this invoice. Late payments may be subject to a 1.5% monthly fee.</p>
+</div>
+</div>
+</div>
+</body></html>

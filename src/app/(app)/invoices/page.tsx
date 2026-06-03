@@ -36,6 +36,7 @@ export default async function InvoicesPage() {
         {allInvoices.map((invoice, idx) => (
           <InvoiceCard 
             key={`${invoice.id}-${idx}`}
+            invoiceId={invoice.id}
             id={invoice.invoice_number}
             clientName={invoice.client_name}
             amount={invoice.total_amount}
@@ -44,6 +45,7 @@ export default async function InvoicesPage() {
             phone={invoice.client_phone || 'N/A'}
             currency={invoice.currency || defaultCurrency}
             currencySymbol={invoice.currency_symbol || defaultCurrencySymbol}
+            amountPaid={invoice.amount_paid}
           />
         ))}
         

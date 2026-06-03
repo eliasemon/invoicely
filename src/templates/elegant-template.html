@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Elegant Invoice</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts mapping to Config -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&amp;family=Hanken+Grotesk:wght@400&amp;family=Work+Sans:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-high": "#dce9ff",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-container": "#002113",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary-container": "#7c839b",
+                        "on-background": "#0b1c30",
+                        "inverse-surface": "#213145",
+                        "primary-fixed": "#dae2fd",
+                        "tertiary": "#000000",
+                        "on-tertiary-container": "#009668",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-tint": "#565e74",
+                        "primary-container": "#131b2e",
+                        "surface-variant": "#d3e4fe",
+                        "secondary": "#0058be",
+                        "on-error-container": "#93000a",
+                        "outline": "#76777d",
+                        "primary": "#000000",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-container": "#fefcff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "tertiary-fixed": "#6ffbbe",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-surface-variant": "#45464d",
+                        "on-surface": "#0b1c30",
+                        "surface": "#f8f9ff",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#2170e4",
+                        "inverse-on-surface": "#eaf1ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "48px",
+                        "gutter": "24px",
+                        "container-max": "800px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["Geist"],
+                        "headline-md": ["Work Sans"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-sm": ["Geist"],
+                        "display-lg": ["Work Sans"]
+                    },
+                    "fontSize": {
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Print optimizations for A4 */
+        @media print {
+            body { background: white; padding: 0; margin: 0; }
+            .no-print { display: none !important; }
+            .print-canvas {
+                box-shadow: none !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            /* Subtle slate accents forced in print */
+            .text-surface-tint { color: #565e74 !important; }
+            .text-outline { color: #76777d !important; }
+        }
+        
+        /* CSS QR Code placeholder */
+        .css-qr-code {
+            background-image: 
+                linear-gradient(45deg, currentColor 25%, transparent 25%, transparent 75%, currentColor 75%, currentColor), 
+                linear-gradient(45deg, currentColor 25%, transparent 25%, transparent 75%, currentColor 75%, currentColor);
+            background-size: 8px 8px;
+            background-position: 0 0, 4px 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-dim min-h-screen text-on-surface font-body-md py-8 px-4 print:py-0 print:px-0">
+<!-- Floating Action Bar (Screen Only) -->
+<div class="no-print fixed top-6 right-6 md:right-12 z-50 flex gap-4">
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant px-6 py-2.5 rounded-full shadow-sm hover:bg-surface transition-colors flex items-center gap-2 font-label-sm text-label-sm cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">share</span>
+            Share Link
+        </button>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full shadow-md hover:opacity-90 transition-opacity flex items-center gap-2 font-label-sm text-label-sm cursor-pointer" onclick="window.print()">
+<span class="material-symbols-outlined text-[18px]">download</span>
+            Download PDF
+        </button>
+</div>
+<!-- Main Invoice Canvas (A4 Aspect Ratio Optimized) -->
+<main class="print-canvas w-full max-w-container-max mx-auto bg-surface-container-lowest shadow-[0_4px_40px_rgba(11,28,48,0.06)] rounded-sm overflow-hidden p-8 md:p-16 lg:p-[4.5rem] relative">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
+<div>
+<h1 class="font-display-lg text-display-lg text-primary mb-2">Aura Creative</h1>
+<p class="font-body-md text-body-md text-surface-tint max-w-[250px]">
+                    1245 Design District Ave.<br>
+                    Suite 400<br>
+                    New York, NY 10001
+                </p>
+</div>
+<div class="text-left md:text-right">
+<h2 class="font-headline-md text-headline-md text-outline tracking-wider mb-4">INVOICE</h2>
+<div class="grid grid-cols-2 gap-x-8 gap-y-2 text-right">
+<span class="font-label-sm text-label-sm text-outline text-left md:text-right">Invoice No.</span>
+<span class="font-data-mono text-data-mono text-on-surface">INV-2023-089</span>
+<span class="font-label-sm text-label-sm text-outline text-left md:text-right">Issue Date</span>
+<span class="font-data-mono text-data-mono text-on-surface">Oct 24, 2023</span>
+<span class="font-label-sm text-label-sm text-outline text-left md:text-right">Due Date</span>
+<span class="font-data-mono text-data-mono text-on-surface font-semibold">Nov 07, 2023</span>
+</div>
+</div>
+</header>
+<!-- Bill To Section -->
+<section class="mb-16 border-l-2 border-surface-tint pl-6">
+<h3 class="font-label-sm text-label-sm text-outline mb-3">BILL TO</h3>
+<p class="font-headline-md text-headline-md text-on-surface mb-1">Stellar Dynamics Inc.</p>
+<p class="font-body-md text-body-md text-surface-tint">
+                Attn: Accounts Payable<br>
+                880 Innovation Parkway<br>
+                San Francisco, CA 94105
+            </p>
+</section>
+<!-- Line Items Table -->
+<section class="mb-12">
+<div class="w-full">
+<!-- Table Header -->
+<div class="grid grid-cols-12 gap-4 border-b border-outline-variant pb-4 mb-4">
+<div class="col-span-6 font-label-sm text-label-sm text-outline">DESCRIPTION</div>
+<div class="col-span-2 text-right font-label-sm text-label-sm text-outline">QTY/HRS</div>
+<div class="col-span-2 text-right font-label-sm text-label-sm text-outline">RATE</div>
+<div class="col-span-2 text-right font-label-sm text-label-sm text-outline">AMOUNT</div>
+</div>
+<!-- Item Row -->
+<div class="grid grid-cols-12 gap-4 py-4 border-b border-surface-container-high items-start">
+<div class="col-span-6">
+<p class="font-body-md text-body-md text-on-surface font-medium">Brand Identity Design</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">Logo conceptualization, primary marks, and brand guidelines document.</p>
+</div>
+<div class="col-span-2 text-right font-data-mono text-data-mono text-surface-tint">1.00</div>
+<div class="col-span-2 text-right font-data-mono text-data-mono text-surface-tint">$4,500.00</div>
+<div class="col-span-2 text-right font-data-mono text-data-mono text-on-surface">$4,500.00</div>
+</div>
+<!-- Item Row -->
+<div class="grid grid-cols-12 gap-4 py-4 border-b border-surface-container-high items-start">
+<div class="col-span-6">
+<p class="font-body-md text-body-md text-on-surface font-medium">Web UI/UX Consultation</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">Wireframing and user journey mapping for main marketing site.</p>
+</div>
+<div class="col-span-2 text-right font-data-mono text-data-mono text-surface-tint">12.50</div>
+<div class="col-span-2 text-right font-data-mono text-data-mono text-surface-tint">$150.00</div>
+<div class="col-span-2 text-right font-data-mono text-data-mono text-on-surface">$1,875.00</div>
+</div>
+<!-- Item Row -->
+<div class="grid grid-cols-12 gap-4 py-4 border-b border-surface-container-high items-start">
+<div class="col-span-6">
+<p class="font-body-md text-body-md text-on-surface font-medium">Asset Preparation</p>
+</div>
+<div class="col-span-2 text-right font-data-mono text-data-mono text-surface-tint">4.00</div>
+<div class="col-span-2 text-right font-data-mono text-data-mono text-surface-tint">$120.00</div>
+<div class="col-span-2 text-right font-data-mono text-data-mono text-on-surface">$480.00</div>
+</div>
+</div>
+</section>
+<!-- Totals Section -->
+<section class="flex flex-col items-end mb-24">
+<div class="w-full md:w-1/2 lg:w-1/3">
+<div class="flex justify-between py-2 border-b border-surface-container-high">
+<span class="font-body-md text-body-md text-surface-tint">Subtotal</span>
+<span class="font-data-mono text-data-mono text-on-surface">$6,855.00</span>
+</div>
+<div class="flex justify-between py-2 border-b border-surface-container-high">
+<span class="font-body-md text-body-md text-surface-tint">Tax (0%)</span>
+<span class="font-data-mono text-data-mono text-on-surface">$0.00</span>
+</div>
+<div class="flex justify-between py-6 mt-2">
+<span class="font-headline-md text-headline-md text-on-surface">Total Due</span>
+<span class="font-data-mono text-headline-md font-bold text-on-surface">$6,855.00</span>
+</div>
+</div>
+</section>
+<!-- Footer / Signature / QR -->
+<footer class="flex flex-col-reverse md:flex-row justify-between items-end gap-12 mt-auto">
+<div class="w-full md:w-1/2">
+<h4 class="font-label-sm text-label-sm text-outline mb-2">PAYMENT TERMS</h4>
+<p class="font-body-md text-body-md text-surface-tint text-sm mb-12">
+                    Payment is due within 14 days of issue. Please include invoice number on your check or transfer details.
+                </p>
+<!-- Signature Area -->
+<div class="mt-8">
+<div class="w-48 border-b-2 border-surface-tint mb-2"></div>
+<p class="font-label-sm text-label-sm text-outline">AUTHORIZED SIGNATURE</p>
+</div>
+</div>
+<!-- Public Link QR -->
+<div class="flex flex-col items-center md:items-end gap-3 text-center md:text-right">
+<div class="w-24 h-24 bg-surface-container rounded-sm css-qr-code text-outline-variant p-2 flex items-center justify-center relative overflow-hidden">
+<div class="absolute inset-2 bg-surface-container-lowest flex items-center justify-center rounded-[2px]">
+<span class="material-symbols-outlined text-outline text-[32px]">qr_code_scanner</span>
+</div>
+</div>
+<p class="font-label-sm text-label-sm text-outline max-w-[120px]">Scan to view or pay securely online</p>
+</div>
+</footer>
+</main>
+</body></html>

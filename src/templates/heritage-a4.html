@@ -1,0 +1,297 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Heritage Invoice Template</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0;
+  }
+  @media print {
+    body {
+      background-color: white !important;
+    }
+    .print-hide {
+      display: none !important;
+    }
+    .print-no-shadow {
+      box-shadow: none !important;
+    }
+  }
+</style>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-tertiary-fixed": "#002113",
+                "inverse-surface": "#2d3133",
+                "error-container": "#ffdad6",
+                "inverse-on-surface": "#eff1f3",
+                "surface-container-lowest": "#ffffff",
+                "background": "#f7f9fb",
+                "on-secondary-fixed-variant": "#36495b",
+                "on-tertiary": "#ffffff",
+                "on-secondary-fixed": "#081d2e",
+                "surface-container": "#eceef0",
+                "primary-container": "#1a2b3c",
+                "tertiary-fixed": "#6ffbbe",
+                "secondary-fixed": "#d1e5fb",
+                "outline": "#74777d",
+                "on-surface-variant": "#44474c",
+                "secondary-fixed-dim": "#b5c9df",
+                "on-primary-container": "#8192a7",
+                "on-error": "#ffffff",
+                "on-background": "#191c1e",
+                "inverse-primary": "#b7c8de",
+                "on-secondary-container": "#516578",
+                "secondary": "#4d6073",
+                "tertiary": "#001a0f",
+                "surface-dim": "#d8dadc",
+                "error": "#ba1a1a",
+                "outline-variant": "#c4c6cd",
+                "on-surface": "#191c1e",
+                "surface-bright": "#f7f9fb",
+                "surface-container-high": "#e6e8ea",
+                "primary-fixed-dim": "#b7c8de",
+                "on-primary": "#ffffff",
+                "primary": "#041627",
+                "surface-tint": "#4f6073",
+                "secondary-container": "#cee2f9",
+                "on-secondary": "#ffffff",
+                "on-error-container": "#93000a",
+                "surface-variant": "#e0e3e5",
+                "tertiary-fixed-dim": "#4edea3",
+                "tertiary-container": "#00311f",
+                "surface-container-highest": "#e0e3e5",
+                "surface": "#f7f9fb",
+                "on-tertiary-fixed-variant": "#005236",
+                "on-tertiary-container": "#00a572",
+                "primary-fixed": "#d2e4fb",
+                "on-primary-fixed": "#0b1d2d",
+                "on-primary-fixed-variant": "#38485a",
+                "surface-container-low": "#f2f4f6"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "md": "24px",
+                "xs": "8px",
+                "margin-desktop": "40px",
+                "lg": "32px",
+                "base": "4px",
+                "gutter": "24px",
+                "xl": "48px",
+                "sm": "16px",
+                "margin-mobile": "16px"
+        },
+        "fontFamily": {
+                "body-md": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "headline-lg": [
+                        "Inter"
+                ],
+                "label-sm": [
+                        "Inter"
+                ],
+                "label-caps": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.01em",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "letterSpacing": "0.01em",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.01em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "label-caps": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-md": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen">
+<div class="print-hide w-full flex justify-center py-sm bg-surface-container border-b border-outline-variant">
+<button class="flex items-center gap-xs px-md py-xs bg-primary text-on-primary rounded font-label-sm text-label-sm hover:bg-surface-tint transition-colors" onclick="window.print()">
+<span class="material-symbols-outlined text-[18px]">print</span>
+      Print Invoice
+    </button>
+</div>
+<div class="w-full py-xl px-sm md:px-margin-desktop print:p-0 print:m-0 flex justify-center">
+<!-- A4 Paper Container -->
+<div class="w-full max-w-[210mm] min-h-[297mm] bg-surface-container-lowest shadow-lg print-no-shadow print:shadow-none p-margin-desktop md:p-xl flex flex-col relative border border-outline-variant print:border-none">
+<!-- Classic Header -->
+<header class="flex flex-col items-center text-center mb-xl relative pb-lg">
+<!-- Elegant double border -->
+<div class="absolute bottom-0 w-full border-b-[3px] border-primary"></div>
+<div class="absolute bottom-[4px] w-full border-b border-primary"></div>
+<div class="w-32 h-20 bg-surface-container border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-1 mb-md">
+  <span class="material-symbols-outlined text-outline text-[24px]">corporate_fare</span>
+  <span class="text-[10px] font-label-caps text-on-surface-variant uppercase tracking-tighter">Logo</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-widest uppercase mb-xs">Invoice</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+          123 Heritage Row, Suite 400<br>
+          London, W1J 7BT, United Kingdom<br>
+          inquiries@heritage-estates.com | +44 (0) 20 7946 0123
+        </p>
+</header>
+<!-- Invoice Details Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-xl pb-lg border-b border-outline-variant">
+<div class="flex flex-col">
+<h2 class="font-label-caps text-label-caps text-primary uppercase mb-xs tracking-wider">Bill To</h2>
+<p class="font-headline-md text-headline-md text-on-surface mb-xs">The Earl of Grantham</p>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Downton Abbey<br>
+            Yorkshire, HG4 3EH<br>
+            United Kingdom
+          </p>
+</div>
+<div class="flex flex-col md:items-end justify-end mt-md md:mt-0">
+<div class="flex justify-between md:justify-end w-full mb-xs">
+<span class="font-label-caps text-label-caps text-primary uppercase md:mr-sm self-center">Invoice No.</span>
+<span class="font-body-lg text-body-lg text-on-surface">INV-1920-045</span>
+</div>
+<div class="flex justify-between md:justify-end w-full mb-xs">
+<span class="font-label-caps text-label-caps text-primary uppercase md:mr-sm self-center">Date Issued</span>
+<span class="font-body-lg text-body-lg text-on-surface">September 12, 1920</span>
+</div>
+<div class="flex justify-between md:justify-end w-full">
+<span class="font-label-caps text-label-caps text-primary uppercase md:mr-sm self-center">Due Date</span>
+<span class="font-body-lg text-body-lg text-on-surface">October 12, 1920</span>
+</div>
+</div>
+</section>
+<!-- Line Items Table -->
+<section class="flex-grow mb-xl">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b-2 border-primary text-primary">
+<th class="py-sm font-label-caps text-label-caps uppercase w-1/2">Description</th>
+<th class="py-sm font-label-caps text-label-caps uppercase text-center w-1/6">Qty / Hrs</th>
+<th class="py-sm font-label-caps text-label-caps uppercase text-right w-1/6">Rate</th>
+<th class="py-sm font-label-caps text-label-caps uppercase text-right w-1/6">Amount</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant">
+<tr>
+<td class="py-md font-body-md text-body-md text-on-surface">Estate Management Consultation</td>
+<td class="py-md font-body-md text-body-md text-on-surface-variant text-center">40</td>
+<td class="py-md font-body-md text-body-md text-on-surface-variant text-right">£50.00</td>
+<td class="py-md font-body-lg text-body-lg text-on-surface text-right">£2,000.00</td>
+</tr>
+<tr>
+<td class="py-md font-body-md text-body-md text-on-surface">Architectural Restoration Assessment</td>
+<td class="py-md font-body-md text-body-md text-on-surface-variant text-center">1</td>
+<td class="py-md font-body-md text-body-md text-on-surface-variant text-right">£1,500.00</td>
+<td class="py-md font-body-lg text-body-lg text-on-surface text-right">£1,500.00</td>
+</tr>
+<tr>
+<td class="py-md font-body-md text-body-md text-on-surface">Procurement of Antique Furnishings</td>
+<td class="py-md font-body-md text-body-md text-on-surface-variant text-center">1</td>
+<td class="py-md font-body-md text-body-md text-on-surface-variant text-right">£850.00</td>
+<td class="py-md font-body-lg text-body-lg text-on-surface text-right">£850.00</td>
+</tr>
+</tbody>
+</table>
+</section>
+<!-- Totals Section -->
+<section class="flex justify-end mb-xl">
+<div class="w-full md:w-1/2">
+<div class="flex justify-between py-xs border-b border-surface-variant">
+<span class="font-body-md text-body-md text-on-surface-variant">Subtotal</span>
+<span class="font-body-md text-body-md text-on-surface">£4,350.00</span>
+</div>
+<div class="flex justify-between py-xs border-b border-surface-variant">
+<span class="font-body-md text-body-md text-on-surface-variant">VAT (20%)</span>
+<span class="font-body-md text-body-md text-on-surface">£870.00</span>
+</div>
+<!-- Elegant total border -->
+<div class="flex justify-between py-sm mt-sm relative">
+<div class="absolute top-0 w-full border-t-[3px] border-primary"></div>
+<div class="absolute top-[4px] w-full border-t border-primary"></div>
+<span class="font-headline-md text-headline-md text-primary">Total Due</span>
+<span class="font-headline-md text-headline-md text-primary">£5,220.00</span>
+</div>
+</div>
+</section>
+<!-- Footer Terms -->
+<footer class="mt-auto border-t border-outline-variant pt-lg text-center">
+<h3 class="font-label-caps text-label-caps text-primary uppercase mb-xs tracking-wider">Terms &amp; Conditions</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">
+          Payment is required within 30 days of the issued date. Please make checks payable to Heritage Estates Ltd. Bank transfers can be directed to Acct: 12345678, Sort Code: 12-34-56. We appreciate your continued trust and patronage.
+        </p>
+</footer>
+</div>
+</div>
+
+
+</body></html>

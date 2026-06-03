@@ -14,6 +14,7 @@ export interface InvoiceGroup {
 export interface Invoice {
   id: string;
   userId: string;
+  invoiceNumber: string;
   clientName: string;
   clientPhone: string;
   clientAddress?: string | null;
@@ -30,6 +31,10 @@ export interface Invoice {
   bank_account_holder?: string | null;
   bank_account_number?: string | null;
   bank_swift?: string | null;
+  
+  // Template
+  template?: string;
+  notes?: string | null;
   
   createdAt: Date;
   updatedAt: Date;

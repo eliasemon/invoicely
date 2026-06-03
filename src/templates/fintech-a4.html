@@ -1,0 +1,254 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Invoice Template - Fintech</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-surface": "#2d3133",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f7f9fb",
+                        "on-secondary-fixed-variant": "#36495b",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#081d2e",
+                        "surface-container": "#eceef0",
+                        "primary-container": "#1a2b3c",
+                        "tertiary-fixed": "#6ffbbe",
+                        "secondary-fixed": "#d1e5fb",
+                        "outline": "#74777d",
+                        "on-surface-variant": "#44474c",
+                        "secondary-fixed-dim": "#b5c9df",
+                        "on-primary-container": "#8192a7",
+                        "on-error": "#ffffff",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#b7c8de",
+                        "on-secondary-container": "#516578",
+                        "secondary": "#4d6073",
+                        "tertiary": "#001a0f",
+                        "surface-dim": "#d8dadc",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#191c1e",
+                        "surface-bright": "#f7f9fb",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-fixed-dim": "#b7c8de",
+                        "on-primary": "#ffffff",
+                        "primary": "#041627",
+                        "surface-tint": "#4f6073",
+                        "secondary-container": "#cee2f9",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e0e3e5",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "tertiary-container": "#00311f",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-tertiary-container": "#00a572",
+                        "primary-fixed": "#d2e4fb",
+                        "on-primary-fixed": "#0b1d2d",
+                        "on-primary-fixed-variant": "#38485a",
+                        "surface-container-low": "#f2f4f6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "xs": "8px",
+                        "margin-desktop": "40px",
+                        "lg": "32px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "xl": "48px",
+                        "sm": "16px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Subtle grid pattern for fintech aesthetic */
+        .bg-grid-pattern {
+            background-size: 24px 24px;
+            background-image: 
+                linear-gradient(to right, rgba(224, 227, 229, 0.4) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(224, 227, 229, 0.4) 1px, transparent 1px);
+        }
+        
+        @media print {
+            body { background: white; }
+            .print-hidden { display: none !important; }
+            .print-shadow-none { box-shadow: none !important; }
+            .print-border-none { border: none !important; }
+            .print-m-0 { margin: 0 !important; }
+            .print-p-0 { padding: 0 !important; }
+            .invoice-container { max-width: 100% !important; margin: 0 !important; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col antialiased">
+<!-- TopAppBar from JSON -->
+<header class="bg-surface dark:bg-background w-full top-0 sticky border-b border-outline-variant dark:border-outline print-hidden z-10">
+<div class="flex items-center justify-between px-md py-xs w-full h-14">
+<button aria-label="Go back" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-95 duration-100 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Invoices</h1>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 w-full flex justify-center py-lg px-sm md:px-margin-desktop print:py-0 print:px-0">
+<!-- A4 Invoice Container -->
+<!-- Responsive wrapper: typical A4 aspect ratio is ~1:1.414. Max width 800px is standard for web document view -->
+<div class="invoice-container w-full max-w-[800px] bg-surface-container-lowest rounded-xl shadow-md border border-surface-variant relative overflow-hidden flex flex-col print-shadow-none print-border-none print-m-0">
+<!-- Grid Background Overlay -->
+<div class="absolute inset-0 bg-grid-pattern pointer-events-none z-0"></div>
+<div class="relative z-10 p-sm md:p-xl flex flex-col gap-lg">
+<!-- Invoice Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-sm md:gap-0 border-b border-surface-variant pb-md">
+<div class="flex items-center">
+<div class="h-12 w-32 bg-surface-container-high border-2 border-dashed border-outline-variant flex items-center justify-center rounded-sm">
+    <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-on-surface-variant text-[20px]" aria-hidden="true">business</span>
+        <span class="font-label-caps text-[10px] text-on-surface-variant">LOGO</span>
+    </div>
+</div>
+</div>
+<div class="flex flex-col items-start md:items-end">
+<span class="font-label-caps text-label-caps text-on-surface-variant tracking-widest uppercase">Invoice</span>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mt-1">INV-2024-8902</h2>
+</div>
+</div>
+<!-- Meta Data (Bento style) -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-sm md:gap-md">
+<!-- Status Label using Error accent for DUE state -->
+<div class="col-span-2 md:col-span-1 bg-error-container/30 border border-error/20 rounded-lg p-sm flex flex-col justify-center items-start">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Status</span>
+<span class="font-label-caps text-label-caps text-on-error-container bg-error-container px-2 py-1 rounded mt-1">Due</span>
+</div>
+<div class="bg-surface border border-surface-variant rounded-lg p-sm flex flex-col justify-center items-start">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Issued Date</span>
+<span class="font-body-md text-body-md font-medium text-on-surface mt-1">Oct 24, 2024</span>
+</div>
+<div class="bg-surface border border-surface-variant rounded-lg p-sm flex flex-col justify-center items-start">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Due Date</span>
+<span class="font-body-md text-body-md font-medium text-error mt-1">Nov 07, 2024</span>
+</div>
+<div class="bg-surface border border-surface-variant rounded-lg p-sm flex flex-col justify-center items-start">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Amount Due</span>
+<span class="font-headline-md text-headline-md text-primary mt-1">$4,250.00</span>
+</div>
+</div>
+<!-- Addresses -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg mt-sm">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant border-b border-surface-variant pb-1 mb-2 inline-block w-max">Billed To</span>
+<strong class="font-body-lg text-body-lg text-on-surface">Acme Corp Ltd.</strong>
+<span class="font-body-md text-body-md text-on-surface-variant">Attn: Accounts Payable</span>
+<span class="font-body-md text-body-md text-on-surface-variant">456 Enterprise Way, Suite 100</span>
+<span class="font-body-md text-body-md text-on-surface-variant">San Francisco, CA 94105</span>
+</div>
+<div class="flex flex-col gap-1 md:text-right">
+<span class="font-label-caps text-label-caps text-on-surface-variant border-b border-surface-variant pb-1 mb-2 inline-block w-max md:ml-auto">From</span>
+<strong class="font-body-lg text-body-lg text-on-surface">Nexus Financial Tech</strong>
+<span class="font-body-md text-body-md text-on-surface-variant">100 Innovation Drive</span>
+<span class="font-body-md text-body-md text-on-surface-variant">New York, NY 10001</span>
+<span class="font-body-md text-body-md text-on-surface-variant">billing@nexusfin.tech</span>
+</div>
+</div>
+<!-- Line Items Table -->
+<div class="mt-md overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b-2 border-surface-variant">
+<th class="font-label-caps text-label-caps text-on-surface-variant py-sm px-2 font-semibold">Description</th>
+<th class="font-label-caps text-label-caps text-on-surface-variant py-sm px-2 font-semibold text-right w-24">Qty</th>
+<th class="font-label-caps text-label-caps text-on-surface-variant py-sm px-2 font-semibold text-right w-32">Rate</th>
+<th class="font-label-caps text-label-caps text-on-surface-variant py-sm px-2 font-semibold text-right w-32">Amount</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+<tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors">
+<td class="py-md px-2 text-on-surface">
+<div class="font-medium">API Integration Services</div>
+<div class="text-on-surface-variant font-label-sm text-label-sm mt-1">Phase 2 implementation and testing</div>
+</td>
+<td class="py-md px-2 text-right text-on-surface-variant">40</td>
+<td class="py-md px-2 text-right text-on-surface-variant">$85.00</td>
+<td class="py-md px-2 text-right text-on-surface font-medium">$3,400.00</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors">
+<td class="py-md px-2 text-on-surface">
+<div class="font-medium">Cloud Infrastructure Setup</div>
+<div class="text-on-surface-variant font-label-sm text-label-sm mt-1">AWS environment configuration</div>
+</td>
+<td class="py-md px-2 text-right text-on-surface-variant">1</td>
+<td class="py-md px-2 text-right text-on-surface-variant">$850.00</td>
+<td class="py-md px-2 text-right text-on-surface font-medium">$850.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Totals Summary -->
+<div class="flex justify-end mt-sm">
+<div class="w-full md:w-1/2 lg:w-1/3 bg-surface border border-surface-variant rounded-lg p-md flex flex-col gap-sm">
+<div class="flex justify-between items-center font-body-md text-body-md">
+<span class="text-on-surface-variant">Subtotal</span>
+<span class="text-on-surface">$4,250.00</span>
+</div>
+<div class="flex justify-between items-center font-body-md text-body-md">
+<span class="text-on-surface-variant">Tax (0%)</span>
+<span class="text-on-surface">$0.00</span>
+</div>
+<div class="border-t border-surface-variant pt-sm mt-xs flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-on-surface font-bold uppercase">Total Due</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">$4,250.00</span>
+</div>
+</div>
+</div>
+<!-- Footer / Notes -->
+<div class="mt-lg pt-md border-t border-surface-variant flex flex-col gap-xs text-on-surface-variant font-label-sm text-label-sm">
+<strong class="text-on-surface">Payment Terms</strong>
+<p>Please remit payment within 14 days of receiving this invoice. Late payments may be subject to a 1.5% monthly fee.</p>
+<p class="mt-sm font-mono text-[10px] opacity-70">DATA_HASH: a8f9c2e4-11b2-4d5e-8f90-1a2b3c4d5e6f</p>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

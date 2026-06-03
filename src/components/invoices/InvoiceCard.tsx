@@ -1,10 +1,13 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { StatusBadge, StatusType } from '@/components/shared/StatusBadge';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
+import { DeleteInvoiceButton } from '@/components/invoices/DeleteInvoiceButton';
 
 interface InvoiceCardProps {
+  invoiceId: string;
   id: string;
   clientName: string;
   amount: number;
@@ -13,11 +16,33 @@ interface InvoiceCardProps {
   phone: string;
   currency?: string | null;
   currencySymbol?: string | null;
+  amountPaid?: number;
 }
 
-export function InvoiceCard({ id, clientName, amount, status, date, phone, currency, currencySymbol }: Readonly<InvoiceCardProps>) {
+import { recordPayment } from '@/app/actions/invoiceActions';
+import { useRouter } from 'next/navigation';
+
+export function InvoiceCard({ invoiceId, id, clientName, amount, status, date, phone, currency, currencySymbol, amountPaid = 0 }: Readonly<InvoiceCardProps>) {
+  const router = useRouter();
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState(amount);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const remainingAmount = amount - amountPaid;
+  const [paymentAmount, setPaymentAmount] = useState(remainingAmount > 0 ? remainingAmount : amount);
+
+  const handleConfirmPayment = async () => {
+    if (!paymentAmount || paymentAmount <= 0) return;
+    setIsSubmitting(true);
+    try {
+      await recordPayment(invoiceId, paymentAmount);
+      setShowPaymentForm(false);
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const resolvedCurrency = currency || 'USD';
   const resolvedCurrencySymbol = currencySymbol || (() => {
@@ -30,13 +55,21 @@ export function InvoiceCard({ id, clientName, amount, status, date, phone, curre
   })();
 
   return (
+    <Link href={status === 'DRAFT' ? `/create?id=${invoiceId}` : `/invoices/${invoiceId}`} className="block">
     <div className="bg-surface-container-lowest rounded-xl p-md border border-outline-variant shadow-[0_4px_12px_rgba(26,43,60,0.05)] flex flex-col gap-sm hover:border-primary-fixed-dim transition-colors cursor-pointer">
       <div className="flex justify-between items-start">
         <div className="flex flex-col">
           <span className="font-headline-md text-headline-md text-on-surface">{clientName}</span>
           <span className="font-body-md text-body-md text-on-surface-variant">#{id}</span>
         </div>
-        <StatusBadge status={status} />
+        <div className="flex items-center gap-2">
+          {status === 'DRAFT' && (
+            <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+              <DeleteInvoiceButton invoiceId={invoiceId} iconOnly={true} className="p-1.5 rounded-full" />
+            </div>
+          )}
+          <StatusBadge status={status} />
+        </div>
       </div>
       
       <div className="h-px w-full bg-surface-variant"></div>
@@ -55,12 +88,21 @@ export function InvoiceCard({ id, clientName, amount, status, date, phone, curre
         <CurrencyDisplay amount={amount} currency={resolvedCurrency} currencySymbol={resolvedCurrencySymbol} className="font-headline-md text-headline-md text-primary" />
       </div>
 
-      {status === 'UNPAID' && (
+      {/* Show amount paid if partial */}
+      {status === 'PARTIAL' && amountPaid > 0 && (
+        <div className="flex justify-between items-center text-label-sm font-label-sm mt-xs">
+          <span className="text-on-surface-variant">Amount Paid:</span>
+          <CurrencyDisplay amount={amountPaid} currency={resolvedCurrency} currencySymbol={resolvedCurrencySymbol} className="text-primary font-semibold" />
+        </div>
+      )}
+
+      {(status === 'UNPAID' || status === 'PARTIAL') && (
         <div className="flex flex-col gap-sm pt-xs">
           <div className="h-px w-full bg-surface-variant"></div>
           <div className="flex flex-col gap-sm">
             <button 
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 setShowPaymentForm(!showPaymentForm);
               }}
@@ -77,7 +119,7 @@ export function InvoiceCard({ id, clientName, amount, status, date, phone, curre
             {showPaymentForm && (
               <div 
                 className="flex flex-col gap-xs p-sm bg-surface-container-low rounded-xl border border-outline-variant"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
                 <label className="font-label-sm text-on-surface-variant">Amount to Pay</label>
                 <div className="flex gap-2">
@@ -90,8 +132,12 @@ export function InvoiceCard({ id, clientName, amount, status, date, phone, curre
                       onChange={(e) => setPaymentAmount(Number(e.target.value))}
                     />
                   </div>
-                  <button className="px-4 py-2 bg-primary text-on-primary rounded-lg font-label-sm shadow-sm active:opacity-90">
-                    Confirm
+                  <button 
+                    disabled={isSubmitting}
+                    onClick={handleConfirmPayment}
+                    className="px-4 py-2 bg-primary text-on-primary rounded-lg font-label-sm shadow-sm active:opacity-90 disabled:opacity-70"
+                  >
+                    {isSubmitting ? 'Saving...' : 'Confirm'}
                   </button>
                 </div>
               </div>
@@ -100,6 +146,7 @@ export function InvoiceCard({ id, clientName, amount, status, date, phone, curre
         </div>
       )}
     </div>
+    </Link>
   );
 }
 

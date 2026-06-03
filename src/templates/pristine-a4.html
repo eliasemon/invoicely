@@ -1,0 +1,272 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Invoice Template - Pristine</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-surface": "#2d3133",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f7f9fb",
+                        "on-secondary-fixed-variant": "#36495b",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#081d2e",
+                        "surface-container": "#eceef0",
+                        "primary-container": "#1a2b3c",
+                        "tertiary-fixed": "#6ffbbe",
+                        "secondary-fixed": "#d1e5fb",
+                        "outline": "#74777d",
+                        "on-surface-variant": "#44474c",
+                        "secondary-fixed-dim": "#b5c9df",
+                        "on-primary-container": "#8192a7",
+                        "on-error": "#ffffff",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#b7c8de",
+                        "on-secondary-container": "#516578",
+                        "secondary": "#4d6073",
+                        "tertiary": "#001a0f",
+                        "surface-dim": "#d8dadc",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#191c1e",
+                        "surface-bright": "#f7f9fb",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-fixed-dim": "#b7c8de",
+                        "on-primary": "#ffffff",
+                        "primary": "#041627",
+                        "surface-tint": "#4f6073",
+                        "secondary-container": "#cee2f9",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e0e3e5",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "tertiary-container": "#00311f",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-tertiary-container": "#00a572",
+                        "primary-fixed": "#d2e4fb",
+                        "on-primary-fixed": "#0b1d2d",
+                        "on-primary-fixed-variant": "#38485a",
+                        "surface-container-low": "#f2f4f6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "xs": "8px",
+                        "margin-desktop": "40px",
+                        "lg": "32px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "xl": "48px",
+                        "sm": "16px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        @media print {
+            body { background: white !important; }
+            .no-print { display: none !important; }
+            .print-container { box-shadow: none !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col pb-safe">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-surface dark:bg-background flex items-center justify-between px-md py-xs z-40 no-print border-b border-outline-variant dark:border-outline flat no shadows">
+<div class="flex items-center gap-xs">
+<button class="p-2 rounded-full hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-95 duration-100 text-on-surface-variant dark:text-surface-variant">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Invoices</h1>
+</div>
+<div>
+<button class="px-4 py-2 bg-primary text-on-primary font-label-sm text-label-sm rounded-DEFAULT hover:opacity-90 transition-opacity active:scale-95" onclick="window.print()">
+                Print Invoice
+            </button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 w-full px-sm py-lg md:py-xl overflow-y-auto">
+<!-- A4 Paper Container -->
+<div class="print-container mx-auto bg-surface-container-lowest shadow-[0px_12px_24px_rgba(26,43,60,0.08)] max-w-[794px] min-h-[1123px] flex flex-col p-10 md:p-[64px] border border-outline-variant/30">
+<!-- Header Section -->
+<header class="flex justify-between items-start mb-16">
+<div class="flex flex-col">
+<div class="h-16 w-48 bg-surface-container-low border-2 border-dashed border-outline-variant flex flex-col items-center justify-center mb-6">
+  <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">corporate_fare</span>
+  <span class="text-[10px] font-label-caps text-on-surface-variant uppercase mt-1">Company Logo</span>
+</div>
+<div class="font-body-md text-body-md text-on-surface-variant">
+<p class="font-bold text-on-surface mb-1">Acme Corp International</p>
+<p class="">123 Enterprise Way, Suite 400</p>
+<p class="">San Francisco, CA 94107</p>
+<p class="">contact@acmecorp.com</p>
+</div>
+</div>
+<div class="text-right">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight mb-4">INVOICE</h2>
+<div class="grid grid-cols-2 gap-x-8 gap-y-2 text-right">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Invoice No</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold">INV-2024-089</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Date</span>
+<span class="font-body-md text-body-md text-on-surface">Oct 15, 2024</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Due Date</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Nov 14, 2024</span>
+</div>
+</div>
+</header>
+<!-- Bill To Section -->
+<section class="mb-12 flex justify-between">
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-3">Bill To</h3>
+<div class="font-body-md text-body-md text-on-surface">
+<p class="font-semibold text-primary mb-1">Nexus Technologies</p>
+<p>Attn: Accounts Payable</p>
+<p>890 Innovation Drive</p>
+<p>Austin, TX 78701</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-DEFAULT w-64">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Total Amount Due</h3>
+<p class="font-headline-md text-headline-md text-primary font-bold">$12,450.00</p>
+</div>
+</section>
+<!-- Line Items Table -->
+<section class="flex-1 mb-12">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b-2 border-primary">
+<th class="py-3 font-label-caps text-label-caps text-on-surface-variant uppercase w-1/2">Description</th>
+<th class="py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-center w-1/6">Qty</th>
+<th class="py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-right w-1/6">Rate</th>
+<th class="py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-right w-1/6">Amount</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<tr class="border-b border-surface-variant hover:bg-surface transition-colors">
+<td class="py-4 pr-4">
+<p class="font-semibold text-primary">Enterprise Software License</p>
+<p class="text-on-surface-variant mt-1 text-[13px]">Annual subscription for Core platform (Tier 3)</p>
+</td>
+<td class="py-4 text-center">1</td>
+<td class="py-4 text-right">$8,500.00</td>
+<td class="py-4 text-right font-semibold">$8,500.00</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-surface transition-colors">
+<td class="py-4 pr-4">
+<p class="font-semibold text-primary">Implementation Consulting</p>
+<p class="text-on-surface-variant mt-1 text-[13px]">System architecture and initial configuration</p>
+</td>
+<td class="py-4 text-center">20</td>
+<td class="py-4 text-right">$150.00</td>
+<td class="py-4 text-right font-semibold">$3,000.00</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-surface transition-colors">
+<td class="py-4 pr-4">
+<p class="font-semibold text-primary">Custom Integration Module</p>
+<p class="text-on-surface-variant mt-1 text-[13px]">Development of CRM data sync pipeline</p>
+</td>
+<td class="py-4 text-center">1</td>
+<td class="py-4 text-right">$950.00</td>
+<td class="py-4 text-right font-semibold">$950.00</td>
+</tr>
+</tbody>
+</table>
+</section>
+<!-- Totals Section -->
+<section class="flex justify-end mb-12">
+<div class="w-1/2 md:w-1/3">
+<div class="flex justify-between py-2 border-b border-surface-variant font-body-md text-body-md text-on-surface">
+<span class="text-on-surface-variant">Subtotal</span>
+<span>$12,450.00</span>
+</div>
+<div class="flex justify-between py-2 border-b border-surface-variant font-body-md text-body-md text-on-surface">
+<span class="text-on-surface-variant">Tax (0%)</span>
+<span>$0.00</span>
+</div>
+<div class="flex justify-between py-4 font-headline-md text-headline-md text-primary font-bold">
+<span>Total</span>
+<span>$12,450.00</span>
+</div>
+</div>
+</section>
+<!-- In Words & Footer -->
+<section class="mt-auto border-t border-outline-variant/30 pt-8 flex justify-between items-end">
+<div class="max-w-md">
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Amount in Words</p>
+<p class="font-body-md text-body-md text-on-surface italic mb-6">
+                        Twelve thousand four hundred fifty dollars and zero cents.
+                    </p>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Payment Terms</p>
+<p class="font-body-md text-body-md text-on-surface text-[13px]">
+                        Please remit payment within 30 days of the invoice date. Bank transfer preferred. Late payments may be subject to a 1.5% monthly fee.
+                    </p>
+</div>
+<div class="text-right text-[12px] font-body-md text-on-surface-variant">
+<p>Thank you for your business.</p>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 w-full flex justify-around items-center px-sm py-xs pb-safe shadow-[0px_-4px_12px_rgba(26,43,60,0.05)] bg-surface-container-lowest dark:bg-inverse-surface z-50 rounded-t-xl shadow-md no-print">
+<a class="flex flex-col items-center justify-center text-on-secondary-container dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all duration-200 active:scale-90 font-label-sm text-label-sm p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-tertiary-fixed-dim bg-secondary-container dark:bg-primary-container rounded-full px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all duration-200 active:scale-90 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="description" data-weight="fill" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="mt-1 font-bold">Invoices</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all duration-200 active:scale-90 font-label-sm text-label-sm p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="mt-1">Create</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all duration-200 active:scale-90 font-label-sm text-label-sm p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="mt-1">Profile</span>
+</a>
+</nav>
+
+
+</body></html>

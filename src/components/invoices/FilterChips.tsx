@@ -6,7 +6,7 @@ interface FilterChipsProps {
   onFilterChange?: (filter: string) => void;
 }
 
-const filters = ['All', 'Paid', 'Unpaid', 'Draft'];
+const filters = ['All', 'Paid', 'Unpaid', 'Partial', 'Draft'];
 
 export function FilterChips({ onFilterChange }: Readonly<FilterChipsProps>) {
   const [active, setActive] = useState('All');

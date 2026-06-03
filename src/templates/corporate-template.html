@@ -1,0 +1,392 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Corporate Invoice - Invoicely</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-high": "#dce9ff",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-container": "#002113",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary-container": "#7c839b",
+                        "on-background": "#0b1c30",
+                        "inverse-surface": "#213145",
+                        "primary-fixed": "#dae2fd",
+                        "tertiary": "#000000",
+                        "on-tertiary-container": "#009668",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-tint": "#565e74",
+                        "primary-container": "#131b2e",
+                        "surface-variant": "#d3e4fe",
+                        "secondary": "#0058be",
+                        "on-error-container": "#93000a",
+                        "outline": "#76777d",
+                        "primary": "#000000",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-container": "#fefcff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "tertiary-fixed": "#6ffbbe",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-surface-variant": "#45464d",
+                        "on-surface": "#0b1c30",
+                        "surface": "#f8f9ff",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#2170e4",
+                        "inverse-on-surface": "#eaf1ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "48px",
+                        "gutter": "24px",
+                        "container-max": "800px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["Geist"],
+                        "headline-md": ["Work Sans"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-sm": ["Geist"],
+                        "display-lg": ["Work Sans"]
+                    },
+                    "fontSize": {
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        @media print {
+            body {
+                background-color: white !important;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .invoice-container {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0 auto;
+                box-shadow: none !important;
+                padding: 20mm !important;
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen text-on-background font-body-md antialiased pb-20 md:pb-0">
+<!-- TopAppBar -->
+<header class="bg-surface border-b border-outline-variant shadow-sm w-full sticky top-0 z-50 no-print hidden md:block">
+<div class="flex justify-between items-center px-margin-desktop h-16 w-full max-w-[1280px] mx-auto">
+<div class="flex items-center gap-4">
+<button class="text-primary cursor-pointer active:opacity-80 p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">Invoicely</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant font-body-md hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Dashboard</a>
+<a class="text-primary font-semibold font-body-md hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Invoices</a>
+<a class="text-on-surface-variant font-body-md hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Templates</a>
+<a class="text-on-surface-variant font-body-md hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Company Profile</a>
+<a class="text-on-surface-variant font-body-md hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Reports</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant flex items-center justify-center">
+<span class="font-label-sm text-label-sm text-primary">AD</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<div class="flex flex-col md:flex-row max-w-[1280px] mx-auto min-h-screen">
+<!-- NavigationDrawer (Desktop) -->
+<aside class="bg-surface-container-lowest border-r border-outline-variant shadow-md h-screen w-64 fixed left-0 top-16 hidden lg:flex flex-col no-print">
+<div class="flex flex-col p-6 gap-6">
+<div class="flex items-center gap-3 pb-6 border-b border-outline-variant">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-bold">
+                        A
+                    </div>
+<div>
+<div class="font-body-md font-semibold text-primary">Accounting Dept</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Manage your billing</div>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 ease-in-out font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                        Dashboard
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-secondary-container text-on-secondary-container transition-all duration-200 ease-in-out font-label-sm text-label-sm font-semibold" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+                        Invoices
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 ease-in-out font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">style</span>
+                        Templates
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 ease-in-out font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">business</span>
+                        Company Profile
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 ease-in-out font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+                        Reports
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 ease-in-out font-label-sm text-label-sm mt-8 border-t border-outline-variant pt-4 rounded-t-none" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                        Settings
+                    </a>
+</nav>
+</div>
+<div class="mt-auto p-6 font-label-sm text-label-sm text-outline">
+                v2.1.0
+            </div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 w-full lg:ml-64 p-4 md:p-8 flex justify-center items-start">
+<!-- Invoice Canvas Container -->
+<div class="w-full max-w-[800px] flex flex-col gap-6">
+<!-- Action Bar (No Print) -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-sm no-print w-full">
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Invoice #INV-2023-001</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Viewing Corporate Template</p>
+</div>
+</div>
+<div class="flex gap-3 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-outline text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                            Edit
+                        </button>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-secondary text-on-secondary rounded-lg hover:bg-[#004a9e] transition-colors font-label-sm text-label-sm font-semibold shadow-md" onclick="window.print()">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            Download PDF
+                        </button>
+</div>
+</div>
+<!-- Corporate Invoice Document -->
+<!-- The actual invoice structure. Uses double border technique, strict gridding, and alternating row colors per style guide. -->
+<article class="invoice-container bg-surface-container-lowest w-full max-w-[800px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant mx-auto relative overflow-hidden">
+<!-- Decorative Top Border -->
+<div class="h-2 w-full bg-secondary"></div>
+<div class="p-8 md:p-12">
+<!-- Header Section (Double Border Technique) -->
+<div class="border-2 border-outline-variant p-6 mb-8 flex flex-col md:flex-row justify-between items-start gap-6 relative">
+<!-- Paid Badge -->
+<div class="absolute -top-3 -right-3 bg-[#e8f5e9] border border-[#a5d6a7] text-[#2e7d32] px-4 py-1 rounded font-label-sm text-label-sm font-bold uppercase flex items-center gap-1 shadow-sm rotate-12 origin-bottom-right transform translate-x-2 translate-y-2">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                Paid
+                            </div>
+<div class="flex flex-col gap-1">
+<img alt="Company Logo" class="h-12 w-auto object-contain mb-4 filter grayscale contrast-125" data-alt="A clean, minimalist corporate logo consisting of sharp geometric shapes in dark slate gray against a pure white background. The logo suggests stability, structure, and professional services, appropriate for a modern financial or consulting firm. It is well-lit and high-contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvYy3oOJ0UkdY5BdH0Jdk6uGKY1WNBeeJzy4RiLcqzUJpHJbqWBoxJfvDKprb8weBACIRmExnevnCS39dD4iVQCXeFDf-x47Vd0VxuK-_Ma0BXqfcmCvFfCOog2XNvUtk7osM9R5Ehde07Zoq-P6YfbUnv6kHq5o6cA_BRqDoiZWVOQRzIWaiVQSvknw-hP9FemTXo64kryR2DU6Hb-GamrpsBxN5fR9aBLAOiIc28zMvnojFFRffqbkWuMH2YZre7utDVcVZz-3CV">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest font-bold mb-1">From</div>
+<div class="font-body-md font-bold text-primary">Acme Corp Solutions</div>
+<div class="font-data-mono text-data-mono text-on-surface-variant">
+                                    123 Business Avenue, Suite 400<br>
+                                    Financial District, NY 10004<br>
+                                    billing@acmecorp.com<br>
+                                    +1 (555) 123-4567
+                                </div>
+</div>
+<div class="flex flex-col gap-1 md:text-right w-full md:w-auto mt-6 md:mt-0 pt-6 md:pt-0 border-t border-outline-variant md:border-t-0">
+<h1 class="font-display-lg text-display-lg text-primary uppercase mb-2">Invoice</h1>
+<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-left md:text-right">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold self-center">Invoice Number:</div>
+<div class="font-data-mono text-data-mono font-semibold text-primary">INV-2023-001</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold self-center">Date Issued:</div>
+<div class="font-data-mono text-data-mono text-primary">Oct 24, 2023</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold self-center">Date Due:</div>
+<div class="font-data-mono text-data-mono text-primary">Nov 23, 2023</div>
+</div>
+</div>
+</div>
+<!-- Bill To Section -->
+<div class="mb-10 p-6 bg-surface-container-low border border-outline-variant flex flex-col md:flex-row justify-between gap-8">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest font-bold mb-2 border-b border-outline-variant pb-2 inline-block">Bill To</div>
+<div class="font-body-md font-bold text-primary mt-2">Stark Industries</div>
+<div class="font-data-mono text-data-mono text-on-surface-variant mt-1">
+                                    Attn: Tony Stark<br>
+                                    200 Park Avenue<br>
+                                    New York, NY 10166
+                                </div>
+</div>
+<div class="flex-shrink-0">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest font-bold mb-2 border-b border-outline-variant pb-2 inline-block">Amount Due</div>
+<div class="font-display-lg text-[32px] leading-tight font-bold text-secondary mt-2">$0.00</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-1">Amount Paid: $12,450.00</div>
+</div>
+</div>
+<!-- Line Items Table (Corporate Gridded Style) -->
+<div class="border border-outline-variant mb-10 overflow-x-auto rounded-sm">
+<table class="w-full text-left border-collapse min-w-[600px]">
+<thead>
+<tr class="bg-[#f1f5f9] border-b border-outline-variant">
+<th class="py-3 px-4 font-label-sm text-label-sm font-bold text-on-surface-variant uppercase tracking-wider border-r border-outline-variant w-12 text-center">#</th>
+<th class="py-3 px-4 font-label-sm text-label-sm font-bold text-on-surface-variant uppercase tracking-wider border-r border-outline-variant">Description</th>
+<th class="py-3 px-4 font-label-sm text-label-sm font-bold text-on-surface-variant uppercase tracking-wider border-r border-outline-variant text-right w-24">Qty/Hrs</th>
+<th class="py-3 px-4 font-label-sm text-label-sm font-bold text-on-surface-variant uppercase tracking-wider border-r border-outline-variant text-right w-32">Rate</th>
+<th class="py-3 px-4 font-label-sm text-label-sm font-bold text-on-surface-variant uppercase tracking-wider text-right w-32">Line Total</th>
+</tr>
+</thead>
+<tbody class="font-data-mono text-data-mono text-primary">
+<tr class="border-b border-outline-variant hover:bg-surface-container transition-colors">
+<td class="py-3 px-4 border-r border-outline-variant text-center text-on-surface-variant">1</td>
+<td class="py-3 px-4 border-r border-outline-variant">
+<div class="font-bold">Enterprise Software License</div>
+<div class="text-xs text-on-surface-variant mt-1">Annual subscription for 50 users (Tier 3)</div>
+</td>
+<td class="py-3 px-4 border-r border-outline-variant text-right">1</td>
+<td class="py-3 px-4 border-r border-outline-variant text-right">$5,000.00</td>
+<td class="py-3 px-4 text-right font-semibold">$5,000.00</td>
+</tr>
+<tr class="bg-[#f8fafc] border-b border-outline-variant hover:bg-surface-container transition-colors">
+<td class="py-3 px-4 border-r border-outline-variant text-center text-on-surface-variant">2</td>
+<td class="py-3 px-4 border-r border-outline-variant">
+<div class="font-bold">Implementation Consulting</div>
+<div class="text-xs text-on-surface-variant mt-1">System architecture and data migration planning</div>
+</td>
+<td class="py-3 px-4 border-r border-outline-variant text-right">40</td>
+<td class="py-3 px-4 border-r border-outline-variant text-right">$150.00</td>
+<td class="py-3 px-4 text-right font-semibold">$6,000.00</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container transition-colors">
+<td class="py-3 px-4 border-r border-outline-variant text-center text-on-surface-variant">3</td>
+<td class="py-3 px-4 border-r border-outline-variant">
+<div class="font-bold">Custom Integration Modules</div>
+<div class="text-xs text-on-surface-variant mt-1">API endpoints for legacy CRM sync</div>
+</td>
+<td class="py-3 px-4 border-r border-outline-variant text-right">1</td>
+<td class="py-3 px-4 border-r border-outline-variant text-right">$1,450.00</td>
+<td class="py-3 px-4 text-right font-semibold">$1,450.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Totals Section -->
+<div class="flex flex-col md:flex-row justify-between items-end gap-8 mb-12">
+<!-- Payment Info & QR -->
+<div class="w-full md:w-1/2 p-4 border border-outline-variant bg-surface-container-low rounded-sm flex gap-4">
+<div class="w-24 h-24 bg-white border border-outline flex-shrink-0 flex items-center justify-center p-1">
+<img alt="Payment QR Code" class="w-full h-full mix-blend-multiply opacity-80" data-alt="A generic square black-and-white QR code used for scanning payment details. It is perfectly square and high contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtZpi5XnR3zX-Wuj4XsRFCLDTniUXD_XH0Mi8-sSE_rA07SzndJ4q_tJ81JBa-ebDuGW6uQvgvkAZvBOR5KcO6Z-qalNxE82OYTbGlPmfvF3J89INkMSGPYVYakmpM7G7aiKAnVPeDXlAWfVTy2CpBLesIQyGYT2yvu4whau-64F34N1VN2sbx5izqLvLnAhRNNTwI-4msSdZB3_1opiDwkDN45IYTMY68msqtF1RGV9Ngay-S6wmmXyfR179J0USNXv8ME1g9-q1G">
+</div>
+<div class="flex flex-col justify-center">
+<div class="font-label-sm text-label-sm font-bold uppercase text-on-surface-variant mb-1">Payment Status</div>
+<div class="font-body-md font-bold text-[#2e7d32] mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+                                        Fully Paid
+                                    </div>
+<div class="font-data-mono text-[10px] text-on-surface-variant leading-tight">
+                                        Transaction ID: TXN-88492-XQ<br>
+                                        Processed: Oct 25, 2023
+                                    </div>
+</div>
+</div>
+<!-- Totals Calculation -->
+<div class="w-full md:w-1/3">
+<div class="flex justify-between py-2 border-b border-outline-variant border-dotted">
+<span class="font-label-sm text-label-sm font-bold text-on-surface-variant uppercase">Subtotal</span>
+<span class="font-data-mono text-data-mono">$12,450.00</span>
+</div>
+<div class="flex justify-between py-2 border-b border-outline-variant border-dotted">
+<span class="font-label-sm text-label-sm font-bold text-on-surface-variant uppercase">Tax (0%)</span>
+<span class="font-data-mono text-data-mono">$0.00</span>
+</div>
+<div class="flex justify-between py-3 border-b-2 border-primary mt-2">
+<span class="font-body-md font-bold text-primary uppercase">Total</span>
+<span class="font-headline-md text-[20px] font-bold text-primary">$12,450.00</span>
+</div>
+<div class="flex justify-between py-2 bg-[#e8f5e9] px-2 mt-2 border border-[#a5d6a7]">
+<span class="font-label-sm text-label-sm font-bold text-[#2e7d32] uppercase">Amount Paid</span>
+<span class="font-data-mono text-data-mono text-[#2e7d32] font-bold">-$12,450.00</span>
+</div>
+<div class="flex justify-between py-3 mt-2 bg-surface-container-low px-2 border border-outline-variant">
+<span class="font-body-md font-bold text-secondary uppercase">Balance Due</span>
+<span class="font-headline-md text-[20px] font-bold text-secondary">$0.00</span>
+</div>
+</div>
+</div>
+<!-- Footer Terms -->
+<div class="border-t-2 border-outline-variant pt-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="font-data-mono text-[11px] text-on-surface-variant max-w-[500px]">
+<strong>Terms &amp; Conditions:</strong> All payments are final. Late payments are subject to a 1.5% monthly fee. This invoice acts as a legally binding document under the jurisdiction of the State of New York.
+                            </div>
+<div class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-widest">
+                                Thank you for your business.
+                            </div>
+</div>
+</div>
+</article>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="bg-surface border-t border-outline-variant shadow-[0_-4px_12px_rgba(26,43,60,0.05)] fixed bottom-0 w-full z-50 lg:hidden no-print flex justify-around items-center h-16 px-margin-mobile pb-safe">
+<button class="flex flex-col items-center justify-center text-on-surface-variant scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-sm text-[10px] mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="receipt_long" data-weight="fill" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-label-sm text-[10px] mt-1 font-semibold">Invoices</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="add_circle" data-weight="fill" style="font-variation-settings: 'FILL' 0;">add_circle</span>
+<span class="font-label-sm text-[10px] mt-1">Create</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="person" data-weight="fill" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-sm text-[10px] mt-1">Profile</span>
+</button>
+</nav>
+</body></html>

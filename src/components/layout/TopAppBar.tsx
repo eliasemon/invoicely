@@ -5,6 +5,25 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 
+function AvatarImage({ src, fallback }: { src: string; fallback: string }) {
+  const [error, setError] = useState(false);
+
+  if (error || !src) {
+    return <>{fallback}</>;
+  }
+
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img 
+      src={src} 
+      alt="Profile Avatar" 
+      className="w-full h-full object-cover" 
+      referrerPolicy="no-referrer"
+      onError={() => setError(true)}
+    />
+  );
+}
+
 export function TopAppBar() {
   const { user, logout } = useAuth();
   const { profile } = useProfile();
@@ -52,12 +71,10 @@ export function TopAppBar() {
               onClick={() => setShowDropdown(!showDropdown)}
               className="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-sm cursor-pointer active:opacity-80 transition-opacity overflow-hidden"
             >
-              {profile?.avatar_url || user?.photoURL ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={profile?.avatar_url || user?.photoURL || ''} alt="Profile Avatar" className="w-full h-full object-cover" />
-              ) : (
-                getInitials()
-              )}
+              <AvatarImage 
+                src={profile?.avatar_url || user?.photoURL || ''} 
+                fallback={getInitials()} 
+              />
             </button>
             
             {showDropdown && (
@@ -110,12 +127,10 @@ export function TopAppBar() {
               onClick={() => setShowDropdown(!showDropdown)}
               className="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-sm cursor-pointer active:opacity-80 transition-opacity overflow-hidden"
             >
-              {profile?.avatar_url || user?.photoURL ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={profile?.avatar_url || user?.photoURL || ''} alt="Profile Avatar" className="w-full h-full object-cover" />
-              ) : (
-                getInitials()
-              )}
+              <AvatarImage 
+                src={profile?.avatar_url || user?.photoURL || ''} 
+                fallback={getInitials()} 
+              />
             </button>
             
             {showDropdown && (
