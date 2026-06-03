@@ -23,6 +23,7 @@ export interface TemplateProps {
     signatory_name?: string | null;
   } | null;
   isPreview?: boolean;
+  showGroups?: boolean;
 }
 
 export function formatDate(date: Date | string): string {

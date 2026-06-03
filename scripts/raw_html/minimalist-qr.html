@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Invoice - Invoicely</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&amp;family=Hanken+Grotesk:wght@400&amp;family=Work+Sans:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary": "#ffffff",
+                      "background": "#f8f9ff",
+                      "surface-container-high": "#dce9ff",
+                      "surface": "#ffffff",
+                      "on-tertiary-container": "#009668",
+                      "on-primary-fixed": "#131b2e",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed": "#002113",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary-fixed-variant": "#004395",
+                      "tertiary": "#000000",
+                      "on-surface-variant": "#45464d",
+                      "on-primary-container": "#7c839b",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-secondary-container": "#fefcff",
+                      "primary-fixed": "#dae2fd",
+                      "secondary-fixed": "#d8e2ff",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#f1f5f9",
+                      "inverse-surface": "#213145",
+                      "surface-container": "#e5eeff",
+                      "outline": "#e2e8f0",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#6ffbbe",
+                      "primary": "#000000",
+                      "error-container": "#ffdad6",
+                      "inverse-primary": "#bec6e0",
+                      "surface-tint": "#565e74",
+                      "surface-dim": "#cbdbf5",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface": "#0f172a",
+                      "primary-container": "#131b2e",
+                      "primary-fixed-dim": "#bec6e0",
+                      "surface-bright": "#ffffff",
+                      "tertiary-container": "#002113",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "secondary-container": "#2170e4",
+                      "secondary": "#0f172a",
+                      "on-secondary-fixed": "#001a42",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#f1f5f9",
+                      "tertiary-fixed-dim": "#4edea3",
+                      "on-tertiary": "#ffffff",
+                      "on-background": "#f8fafc"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "margin-desktop": "64px",
+                      "container-max": "800px",
+                      "margin-mobile": "24px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Work Sans"
+                      ],
+                      "data-mono": [
+                              "Geist"
+                      ],
+                      "label-sm": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Work Sans"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "data-mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased min-h-screen py-8 md:py-16">
+<main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop bg-surface border border-outline rounded-xl py-margin-desktop relative">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16">
+<div>
+<img alt="Acme Corp Logo" class="h-10 w-auto mb-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDwEdcMCK7gqvqFmfHLAVdacJLb1RLtlbTMSZIo3AX3geVfxZXoP6DlrNBWafY422kPWTfJIYWXYHPlnDbthSFU_eltrrSKwJ56yoFhSNV7mgSkSyf-pC2zFGD4mOPau-Bo2cGLPAh6HZLDmBybU3kHOjCn3UVnUNEJFcnI8MnHWKiMm2lErQ7PAeInhJWrdwve-H4tDPTbH3B25EZEZRrpvD5R1H4stDPykfS0r0S_3SihjPsV7mQkQDJks5L413IoUWsdLRcIjxV">
+<div class="text-on-surface-variant font-data-mono text-data-mono space-y-1">
+<p class="">Acme Corp Inc.</p>
+<p class="">123 Business Rd.</p>
+<p class="">Suite 100</p>
+<p class="">San Francisco, CA 94107</p>
+</div>
+</div>
+<div class="flex flex-row-reverse md:flex-row items-start gap-8 w-full md:w-auto justify-between md:justify-end">
+<div class="text-left md:text-right">
+<h1 class="font-display-lg text-display-lg text-primary mb-2">Invoice</h1>
+<p class="font-data-mono text-data-mono text-on-surface-variant mb-6">INV-2023-0042</p>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-outline text-on-surface font-label-sm text-label-sm bg-surface-variant">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+                    Paid
+                </div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<img alt="Digital Invoice QR Code" class="w-16 h-16" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEZIC_FYFLrx-x37YHXHzGOyGsZjKetn8VjHbCkFiSouFbfVpHawG6ml8nng9vaTrhIME3R7iVlnzXYZX24n6Qjb9rP1Hhc4NkCE_J_QGWg6Q-x4cCHhvLe3fyxyn-E_RkBtu_3hBzBhiSOjHN1nUuZz1Oc8-LnxcKAEvWEk8Wy_uQCC6FLLYH8pFJV-I7ac0eV7QkvUt6kcyMVi2NNtaswqKq54PryRYKB-r-vN4q1mriU4iFbleQ-NMf-Goo3bZKNeFZcCWROoGz">
+<span class="font-label-sm text-[10px] text-on-surface-variant text-label-sm" style="opacity: 0;">View Online</span>
+</div>
+</div>
+</header>
+<!-- Meta Section -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+<div>
+<h2 class="font-label-sm text-label-sm text-on-surface-variant mb-4 uppercase tracking-widest">Billed To</h2>
+<div class="text-on-surface font-body-md text-body-md space-y-1">
+<p class="font-headline-md text-headline-md text-primary text-lg">Jane Doe</p>
+<p class="">456 Client Avenue</p>
+<p class="">Apt 4B</p>
+<p class="">New York, NY 10001</p>
+<p class="pt-2 text-on-surface-variant font-data-mono text-data-mono">jane.doe@example.com</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-8 text-left md:text-right">
+<div>
+<h2 class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Issue Date</h2>
+<p class="font-data-mono text-data-mono text-on-surface">Oct 15, 2023</p>
+</div>
+<div>
+<h2 class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Due Date</h2>
+<p class="font-data-mono text-data-mono text-on-surface">Nov 14, 2023</p>
+</div>
+</div>
+</section>
+<!-- Line Items -->
+<section class="mb-16">
+<div class="hidden md:grid grid-cols-12 gap-4 pb-4 border-b border-outline text-on-surface-variant font-label-sm text-label-sm lowercase">
+<div class="col-span-6">Description</div>
+<div class="col-span-2 text-right">Qty</div>
+<div class="col-span-2 text-right">Rate</div>
+<div class="col-span-2 text-right">Amount</div>
+</div>
+<div class="flex flex-col gap-6 py-6 border-b border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start md:items-center">
+<div class="col-span-1 md:col-span-6">
+<p class="font-body-md text-body-md text-on-surface font-medium">Brand Identity Design</p>
+<p class="font-data-mono text-data-mono text-on-surface-variant mt-1">Includes logo design, typography selection, and color palette creation.</p>
+</div>
+<div class="col-span-1 md:col-span-2 md:text-right font-data-mono text-data-mono text-on-surface-variant">
+<span class="md:hidden">Qty: </span>1
+                    </div>
+<div class="col-span-1 md:col-span-2 md:text-right font-data-mono text-data-mono text-on-surface-variant">
+<span class="md:hidden">Rate: </span>$4,500.00
+                    </div>
+<div class="col-span-1 md:col-span-2 text-right font-data-mono text-data-mono text-on-surface">
+                        $4,500.00
+                    </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start md:items-center">
+<div class="col-span-1 md:col-span-6">
+<p class="font-body-md text-body-md text-on-surface font-medium">Website Development</p>
+<p class="font-data-mono text-data-mono text-on-surface-variant mt-1">Custom responsive website built with modern framework.</p>
+</div>
+<div class="col-span-1 md:col-span-2 md:text-right font-data-mono text-data-mono text-on-surface-variant">
+<span class="md:hidden">Qty: </span>1
+                    </div>
+<div class="col-span-1 md:col-span-2 md:text-right font-data-mono text-data-mono text-on-surface-variant">
+<span class="md:hidden">Rate: </span>$6,200.00
+                    </div>
+<div class="col-span-1 md:col-span-2 text-right font-data-mono text-data-mono text-on-surface">
+                        $6,200.00
+                    </div>
+</div>
+</div>
+<!-- Totals -->
+<div class="flex flex-col items-end gap-4 py-8">
+<div class="w-full md:w-1/2 flex justify-between font-data-mono text-data-mono text-on-surface-variant">
+<span class="">Subtotal</span>
+<span class="">$10,700.00</span>
+</div>
+<div class="w-full md:w-1/2 flex justify-between font-data-mono text-data-mono text-on-surface-variant">
+<span class="">Tax (0%)</span>
+<span class="">$0.00</span>
+</div>
+<div class="w-full md:w-1/2 flex justify-between font-headline-md text-headline-md text-primary mt-4 pt-4 border-t border-outline">
+<span class="">Total</span>
+<span class="">$10,700.00</span>
+</div>
+</div>
+</section>
+<!-- Footer Actions & Info -->
+<footer class="flex flex-col md:flex-row justify-between items-end gap-8 pt-16 mt-16 border-t border-outline-variant">
+<div class="w-full md:w-auto">
+<h2 class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Payment Method</h2>
+<p class="font-body-md text-body-md text-on-surface">Wire Transfer: ending in 4092</p>
+</div>
+<div class="flex flex-col md:flex-row items-center gap-6 w-full md:w-auto">
+<div class="flex flex-col items-center gap-2">
+<img alt="QR Code to view invoice online" class="w-20 h-20 opacity-80 mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnN4fQiV8zUSKaNmyYtTCKHjJoAbq1ngsf3ipHLFFuWHckLdMKvj3xVnzM-cJpn4REXCpdZwQWZjoVIvQ1OD_17Yolf7NwcRsboGKaioPOBp8lStFBVKizKEuVYChgwuht_X45zVPTbzNaDD22xbzccOAkr7MfR7Br-WO4e7llo9dDoD6uUNKHeZ243PF47devRWSI7U8gBb0-tazGFJnjh0TEbZ2Od4ppVwg8ibjxUYkGEYkYqBcAnZcwM96luXIT3pk_ORU6nOUe">
+<span class="font-label-sm text-label-sm text-on-surface-variant">View Online</span>
+</div>
+<button class="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-lg font-label-sm text-label-sm hover:bg-inverse-surface transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">download</span>
+                    Download PDF
+                </button>
+</div>
+</footer>
+</main>
+
+
+</body></html>

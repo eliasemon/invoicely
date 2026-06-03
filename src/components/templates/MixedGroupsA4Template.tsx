@@ -10,8 +10,8 @@ export function MixedGroupsA4Template({ invoice, profile }: TemplateProps) {
     <div className="bg-[#f8fafc] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
       <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-md rounded-lg overflow-hidden print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8e] text-white px-10 py-8">
-          <div className="flex justify-between items-start">
+        <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8e] text-white px-6 py-4">
+          <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-4 sm:gap-6">
             <div>
               {profile?.company_logo && (
                 <img alt="Company Logo" className="max-h-20 max-w-[200px] mb-4 object-contain brightness-0 invert w-auto h-auto" src={profile.company_logo} />
@@ -23,22 +23,22 @@ export function MixedGroupsA4Template({ invoice, profile }: TemplateProps) {
                 <p className="text-xs text-blue-200/80 mt-2 whitespace-pre-line">{profile.company_address}</p>
               )}
             </div>
-            <div className="text-right">
+            <div className="text-left sm:text-right print:text-right w-full sm:w-auto">
               <p className="text-3xl font-bold font-mono">{invoice.invoiceNumber}</p>
               <p className="text-sm text-blue-200 mt-1">{formatDate(invoice.createdAt)}</p>
             </div>
           </div>
         </div>
 
-        <div className="p-10">
+        <div className="p-6 md:p-8 print:p-6">
           {/* Client & dates */}
-          <div className="flex justify-between mb-10 pb-8 border-b border-[#e2e8f0]">
+          <div className="flex flex-col sm:flex-row print:flex-row justify-between gap-6 mb-5 pb-4 border-b border-[#e2e8f0]">
             <div>
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-semibold mb-2">Bill To</p>
               <p className="text-lg font-bold text-[#1e293b]">{invoice.clientName}</p>
               <p className="text-sm text-[#64748b] whitespace-pre-line mt-1">{invoice.clientAddress || invoice.clientPhone}</p>
             </div>
-            <div className="text-right">
+            <div className="text-left sm:text-right print:text-right w-full sm:w-auto">
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-semibold mb-2">Due Date</p>
               <p className="text-sm font-mono">{formatDate(dueDate)}</p>
               <div className={`inline-block mt-2 px-3 py-1 rounded text-[11px] font-bold uppercase ${
@@ -55,14 +55,14 @@ export function MixedGroupsA4Template({ invoice, profile }: TemplateProps) {
             const borderColor = borderColors[gIdx % borderColors.length];
             
             return (
-              <div key={gIdx} className="mb-6">
-                <div className="flex items-center gap-3 mb-3">
+              <div key={gIdx} className="mb-4">
+                <div className="flex items-center gap-3 mb-2">
                   <div className="w-3 h-3 rounded" style={{ backgroundColor: borderColor }}></div>
                   <h3 className="text-sm font-bold text-[#334155] uppercase tracking-wider">{group.name || `Category ${gIdx + 1}`}</h3>
                 </div>
                 <div className="rounded-lg overflow-hidden border" style={{ borderColor }}>
                   {group.items.map((item, iIdx) => (
-                    <div key={iIdx} className="flex justify-between items-center px-4 py-3 border-b last:border-b-0" style={{ backgroundColor: iIdx % 2 === 0 ? color : 'white', borderColor }}>
+                    <div key={iIdx} className="flex justify-between items-center px-3 py-1.5 border-b last:border-b-0" style={{ backgroundColor: iIdx % 2 === 0 ? color : 'white', borderColor }}>
                       <div>
                         <p className="font-medium text-[#1e293b]">{item.name}</p>
                         <p className="text-xs text-[#94a3b8] font-mono mt-0.5">{item.quantity} × {formatMoney(item.unitPrice, sym)}</p>
@@ -76,8 +76,8 @@ export function MixedGroupsA4Template({ invoice, profile }: TemplateProps) {
           })}
 
           {/* Totals */}
-          <div className="flex justify-end mt-8">
-            <div className="w-64">
+          <div className="flex justify-end mt-4">
+            <div className="w-full sm:w-64 print:w-64">
               <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
               <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Tax</span><span>{formatMoney(0, sym)}</span></div>
               <div className="flex justify-between py-3 mt-2 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8e] text-white px-4 rounded-lg font-bold font-mono text-lg">
@@ -88,7 +88,7 @@ export function MixedGroupsA4Template({ invoice, profile }: TemplateProps) {
           {/* Bank Details & Signature Section */}
           {(((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ||
             ((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name))) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 border-t border-[#e2e8f0] pt-8 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-8 mt-6 border-t border-[#e2e8f0] pt-4 text-left w-full">
               {/* Bank Details */}
               {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
                 <div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal, getAllItems } from './templateUtils';
 
-export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps) {
+export function CorporateTemplate({ invoice, profile, isPreview, showGroups }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
   const dueDate = getDueDate(invoice.createdAt);
   const subtotal = getSubtotal(invoice);
@@ -28,9 +28,9 @@ export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps
           {/* Invoice Document */}
           <article className="bg-white w-full shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-[#c6c6cd] overflow-hidden print:shadow-none print:rounded-none print:border-none">
             <div className="h-2 w-full bg-[#0058be]"></div>
-            <div className="p-8 md:p-12">
+            <div className="p-6 md:p-10 print:p-6">
               {/* Header */}
-              <div className="border-2 border-[#c6c6cd] p-6 mb-8 flex flex-col gap-6 relative">
+              <div className="border-2 border-[#c6c6cd] p-4 mb-4 flex flex-col gap-3 relative">
                 <div className={`absolute -top-3 -right-3 px-4 py-1 rounded text-[12px] font-bold uppercase flex items-center gap-1 shadow-sm ${
                   invoice.status === 'PAID' ? 'bg-[#e8f5e9] border border-[#a5d6a7] text-[#2e7d32]' : 'bg-[#fff3e0] border border-[#ffcc80] text-[#e65100]'
                 }`}>
@@ -38,7 +38,7 @@ export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps
                 </div>
                 
                 {/* Row 1: Logo and Title */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
+                <div className="flex flex-col md:flex-row print:flex-row justify-between items-start md:items-center print:items-center gap-4 w-full">
                   <div>
                     {profile?.company_logo ? (
                       <img alt="Logo" className="max-h-24 max-w-[220px] object-contain w-auto h-auto" src={profile.company_logo} />
@@ -53,7 +53,7 @@ export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps
                 <div className="h-[1px] bg-[#c6c6cd] w-full"></div>
 
                 {/* Row 2: Details Columns */}
-                <div className="flex flex-col md:flex-row justify-between items-start gap-6 w-full">
+                <div className="flex flex-col md:flex-row print:flex-row justify-between items-start gap-6 w-full">
                   {/* Left Column: From */}
                   <div className="flex flex-col gap-1">
                     {profile?.company_logo && (
@@ -66,8 +66,8 @@ export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps
                   </div>
                   
                   {/* Right Column: Invoice Meta */}
-                  <div className="flex flex-col gap-1 md:text-right w-full md:w-auto">
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-left md:text-right">
+                  <div className="flex flex-col gap-1 md:text-right print:text-right w-full md:w-auto print:w-auto">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-left md:text-right print:text-right">
                       <div className="text-[12px] text-[#45464d] uppercase font-bold">Invoice Number:</div>
                       <div className="text-sm font-semibold text-black" style={{ fontFamily: 'Geist, monospace' }}>{invoice.invoiceNumber}</div>
                       <div className="text-[12px] text-[#45464d] uppercase font-bold">Date Issued:</div>
@@ -80,7 +80,7 @@ export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps
               </div>
 
               {/* Bill To */}
-              <div className="mb-10 p-6 bg-[#eff4ff] border border-[#c6c6cd] flex flex-col md:flex-row justify-between gap-8">
+              <div className="mb-5 p-4 bg-[#eff4ff] border border-[#c6c6cd] flex flex-col md:flex-row print:flex-row justify-between gap-4">
                 <div>
                   <div className="text-[12px] text-[#45464d] uppercase tracking-widest font-bold mb-2 border-b border-[#c6c6cd] pb-2 inline-block">Bill To</div>
                   <div className="font-bold text-black mt-2">{invoice.clientName}</div>
@@ -93,33 +93,54 @@ export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps
               </div>
 
               {/* Items Table */}
-              <div className="border border-[#c6c6cd] mb-10 overflow-x-auto rounded-sm">
+              <div className="border border-[#c6c6cd] mb-4 overflow-x-auto rounded-sm">
                 <table className="w-full text-left border-collapse min-w-[600px]">
                   <thead>
                     <tr className="bg-[#f1f5f9] border-b border-[#c6c6cd]">
-                      <th className="py-3 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd] w-12 text-center">#</th>
-                      <th className="py-3 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd]">Description</th>
-                      <th className="py-3 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd] text-right w-24">Qty</th>
-                      <th className="py-3 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd] text-right w-32">Rate</th>
-                      <th className="py-3 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider text-right w-32">Total</th>
+                      <th className="py-1.5 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd] w-12 text-center">#</th>
+                      <th className="py-1.5 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd]">Description</th>
+                      <th className="py-1.5 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd] text-right w-24">Qty</th>
+                      <th className="py-1.5 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd] text-right w-32">Rate</th>
+                      <th className="py-1.5 px-4 text-[12px] font-bold text-[#45464d] uppercase tracking-wider text-right w-32">Total</th>
                     </tr>
                   </thead>
                   <tbody style={{ fontFamily: 'Geist, monospace' }}>
-                    {items.map((item, idx) => (
-                      <tr key={idx} className={`border-b border-[#c6c6cd] ${idx % 2 === 1 ? 'bg-[#f8fafc]' : ''}`}>
-                        <td className="py-3 px-4 border-r border-[#c6c6cd] text-center text-[#45464d]">{idx + 1}</td>
-                        <td className="py-3 px-4 border-r border-[#c6c6cd]"><div className="font-bold">{item.name}</div></td>
-                        <td className="py-3 px-4 border-r border-[#c6c6cd] text-right">{item.quantity}</td>
-                        <td className="py-3 px-4 border-r border-[#c6c6cd] text-right">{formatMoney(item.unitPrice, sym)}</td>
-                        <td className="py-3 px-4 text-right font-semibold">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
-                      </tr>
-                    ))}
+                    {showGroups && invoice.groups && invoice.groups.length > 0 ? (
+                      invoice.groups.map((group, gIdx) => (
+                        <React.Fragment key={gIdx}>
+                          {group.name && (
+                            <tr className="bg-[#f1f5f9] font-bold">
+                              <td colSpan={5} className="py-2 px-4 text-xs text-black border-b border-[#c6c6cd] uppercase text-left">{group.name}</td>
+                            </tr>
+                          )}
+                          {group.items.map((item, iIdx) => (
+                            <tr key={iIdx} className="border-b border-[#c6c6cd]">
+                              <td className="py-1.5 px-4 border-r border-[#c6c6cd] text-center text-[#45464d]">{iIdx + 1}</td>
+                              <td className="py-1.5 px-4 border-r border-[#c6c6cd]"><div className="font-bold">{item.name}</div></td>
+                              <td className="py-1.5 px-4 border-r border-[#c6c6cd] text-right">{item.quantity}</td>
+                              <td className="py-1.5 px-4 border-r border-[#c6c6cd] text-right">{formatMoney(item.unitPrice, sym)}</td>
+                              <td className="py-1.5 px-4 text-right font-semibold">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
+                      ))
+                    ) : (
+                      items.map((item, idx) => (
+                        <tr key={idx} className={`border-b border-[#c6c6cd] ${idx % 2 === 1 ? 'bg-[#f8fafc]' : ''}`}>
+                          <td className="py-1.5 px-4 border-r border-[#c6c6cd] text-center text-[#45464d]">{idx + 1}</td>
+                          <td className="py-1.5 px-4 border-r border-[#c6c6cd]"><div className="font-bold">{item.name}</div></td>
+                          <td className="py-1.5 px-4 border-r border-[#c6c6cd] text-right">{item.quantity}</td>
+                          <td className="py-1.5 px-4 border-r border-[#c6c6cd] text-right">{formatMoney(item.unitPrice, sym)}</td>
+                          <td className="py-1.5 px-4 text-right font-semibold">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
 
               {/* Totals */}
-              <div className="flex justify-end mb-12">
+              <div className="flex justify-end mb-6">
                 <div className="w-full md:w-1/3">
                   <div className="flex justify-between py-2 border-b border-dotted border-[#c6c6cd]">
                     <span className="text-[12px] font-bold text-[#45464d] uppercase">Subtotal</span>
@@ -139,7 +160,7 @@ export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps
               {/* Bank Details & Signature Section */}
               {(((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ||
                 ((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name))) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 border-t border-[#c6c6cd] pt-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-8 mb-6 border-t border-[#c6c6cd] pt-4">
                   {/* Bank Details */}
                   {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
                     <div>
@@ -161,7 +182,7 @@ export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps
 
                   {/* Signature */}
                   {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
-                    <div className="flex flex-col items-start md:items-end">
+                    <div className="flex flex-col items-start md:items-end print:items-end">
                       {(invoice.signature_url || profile?.signature_url) && (
                         <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-10 mb-2 object-contain" />
                       )}
@@ -173,7 +194,7 @@ export function CorporateTemplate({ invoice, profile, isPreview }: TemplateProps
               )}
 
               {/* Footer */}
-              <div className="border-t-2 border-[#c6c6cd] pt-6 text-left">
+              <div className="border-t-2 border-[#c6c6cd] pt-3 text-left">
                 <div className="text-[11px] text-[#45464d] max-w-[500px]" style={{ fontFamily: 'Geist, monospace' }}>
                   <strong>Terms &amp; Conditions:</strong> All payments are final. Late payments may be subject to a 1.5% monthly fee.
                 </div>
