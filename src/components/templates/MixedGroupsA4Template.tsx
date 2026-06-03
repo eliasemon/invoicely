@@ -124,7 +124,7 @@ export function MixedGroupsA4Template({ invoice, profile , publicUrl }: Template
               ) : <div></div>}
 
               {/* Signature */}
-              <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-full">
+              <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-auto shrink-0">
                     
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
                 <div className="flex flex-col items-start md:items-end">
