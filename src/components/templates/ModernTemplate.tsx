@@ -131,13 +131,13 @@ export function ModernTemplate({ invoice, profile, isPreview }: TemplateProps) {
               <>
                 <div className="flex justify-end mt-2">
                   <div className="w-full md:w-2/3 print:w-2/3 py-2 px-4 flex justify-between items-center text-sm">
-                    <p className="text-[10px] uppercase tracking-wider text-[#76777d]">Amount Paid</p>
+                    <p className="text-[10px] uppercase tracking-wider text-[#76777d]">Paid</p>
                     <p className="text-sm font-medium text-green-600" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(amountPaid, sym)}</p>
                   </div>
                 </div>
                 <div className="flex justify-end">
                   <div className="w-full md:w-2/3 print:w-2/3 bg-[#eff6ff] py-3 px-4 rounded-lg flex justify-between items-center border border-[#bfdbfe]">
-                    <p className="text-[10px] uppercase tracking-wider text-[#1e40af]">Balance Due</p>
+                    <p className="text-[10px] uppercase tracking-wider text-[#1e40af]">Due</p>
                     <p className="text-xl font-bold text-[#1e40af]" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(balanceDue, sym)}</p>
                   </div>
                 </div>

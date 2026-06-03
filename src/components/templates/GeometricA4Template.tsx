@@ -117,11 +117,11 @@ export function GeometricA4Template({ invoice, profile, showGroups }: TemplatePr
               {amountPaid > 0 && (
                 <>
                   <div className="flex justify-between py-2 text-sm text-gray-500 font-medium">
-                    <span>Amount Paid</span>
+                    <span>Paid</span>
                     <span>{formatMoney(amountPaid, sym)}</span>
                   </div>
                   <div className="flex justify-between py-3 mt-2 border-t-2 border-gray-800 text-lg font-bold text-gray-900">
-                    <span>Balance Due</span>
+                    <span>Due</span>
                     <span>{formatMoney(balanceDue, sym)}</span>
                   </div>
                 </>
