@@ -8,7 +8,7 @@ export function ElegantTemplate({ invoice, profile, isPreview, showGroups }: Tem
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#cbdbf5] min-h-screen text-[#0b1c30] py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
+    <div className="bg-[#cbdbf5] min-h-screen text-[#0b1c30] py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
       {/* Floating Actions */}
       {!isPreview && (
         <div className="fixed top-6 right-6 md:right-12 z-50 flex gap-4 print:hidden">
@@ -20,7 +20,7 @@ export function ElegantTemplate({ invoice, profile, isPreview, showGroups }: Tem
       )}
 
       {/* Invoice Canvas */}
-      <main className="w-full max-w-[210mm] min-h-[297mm] mx-auto bg-white shadow-[0_4px_40px_rgba(11,28,48,0.06)] rounded-sm overflow-hidden p-6 md:p-10 print:p-6 relative print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
+      <main className="w-full max-w-[210mm] min-h-[297mm] mx-auto bg-white shadow-[0_4px_40px_rgba(11,28,48,0.06)] rounded-sm overflow-hidden p-6 md:p-10 print:p-6 relative print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         {/* Header */}
         <header className="flex flex-col md:flex-row print:flex-row justify-between items-start md:items-end print:items-end gap-8 mb-6">
           <div>

@@ -7,8 +7,8 @@ export function MixedGroupsA4Template({ invoice, profile }: TemplateProps) {
   const subtotal = getSubtotal(invoice);
 
   return (
-    <div className="bg-[#f8fafc] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-md rounded-lg overflow-hidden print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
+    <div className="bg-[#f8fafc] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-md rounded-lg overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         {/* Header */}
         <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8e] text-white px-6 py-4">
           <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-4 sm:gap-6">

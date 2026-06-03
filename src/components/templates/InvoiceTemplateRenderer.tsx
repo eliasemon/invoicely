@@ -49,7 +49,7 @@ export function InvoiceTemplateRenderer({ templateId, invoice, profile, isPrevie
   const hasGroups = invoice.groups && invoice.groups.length > 0 && invoice.groups.some(g => g.name && g.name.trim() !== '');
 
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex flex-col items-center w-full print:block print:w-[210mm] print:p-0 print:m-0">
       {hasGroups && (
         <div className="mb-6 flex items-center justify-between gap-4 bg-white border border-[#e2e8f0] rounded-xl px-5 py-3 shadow-md text-sm print:hidden max-w-[210mm] w-full mx-auto">
           <div className="flex items-center gap-3">

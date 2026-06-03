@@ -9,7 +9,7 @@ export function ModernTemplate({ invoice, profile, isPreview }: TemplateProps) {
   const total = subtotal + tax;
 
   return (
-    <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] py-8 px-4 print:py-0 print:px-0" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
+    <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
       {/* Action Bar - hidden in print */}
       {!isPreview && (
         <div className="max-w-[210mm] mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 print:hidden">
@@ -22,7 +22,7 @@ export function ModernTemplate({ invoice, profile, isPreview }: TemplateProps) {
       )}
 
       {/* Invoice Paper */}
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col md:flex-row print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col md:flex-row print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         {/* Sidebar */}
         <div className="bg-[#0058be] text-white w-full md:w-[30%] print:w-[30%] p-6 flex flex-col justify-between">
           <div>

@@ -8,8 +8,8 @@ export function PristineA4Template({ invoice, profile, showGroups }: TemplatePro
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f0f4f8] min-h-screen py-4 px-2 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-lg print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
+    <div className="bg-[#f0f4f8] min-h-screen py-4 px-2 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-lg print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         {/* Top accent */}
         <div className="h-1 bg-gradient-to-r from-[#0058be] via-[#2170e4] to-[#0058be]"></div>
         

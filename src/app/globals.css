@@ -149,10 +149,28 @@
     size: A4;
     margin: 0;
   }
+  html,
   body {
-    margin: 0;
+    width: 210mm;
+    height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
     background-color: #ffffff !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    overflow: visible !important;
+  }
+  /* Force every wrapper in the DOM chain to stretch to full page width */
+  body > div,
+  body > div > div,
+  body > div > div > div,
+  body > div > div > main,
+  body > div > div > div > div {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 }

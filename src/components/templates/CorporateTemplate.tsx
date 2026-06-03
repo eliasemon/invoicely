@@ -8,9 +8,9 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups }: T
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] pb-20 md:pb-0 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
-      <div className="flex justify-center items-start p-4 md:p-8 print:p-0 print:m-0">
-        <div className="w-full max-w-[210mm] min-h-[297mm] mx-auto print:max-w-none print:w-full print:min-h-[297mm]">
+    <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] pb-20 md:pb-0 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
+      <div className="flex justify-center items-start p-4 md:p-8 print:p-0 print:m-0 print:block print:w-[210mm]">
+        <div className="w-full max-w-[210mm] min-h-[297mm] mx-auto print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm]">
           {/* Action Bar */}
           {!isPreview && (
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border border-[#c6c6cd] shadow-sm mb-6 print:hidden">

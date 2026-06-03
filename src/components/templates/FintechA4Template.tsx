@@ -8,8 +8,8 @@ export function FintechA4Template({ invoice, profile, showGroups }: TemplateProp
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f8fafc] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0" style={{ fontFamily: 'Geist, sans-serif' }}>
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#1e293b] rounded-2xl border border-[#e2e8f0] shadow-xl overflow-hidden print:shadow-none print:rounded-none print:border-none print:max-w-none print:w-full print:min-h-[297mm] print:my-0">
+    <div className="bg-[#f8fafc] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}>
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#1e293b] rounded-2xl border border-[#e2e8f0] shadow-xl overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         {/* Gradient top */}
         <div className="h-1 bg-gradient-to-r from-[#22c55e] via-[#10b981] to-[#14b8a6]"></div>
         

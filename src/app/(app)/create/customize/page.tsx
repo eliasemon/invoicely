@@ -146,8 +146,8 @@ export default function CustomizeInvoicePage() {
 
       {/* Preview Modal */}
       {isPreviewOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8 print:p-0 print:absolute print:inset-0 print:bg-white print:z-50 print:block">
-          <div className="relative w-full max-w-5xl h-[90vh] bg-surface rounded-xl overflow-hidden shadow-2xl flex flex-col print:h-auto print:shadow-none print:rounded-none print:w-full print:max-w-none">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8 print:p-0 print:absolute print:inset-0 print:bg-white print:z-50 print:block print:w-[210mm]">
+          <div className="relative w-full max-w-5xl h-[90vh] bg-surface rounded-xl overflow-hidden shadow-2xl flex flex-col print:h-auto print:shadow-none print:rounded-none print:w-[210mm] print:max-w-[210mm] print:block">
             <div className="flex justify-between items-center p-4 border-b border-outline-variant bg-surface print:hidden">
               <h3 className="font-headline-sm text-primary font-bold">Template Preview</h3>
               <div className="flex items-center gap-2">
@@ -159,8 +159,8 @@ export default function CustomizeInvoicePage() {
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto bg-surface-container-lowest print:overflow-visible">
-              <div className="transform scale-[0.85] origin-top md:scale-100 min-h-max print:transform-none print:scale-100">
+            <div className="flex-1 overflow-y-auto bg-surface-container-lowest print:overflow-visible print:w-[210mm]">
+              <div className="transform scale-[0.85] origin-top md:scale-100 min-h-max print:transform-none print:scale-100 print:w-[210mm]">
                 <InvoiceTemplateRenderer 
                   templateId={selectedTemplate} 
                   invoice={mockInvoice} 
