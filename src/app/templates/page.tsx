@@ -45,11 +45,12 @@ export default function TemplatesGalleryPage() {
     status: 'DRAFT' as const,
     groups: [
       {
+        id: 'group-1',
         name: 'Web Development Services',
         items: [
-          { name: 'Frontend React Development', quantity: 40, unitPrice: 65 },
-          { name: 'Backend Node.js API', quantity: 20, unitPrice: 75 },
-          { name: 'UI/UX Design', quantity: 15, unitPrice: 50 },
+          { id: 'item-1', name: 'Frontend React Development', quantity: 40, unitPrice: 65 },
+          { id: 'item-2', name: 'Backend Node.js API', quantity: 20, unitPrice: 75 },
+          { id: 'item-3', name: 'UI/UX Design', quantity: 15, unitPrice: 50 },
         ]
       }
     ],
