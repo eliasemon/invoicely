@@ -119,6 +119,7 @@ export function TopAppBar() {
           <nav className="flex items-center gap-md">
             <Link className="font-label-sm text-label-sm font-semibold text-primary" href="/dashboard">Home</Link>
             <Link className="font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="/invoices">Invoices</Link>
+            <Link className="font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="/clients">Clients</Link>
             <Link className="font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="/create">Create</Link>
             <Link className="font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="/profile">Profile</Link>
           </nav>

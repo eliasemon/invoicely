@@ -8,6 +8,7 @@ export function BottomNavBar() {
   const navItems = [
     { href: '/dashboard', label: 'Home', icon: 'home' },
     { href: '/invoices', label: 'Invoices', icon: 'receipt_long' },
+    { href: '/clients', label: 'Clients', icon: 'group' },
     { href: '/create', label: 'Create', icon: 'add_circle' },
     { href: '/profile', label: 'Profile', icon: 'person' },
   ];

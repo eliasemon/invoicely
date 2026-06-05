@@ -137,7 +137,7 @@ export async function createInvoice(data: {
   return invoice;
 }
 
-export async function getInvoices(filters?: { search?: string, status?: string }) {
+export async function getInvoices(filters?: { search?: string, status?: string, clientName?: string }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
 
@@ -149,6 +149,10 @@ export async function getInvoices(filters?: { search?: string, status?: string }
 
   if (filters?.status && filters.status !== 'All') {
     query = query.eq('status', filters.status.toUpperCase());
+  }
+
+  if (filters?.clientName) {
+    query = query.eq('client_name', filters.clientName);
   }
 
   if (filters?.search) {
