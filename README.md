@@ -1,6 +1,6 @@
-# Invoicely
+# Invorio
 
-Invoicely is a modern, full-stack invoicing application designed for seamless invoice generation, client management, and multi-currency pricing. 
+Invorio is a modern, full-stack invoicing application designed for seamless invoice generation, client management, and multi-currency pricing. 
 
 ## 🚀 Technologies Used
 

@@ -3,7 +3,7 @@ import { getProfile } from '@/app/actions/profileActions';
 import { ClientCard } from '@/components/clients/ClientCard';
 
 export const metadata = {
-  title: 'Clients | Invoicely',
+  title: 'Clients | Invorio',
 };
 
 export default async function ClientsPage() {

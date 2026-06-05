@@ -13,7 +13,7 @@ export function PublicInvoiceHeader({ invoiceNumber }: PublicInvoiceHeaderProps)
         <div className="flex items-center gap-sm">
           <Link href="/" className="flex items-center gap-xs hover:opacity-85 transition-opacity">
             <MaterialIcon icon="account_balance_wallet" filled className="text-primary text-[24px]" />
-            <span className="font-headline-md text-headline-md tracking-tight text-primary font-bold hidden sm:inline">Invoicely</span>
+            <span className="font-headline-md text-headline-md tracking-tight text-primary font-bold hidden sm:inline">Invorio</span>
           </Link>
           <div className="h-4 w-px bg-outline-variant hidden sm:block"></div>
           <span className="font-body-lg text-body-lg font-semibold text-primary">

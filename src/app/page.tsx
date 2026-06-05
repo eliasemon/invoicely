@@ -25,7 +25,7 @@ export default async function LandingPage() {
         <div className="max-w-[1280px] mx-auto flex items-center justify-between h-16 px-margin-mobile md:px-margin-desktop">
           <div className="flex items-center gap-xs">
             <MaterialIcon icon="account_balance_wallet" filled className="text-primary" />
-            <span className="text-headline-md font-headline-md tracking-tight text-primary dark:text-primary-fixed-dim">Invoicely</span>
+            <span className="text-headline-md font-headline-md tracking-tight text-primary dark:text-primary-fixed-dim">Invorio</span>
           </div>
           <Link href="/dashboard" className="bg-primary text-on-primary font-label-sm text-label-sm px-sm py-xs rounded-lg hover:bg-primary-container transition-colors duration-200 active:scale-95 flex items-center gap-base h-10 px-md">
             Get Started
@@ -206,7 +206,7 @@ export default async function LandingPage() {
           <div className="max-w-[800px] mx-auto text-center flex flex-col items-center">
             <MaterialIcon icon="format_quote" filled className="text-tertiary-fixed-dim text-4xl mb-sm" />
             <p className="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary mb-md italic leading-tight">
-              &quot;Invoicely reduced our late payments by 40% in the first quarter. The interface is exceptionally clean, and the automated QR codes are a game-changer for client settlement.&quot;
+              &quot;Invorio reduced our late payments by 40% in the first quarter. The interface is exceptionally clean, and the automated QR codes are a game-changer for client settlement.&quot;
             </p>
             <div className="flex items-center gap-sm mt-sm">
               <img 
@@ -239,7 +239,7 @@ export default async function LandingPage() {
       <footer className="bg-surface-container-lowest dark:bg-surface-container-lowest w-full py-lg border-t border-outline-variant/20 mt-auto">
         <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-center gap-md px-margin-mobile md:px-margin-desktop">
           <div className="font-headline-md text-headline-md text-primary flex items-center gap-xs">
-            <MaterialIcon icon="account_balance_wallet" filled /> Invoicely
+            <MaterialIcon icon="account_balance_wallet" filled /> Invorio
           </div>
           <nav className="flex flex-wrap justify-center gap-md">
             <Link href="#" className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Product</Link>
@@ -248,7 +248,7 @@ export default async function LandingPage() {
             <Link href="#" className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Privacy Policy</Link>
           </nav>
           <div className="font-label-sm text-label-sm text-on-surface-variant text-center md:text-right">
-            © 2024 Invoicely Inc. All rights reserved.
+            © 2024 Invorio Inc. All rights reserved.
           </div>
         </div>
       </footer>

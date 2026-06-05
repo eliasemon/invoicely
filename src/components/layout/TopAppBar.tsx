@@ -71,7 +71,7 @@ export function TopAppBar() {
           </button>
           <Link href="/dashboard" className="flex items-center gap-xs font-headline-md text-headline-md font-bold text-primary">
             <MaterialIcon icon="account_balance_wallet" filled className="text-primary" />
-            Invoicely
+            Invorio
           </Link>
           <div className="relative">
             <button 
@@ -123,7 +123,7 @@ export function TopAppBar() {
             <div className="h-16 flex items-center px-4 border-b border-outline-variant/30">
               <Link href="/dashboard" className="flex items-center gap-xs font-headline-md text-headline-md font-bold text-primary" onClick={() => setShowMobileMenu(false)}>
                 <MaterialIcon icon="account_balance_wallet" filled className="text-primary" />
-                Invoicely
+                Invorio
               </Link>
             </div>
             <nav className="flex-1 overflow-y-auto py-4 px-2 flex flex-col gap-1">
@@ -170,7 +170,7 @@ export function TopAppBar() {
           <div className="flex items-center gap-xs">
             <Link href="/dashboard" className="flex items-center gap-xs font-headline-md text-headline-md font-bold text-primary">
               <MaterialIcon icon="account_balance_wallet" filled className="text-primary" />
-              Invoicely
+              Invorio
             </Link>
           </div>
           <nav className="flex items-center gap-md">

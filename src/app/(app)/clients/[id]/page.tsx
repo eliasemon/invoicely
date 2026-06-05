@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const clientSummary = await getClientSummary(clientId);
   
   return {
-    title: `${clientSummary?.name || 'Client'} | Invoicely Clients`,
+    title: `${clientSummary?.name || 'Client'} | Invorio Clients`,
   };
 }
 

@@ -7,7 +7,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <header className="absolute top-0 w-full p-margin-mobile md:p-margin-desktop z-10 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-xs">
           <MaterialIcon icon="account_balance_wallet" filled className="text-primary text-2xl" />
-          <span className="text-headline-md font-headline-md font-bold tracking-tight text-primary">Invoicely</span>
+          <span className="text-headline-md font-headline-md font-bold tracking-tight text-primary">Invorio</span>
         </Link>
       </header>
       <main className="flex-1 w-full flex items-center justify-center p-margin-mobile">

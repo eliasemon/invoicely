@@ -19,7 +19,7 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showG
       {/* Action Bar - hidden in print */}
       {!isPreview && (
         <div className="max-w-[210mm] mx-auto mb-3 flex flex-col sm:flex-row justify-between items-center gap-2 print:hidden">
-          <span className="text-sm font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>Invoicely</span>
+          <span className="text-sm font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>Invorio</span>
           <button onClick={() => window.print()} className="px-4 py-2 border border-[#c6c6cd] rounded-lg text-xs hover:bg-[#eff4ff] transition-colors flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px]">download</span>
             Download / Print PDF

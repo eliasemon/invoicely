@@ -86,7 +86,7 @@ export default function ProfilePage() {
           { 
             element: '#profile-header', 
             popover: { 
-              title: 'Welcome to Invoicely!', 
+              title: 'Welcome to Invorio!', 
               description: 'Let\'s get your profile set up so you can start generating beautiful invoices. We\'ll walk you through the key sections.', 
               side: "bottom", 
               align: 'start' 

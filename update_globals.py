@@ -123,7 +123,7 @@ for k, v in fontSizesObj.items():
     if 'fontWeight' in v[1]:
         theme_inline.append(f"  --text-{k}--font-weight: {v[1]['fontWeight']};")
 
-# Dark mode map (approximate inversion for now or just stick to light for these specific tokens, as DESIGN didn't include dark tokens directly except for generic ones, wait, Invoicely HTML doesn't seem to have explicit dark mode tokens, it has standard tailwind dark mode with `dark:` classes or relying on variables. We will just use standard light mode variables since the HTML is hardcoded for light mode mostly.
+# Dark mode map (approximate inversion for now or just stick to light for these specific tokens, as DESIGN didn't include dark tokens directly except for generic ones, wait, Invorio HTML doesn't seem to have explicit dark mode tokens, it has standard tailwind dark mode with `dark:` classes or relying on variables. We will just use standard light mode variables since the HTML is hardcoded for light mode mostly.
 
 theme_inline_str = "\n".join(theme_inline)
 
@@ -150,7 +150,7 @@ css_content = f"""@import "tailwindcss";
 }}
 """
 
-with open("/Users/eliasemon/personal-projects/invoicely/invoicely-app/src/app/globals.css", "w") as f:
+with open("/Users/eliasemon/personal-projects/invorio/invorio-app/src/app/globals.css", "w") as f:
     f.write(css_content)
 
 print("Updated globals.css")

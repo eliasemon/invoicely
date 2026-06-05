@@ -22,7 +22,7 @@ const hankenGrotesk = Hanken_Grotesk({
 
 
 export const metadata: Metadata = {
-  title: "Invoicely",
+  title: "Invorio",
   description: "Invoicing at the Speed of Business",
 };
 
