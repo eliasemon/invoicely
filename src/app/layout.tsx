@@ -22,8 +22,34 @@ const hankenGrotesk = Hanken_Grotesk({
 
 
 export const metadata: Metadata = {
-  title: "Invorio",
-  description: "Invoicing at the Speed of Business",
+  metadataBase: new URL(process.env.APP_BASE_URL || 'https://invorio.app'),
+  title: {
+    default: "Invorio | Invoicing at the Speed of Business",
+    template: "%s | Invorio",
+  },
+  description: "Create, send, and track professional invoices in seconds. Built for modern businesses demanding precision and clarity.",
+  keywords: ["invoicing software", "billing", "create invoices", "Invorio", "online invoices", "business billing"],
+  openGraph: {
+    title: "Invorio | Invoicing at the Speed of Business",
+    description: "Create, send, and track professional invoices in seconds.",
+    url: "/",
+    siteName: "Invorio",
+    images: [
+      {
+        url: "/icon.svg", // Update with actual OG image if available
+        width: 800,
+        height: 600,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Invorio | Invoicing at the Speed of Business",
+    description: "Create, send, and track professional invoices in seconds.",
+    images: ["/icon.svg"],
+  },
 };
 
 export default function RootLayout({
