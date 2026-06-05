@@ -12,7 +12,7 @@ import { InvoiceTemplateRenderer } from '@/components/templates/InvoiceTemplateR
 
 export default function CustomizeInvoicePage() {
   const router = useRouter();
-  const { draftInvoiceId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, setSelectedTemplate } = useCreateInvoice();
+  const { draftInvoiceId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, setSelectedTemplate, discountType, discountValue, shippingCost } = useCreateInvoice();
   const { profile } = useProfile();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -41,6 +41,9 @@ export default function CustomizeInvoicePage() {
     bank_account_holder: profile?.bank_account_holder,
     bank_account_number: profile?.bank_account_number,
     bank_swift: profile?.bank_swift,
+    discount_type: discountType,
+    discount_value: discountValue,
+    shipping_cost: shippingCost,
   };
 
   const handleFinalize = async () => {
@@ -52,7 +55,10 @@ export default function CustomizeInvoicePage() {
         clientPhone: mobileNumber,
         clientAddress,
         template: selectedTemplate,
-        groups
+        groups,
+        discountType,
+        discountValue,
+        shippingCost,
       });
       
       router.push(`/invoices/${invoice.id}`);
@@ -71,7 +77,10 @@ export default function CustomizeInvoicePage() {
         clientPhone: mobileNumber,
         clientAddress,
         template: selectedTemplate,
-        groups
+        groups,
+        discountType,
+        discountValue,
+        shippingCost,
       });
       
       router.push(`/invoices/${invoice.id}`);

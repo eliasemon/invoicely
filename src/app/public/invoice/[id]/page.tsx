@@ -25,6 +25,8 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
     amount: invoice.total_amount,
     amountPaid: invoice.amount_paid || 0,
     status: invoice.status,
+    issued_at: invoice.issued_at,
+    due_date: invoice.due_date,
   };
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';

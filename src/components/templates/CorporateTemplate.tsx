@@ -1,13 +1,17 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal, getAllItems } from './templateUtils';
+import { TemplateProps, formatDate, formatMoney, getIssueDate, getDueDate, getSubtotal, getDiscountAmount, getShippingCost, getTotal, getAllItems } from './templateUtils';
 
-export function CorporateTemplate({ invoice, profile, isPreview, showGroups , publicUrl }: TemplateProps) {
+export function CorporateTemplate({ invoice, profile, isPreview, showGroups, showGroupTotals, publicUrl }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
-  const dueDate = getDueDate(invoice.createdAt);
+  const issueDate = getIssueDate(invoice);
+  const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
+  const discountAmount = getDiscountAmount(invoice, subtotal);
+  const shippingCost = getShippingCost(invoice);
+  const total = getTotal(invoice);
   const amountPaid = invoice.amountPaid || 0;
-  const balanceDue = Math.max(0, subtotal - amountPaid);
+  const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
 
   return (
@@ -79,7 +83,7 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups , pu
                         </div>
                       )}
                       <div className="text-[12px] text-[#45464d] uppercase font-bold">Date Issued:</div>
-                      <div className="text-sm text-black" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(invoice.createdAt)}</div>
+                      <div className="text-sm text-black" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(issueDate)}</div>
                       <div className="text-[12px] text-[#45464d] uppercase font-bold">Date Due:</div>
                       <div className="text-sm text-black" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(dueDate)}</div>
                     </div>
@@ -130,6 +134,13 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups , pu
                               <td className="py-1.5 px-4 text-right font-semibold">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
                             </tr>
                           ))}
+
+                  {showGroupTotals && (
+                    <tr className="bg-transparent">
+                      <td colSpan={4} className="py-0.5 px-3 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">Group Subtotal</td>
+                      <td className="py-0.5 px-3 text-right text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</td>
+                    </tr>
+                  )}
                         </React.Fragment>
                       ))
                     ) : (
@@ -154,13 +165,27 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups , pu
                     <span className="text-[12px] font-bold text-[#45464d] uppercase">Subtotal</span>
                     <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(subtotal, sym)}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-dotted border-[#c6c6cd]">
+                  
+              {discountAmount > 0 && (
+                <div className="flex justify-between py-2 border-b border-dotted border-[#c6c6cd]">
+                    <span className="text-[12px] font-bold text-[#45464d] uppercase">Discount {invoice.discount_type === 'percentage' ? `(${invoice.discount_value}%)` : ''}</span>
+                    <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>-{formatMoney(discountAmount, sym)}</span>
+                  </div>
+              )}
+              <div className="flex justify-between py-2 border-b border-dotted border-[#c6c6cd]">
                     <span className="text-[12px] font-bold text-[#45464d] uppercase">Tax (0%)</span>
                     <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(0, sym)}</span>
                   </div>
+              {shippingCost > 0 && (
+                <div className="flex justify-between py-2 border-b border-dotted border-[#c6c6cd]">
+                    <span className="text-[12px] font-bold text-[#45464d] uppercase">Shipping</span>
+                    <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>+{formatMoney(shippingCost, sym)}</span>
+                  </div>
+              )}
+            
                   <div className="flex justify-between py-3 border-b-2 border-black mt-2">
                     <span className="font-bold text-black uppercase">Total</span>
-                    <span className="text-xl font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(subtotal, sym)}</span>
+                    <span className="text-xl font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(total, sym)}</span>
                   </div>
               {amountPaid > 0 && (
                 <>

@@ -25,6 +25,7 @@ export interface TemplateProps {
   } | null;
   isPreview?: boolean;
   showGroups?: boolean;
+  showGroupTotals?: boolean;
   publicUrl?: string;
 }
 
@@ -40,14 +41,45 @@ export function formatMoney(amount: number, symbol: string = '$'): string {
   return `${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-export function getDueDate(createdAt: Date | string, days: number = 30): Date {
-  const d = new Date(createdAt);
-  d.setDate(d.getDate() + days);
+export function getIssueDate(invoice: Invoice): Date {
+  if (invoice.issued_at) return new Date(invoice.issued_at);
+  return new Date(invoice.createdAt);
+}
+
+export function getDueDate(invoice: Invoice, fallbackDays: number = 30): Date {
+  if (invoice.due_date) return new Date(invoice.due_date);
+  const issueDate = getIssueDate(invoice);
+  const d = new Date(issueDate);
+  d.setDate(d.getDate() + fallbackDays);
   return d;
 }
 
 export function getSubtotal(invoice: Invoice): number {
+  if (invoice.groups && invoice.groups.length > 0) {
+    return invoice.groups.reduce((acc, g) => 
+      acc + g.items.reduce((itemAcc, item) => itemAcc + (item.quantity * item.unitPrice), 0), 
+    0);
+  }
   return invoice.amount || 0;
+}
+
+export function getDiscountAmount(invoice: Invoice, subtotal: number): number {
+  if (!invoice.discount_value) return 0;
+  if (invoice.discount_type === 'percentage') {
+    return subtotal * (invoice.discount_value / 100);
+  }
+  return invoice.discount_value;
+}
+
+export function getShippingCost(invoice: Invoice): number {
+  return invoice.shipping_cost || 0;
+}
+
+export function getTotal(invoice: Invoice): number {
+  const subtotal = getSubtotal(invoice);
+  const discount = getDiscountAmount(invoice, subtotal);
+  const shipping = getShippingCost(invoice);
+  return Math.max(0, subtotal - discount) + shipping;
 }
 
 export function getAllItems(invoice: Invoice): { name: string; quantity: number; unitPrice: number; groupName?: string }[] {

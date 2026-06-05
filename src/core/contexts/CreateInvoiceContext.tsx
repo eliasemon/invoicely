@@ -18,6 +18,12 @@ interface CreateInvoiceContextType {
   setGroups: (groups: GroupData[]) => void;
   selectedTemplate: string;
   setSelectedTemplate: (template: string) => void;
+  discountType: 'amount' | 'percentage';
+  setDiscountType: (type: 'amount' | 'percentage') => void;
+  discountValue: number;
+  setDiscountValue: (value: number) => void;
+  shippingCost: number;
+  setShippingCost: (cost: number) => void;
   currency: string;
   currencySymbol: string;
 }
@@ -36,6 +42,9 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     items: []
   }]);
   const [selectedTemplate, setSelectedTemplate] = useState('corporate-template');
+  const [discountType, setDiscountType] = useState<'amount' | 'percentage'>('amount');
+  const [discountValue, setDiscountValue] = useState(0);
+  const [shippingCost, setShippingCost] = useState(0);
 
   const currency = profile?.default_currency || initialCurrency || 'USD';
   const currencySymbol = profile?.currency_symbol || initialCurrencySymbol || (() => {
@@ -72,7 +81,10 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
           clientPhone: mobileNumber,
           clientAddress,
           template: selectedTemplate,
-          groups
+          groups,
+          discountType,
+          discountValue,
+          shippingCost
         });
         
         if (!draftIdRef.current && invoice?.id) {
@@ -84,7 +96,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [clientName, mobileNumber, clientAddress, groups, selectedTemplate]);
+  }, [clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost]);
 
   return (
     <CreateInvoiceContext.Provider value={{
@@ -94,6 +106,9 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
       clientAddress, setClientAddress,
       groups, setGroups,
       selectedTemplate, setSelectedTemplate,
+      discountType, setDiscountType,
+      discountValue, setDiscountValue,
+      shippingCost, setShippingCost,
       currency, currencySymbol
     }}>
       {children}

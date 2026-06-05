@@ -1,13 +1,17 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal, getAllItems } from './templateUtils';
+import { TemplateProps, formatDate, formatMoney, getIssueDate, getDueDate, getSubtotal, getDiscountAmount, getShippingCost, getTotal, getAllItems } from './templateUtils';
 
-export function HeritageA4Template({ invoice, profile, showGroups , publicUrl }: TemplateProps) {
+export function HeritageA4Template({ invoice, profile, showGroups, showGroupTotals, publicUrl }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
-  const dueDate = getDueDate(invoice.createdAt);
+  const issueDate = getIssueDate(invoice);
+  const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
+  const discountAmount = getDiscountAmount(invoice, subtotal);
+  const shippingCost = getShippingCost(invoice);
+  const total = getTotal(invoice);
   const amountPaid = invoice.amountPaid || 0;
-  const balanceDue = Math.max(0, subtotal - amountPaid);
+  const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
 
   return (
@@ -39,7 +43,7 @@ export function HeritageA4Template({ invoice, profile, showGroups , publicUrl }:
             <div className="text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto">
               <p className="text-[11px] text-[#8b7355] uppercase tracking-[0.2em] mb-1.5">Invoice Details</p>
               <p className="text-sm" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">No:</span> {invoice.invoiceNumber}</p>
-              <p className="text-sm mt-1" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">Date:</span> {formatDate(invoice.createdAt)}</p>
+              <p className="text-sm mt-1" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">Date:</span> {formatDate(issueDate)}</p>
               <p className="text-sm mt-1" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">Due:</span> {formatDate(dueDate)}</p>
               {profile?.qr_code_enabled && publicUrl && (
                 <div className="mt-4 flex justify-start sm:justify-end print:justify-end">
@@ -76,6 +80,13 @@ export function HeritageA4Template({ invoice, profile, showGroups , publicUrl }:
                         <td className="py-1.5 text-right text-sm font-semibold text-[#2c1810]">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
                       </tr>
                     ))}
+
+                  {showGroupTotals && (
+                    <tr className="bg-transparent">
+                      <td colSpan={3} className="py-0.5 px-3 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">Group Subtotal</td>
+                      <td className="py-0.5 px-3 text-right text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</td>
+                    </tr>
+                  )}
                   </React.Fragment>
                 ))
               ) : (
@@ -95,9 +106,17 @@ export function HeritageA4Template({ invoice, profile, showGroups , publicUrl }:
           <div className="flex justify-end mb-6">
             <div className="w-full sm:w-64 print:w-64">
               <div className="flex justify-between py-2 text-sm text-[#6b5b4a]"><span>Subtotal</span><span style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(subtotal, sym)}</span></div>
+              
+              {discountAmount > 0 && (
+                <div className="flex justify-between py-2 text-sm text-[#6b5b4a]"><span>Discount {invoice.discount_type === 'percentage' ? `(${invoice.discount_value}%)` : ''}</span><span style={{ fontFamily: 'Geist, monospace' }}>-{formatMoney(discountAmount, sym)}</span></div>
+              )}
               <div className="flex justify-between py-2 text-sm text-[#6b5b4a]"><span>Tax</span><span style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(0, sym)}</span></div>
+              {shippingCost > 0 && (
+                <div className="flex justify-between py-2 text-sm text-[#6b5b4a]"><span>Shipping</span><span style={{ fontFamily: 'Geist, monospace' }}>+{formatMoney(shippingCost, sym)}</span></div>
+              )}
+            
               <div className="flex justify-between py-3 border-t-2 border-[#8b7355] mt-2 text-xl font-bold text-[#2c1810]">
-                <span>Total</span><span style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(subtotal, sym)}</span>
+                <span>Total</span><span style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(total, sym)}</span>
               </div>
               {amountPaid > 0 && (
                 <>

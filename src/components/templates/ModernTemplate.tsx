@@ -1,13 +1,16 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal } from './templateUtils';
+import { TemplateProps, formatDate, formatMoney, getIssueDate, getDueDate, getSubtotal, getDiscountAmount, getShippingCost, getTotal } from './templateUtils';
 
-export function ModernTemplate({ invoice, profile, isPreview , publicUrl }: TemplateProps) {
+export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showGroupTotals }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
-  const dueDate = getDueDate(invoice.createdAt);
+  const issueDate = getIssueDate(invoice);
+  const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
+  const discountAmount = getDiscountAmount(invoice, subtotal);
+  const shippingCost = getShippingCost(invoice);
+  const total = getTotal(invoice);
   const tax = 0;
-  const total = subtotal + tax;
   const amountPaid = invoice.amountPaid || 0;
   const balanceDue = Math.max(0, total - amountPaid);
 
@@ -48,7 +51,7 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl }: Temp
             </div>
             <div className="mb-4">
               <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">Date Issued</p>
-              <p className="text-xs">{formatDate(invoice.createdAt)}</p>
+              <p className="text-xs">{formatDate(issueDate)}</p>
             </div>
             <div className="mb-4">
               <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">Due Date</p>
@@ -111,6 +114,13 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl }: Temp
                     <p className="text-xs whitespace-nowrap" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(item.quantity * item.unitPrice, sym)}</p>
                   </div>
                 ))}
+
+                  {showGroupTotals && (
+                    <div className="flex justify-between items-center px-3 py-0.5 bg-transparent border-t border-slate-100/50">
+                      <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">Group Subtotal</div>
+                      <div className="text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</div>
+                    </div>
+                  )}
               </div>
             ))}
           </div>
@@ -123,12 +133,28 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl }: Temp
                 <p style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(subtotal, sym)}</p>
               </div>
             </div>
+            {discountAmount > 0 && (
+              <div className="flex justify-end mb-1.5">
+                <div className="w-full sm:w-2/3 md:w-1/2 print:w-1/2 flex justify-between text-xs">
+                  <p className="text-[10px] text-[#76777d]">Discount {invoice.discount_type === 'percentage' ? `(${invoice.discount_value}%)` : ''}</p>
+                  <p style={{ fontFamily: 'Geist, monospace' }}>-{formatMoney(discountAmount, sym)}</p>
+                </div>
+              </div>
+            )}
             <div className="flex justify-end mb-3">
               <div className="w-full sm:w-2/3 md:w-1/2 print:w-1/2 flex justify-between text-xs">
                 <p className="text-[10px] text-[#76777d]">Tax (0%)</p>
                 <p style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(tax, sym)}</p>
               </div>
             </div>
+            {shippingCost > 0 && (
+              <div className="flex justify-end mb-3">
+                <div className="w-full sm:w-2/3 md:w-1/2 print:w-1/2 flex justify-between text-xs">
+                  <p className="text-[10px] text-[#76777d]">Shipping</p>
+                  <p style={{ fontFamily: 'Geist, monospace' }}>+{formatMoney(shippingCost, sym)}</p>
+                </div>
+              </div>
+            )}
             <div className="flex justify-end">
               <div className="w-full md:w-2/3 print:w-2/3 bg-[#131b2e] py-3 px-4 rounded-lg flex justify-between items-center">
                 <p className="text-[10px] uppercase tracking-wider text-[#bec6e0]">Total</p>

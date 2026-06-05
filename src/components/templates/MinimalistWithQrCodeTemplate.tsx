@@ -1,13 +1,17 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal, getAllItems } from './templateUtils';
+import { TemplateProps, formatDate, formatMoney, getIssueDate, getDueDate, getSubtotal, getDiscountAmount, getShippingCost, getTotal, getAllItems } from './templateUtils';
 
-export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, showGroups , publicUrl }: TemplateProps) {
+export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, showGroups, showGroupTotals, publicUrl }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
-  const dueDate = getDueDate(invoice.createdAt);
+  const issueDate = getIssueDate(invoice);
+  const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
+  const discountAmount = getDiscountAmount(invoice, subtotal);
+  const shippingCost = getShippingCost(invoice);
+  const total = getTotal(invoice);
   const amountPaid = invoice.amountPaid || 0;
-  const balanceDue = Math.max(0, subtotal - amountPaid);
+  const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
 
   return (
@@ -55,7 +59,7 @@ export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, show
           <div className="grid grid-cols-2 gap-8 text-left md:text-right print:text-right">
             <div>
               <h2 className="text-[12px] text-[#45464d] mb-2 uppercase tracking-widest">Issue Date</h2>
-              <p className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(invoice.createdAt)}</p>
+              <p className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(issueDate)}</p>
             </div>
             <div>
               <h2 className="text-[12px] text-[#45464d] mb-2 uppercase tracking-widest">Due Date</h2>
@@ -98,6 +102,13 @@ export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, show
                         </div>
                       </div>
                     ))}
+
+                  {showGroupTotals && (
+                    <div className="flex justify-between items-center px-3 py-0.5 bg-transparent border-t border-slate-100/50">
+                      <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">Group Subtotal</div>
+                      <div className="text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</div>
+                    </div>
+                  )}
                   </div>
                 </div>
               ))
@@ -127,13 +138,27 @@ export function MinimalistWithQrCodeTemplate({ invoice, profile, isPreview, show
               <span>Subtotal</span>
               <span>{formatMoney(subtotal, sym)}</span>
             </div>
-            <div className="w-full md:w-1/2 print:w-1/2 flex justify-between text-sm text-[#45464d]" style={{ fontFamily: 'Geist, monospace' }}>
+            
+              {discountAmount > 0 && (
+                <div className="w-full md:w-1/2 print:w-1/2 flex justify-between text-sm text-[#45464d]" style={{ fontFamily: 'Geist, monospace' }}>
+              <span>Discount {invoice.discount_type === 'percentage' ? `(${invoice.discount_value}%)` : ''}</span>
+              <span>-{formatMoney(discountAmount, sym)}</span>
+            </div>
+              )}
+              <div className="w-full md:w-1/2 print:w-1/2 flex justify-between text-sm text-[#45464d]" style={{ fontFamily: 'Geist, monospace' }}>
               <span>Tax (0%)</span>
               <span>{formatMoney(0, sym)}</span>
             </div>
+              {shippingCost > 0 && (
+                <div className="w-full md:w-1/2 print:w-1/2 flex justify-between text-sm text-[#45464d]" style={{ fontFamily: 'Geist, monospace' }}>
+              <span>Shipping</span>
+              <span>+{formatMoney(shippingCost, sym)}</span>
+            </div>
+              )}
+            
             <div className="w-full md:w-1/2 print:w-1/2 flex justify-between text-2xl font-semibold text-black mt-2 pt-2 border-t border-[#e2e8f0]" style={{ fontFamily: 'Work Sans, sans-serif' }}>
               <span>Total</span>
-              <span>{formatMoney(subtotal, sym)}</span>
+              <span>{formatMoney(total, sym)}</span>
             </div>
               {amountPaid > 0 && (
                 <>

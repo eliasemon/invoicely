@@ -1,13 +1,17 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal, getAllItems } from './templateUtils';
+import { TemplateProps, formatDate, formatMoney, getIssueDate, getDueDate, getSubtotal, getDiscountAmount, getShippingCost, getTotal, getAllItems } from './templateUtils';
 
-export function EnterpriseA4Template({ invoice, profile, showGroups , publicUrl }: TemplateProps) {
+export function EnterpriseA4Template({ invoice, profile, showGroups, showGroupTotals, publicUrl }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
-  const dueDate = getDueDate(invoice.createdAt);
+  const issueDate = getIssueDate(invoice);
+  const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
+  const discountAmount = getDiscountAmount(invoice, subtotal);
+  const shippingCost = getShippingCost(invoice);
+  const total = getTotal(invoice);
   const amountPaid = invoice.amountPaid || 0;
-  const balanceDue = Math.max(0, subtotal - amountPaid);
+  const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
 
   return (
@@ -43,7 +47,7 @@ export function EnterpriseA4Template({ invoice, profile, showGroups , publicUrl 
             {/* Info grid */}
             <div className="grid grid-cols-1 sm:grid-cols-4 print:grid-cols-4 gap-4 sm:gap-6 mb-6 text-sm">
               <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">Invoice To</p><p className="font-semibold text-[#1e293b]">{invoice.clientName}</p><p className="text-xs text-[#64748b] mt-1 whitespace-pre-line">{invoice.clientAddress || invoice.clientPhone}</p></div>
-              <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">Issue Date</p><p className="font-mono">{formatDate(invoice.createdAt)}</p></div>
+              <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">Issue Date</p><p className="font-mono">{formatDate(issueDate)}</p></div>
               <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">Due Date</p><p className="font-mono">{formatDate(dueDate)}</p></div>
               <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">Status</p><span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${invoice.status === 'PAID' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>{invoice.status}</span></div>
             </div>
@@ -75,6 +79,13 @@ export function EnterpriseA4Template({ invoice, profile, showGroups , publicUrl 
                           <td className="py-1.5 px-4 text-right font-semibold text-[#1e293b]">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
                         </tr>
                       ))}
+
+                  {showGroupTotals && (
+                    <tr className="bg-transparent">
+                      <td colSpan={3} className="py-0.5 px-3 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">Group Subtotal</td>
+                      <td className="py-0.5 px-3 text-right text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</td>
+                    </tr>
+                  )}
                     </React.Fragment>
                   ))
                 ) : (
@@ -94,8 +105,16 @@ export function EnterpriseA4Template({ invoice, profile, showGroups , publicUrl 
             <div className="flex justify-end">
               <div className="w-full sm:w-64 print:w-64">
                 <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono border-b border-[#f1f5f9]"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
-                <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono border-b border-[#f1f5f9]"><span>Tax (0%)</span><span>{formatMoney(0, sym)}</span></div>
-                <div className="flex justify-between py-3 mt-1 text-lg font-bold text-[#1e40af] font-mono bg-[#eff6ff] px-3 rounded"><span>Total Due</span><span>{formatMoney(subtotal, sym)}</span></div>
+                
+              {discountAmount > 0 && (
+                <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono border-b border-[#f1f5f9]"><span>Discount {invoice.discount_type === 'percentage' ? `(${invoice.discount_value}%)` : ''}</span><span>-{formatMoney(discountAmount, sym)}</span></div>
+              )}
+              <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono border-b border-[#f1f5f9]"><span>Tax (0%)</span><span>{formatMoney(0, sym)}</span></div>
+              {shippingCost > 0 && (
+                <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono border-b border-[#f1f5f9]"><span>Shipping</span><span>+{formatMoney(shippingCost, sym)}</span></div>
+              )}
+            
+                <div className="flex justify-between py-3 mt-1 text-lg font-bold text-[#1e40af] font-mono bg-[#eff6ff] px-3 rounded"><span>Total Due</span><span>{formatMoney(total, sym)}</span></div>
               {amountPaid > 0 && (
                 <>
                   <div className="flex justify-between py-2 text-sm text-gray-500 font-medium">

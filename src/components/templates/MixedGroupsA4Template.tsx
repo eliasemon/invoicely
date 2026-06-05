@@ -1,13 +1,17 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal } from './templateUtils';
+import { TemplateProps, formatDate, formatMoney, getIssueDate, getDueDate, getSubtotal, getDiscountAmount, getShippingCost, getTotal } from './templateUtils';
 
-export function MixedGroupsA4Template({ invoice, profile , publicUrl }: TemplateProps) {
+export function MixedGroupsA4Template({ invoice, profile , publicUrl , showGroupTotals }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
-  const dueDate = getDueDate(invoice.createdAt);
+  const issueDate = getIssueDate(invoice);
+  const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
+  const discountAmount = getDiscountAmount(invoice, subtotal);
+  const shippingCost = getShippingCost(invoice);
+  const total = getTotal(invoice);
   const amountPaid = invoice.amountPaid || 0;
-  const balanceDue = Math.max(0, subtotal - amountPaid);
+  const balanceDue = Math.max(0, total - amountPaid);
 
   return (
     <div className="bg-[#f8fafc] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
@@ -28,7 +32,7 @@ export function MixedGroupsA4Template({ invoice, profile , publicUrl }: Template
             </div>
             <div className="text-left sm:text-right print:text-right w-full sm:w-auto">
               <p className="text-3xl font-bold font-mono">{invoice.invoiceNumber}</p>
-              <p className="text-sm text-blue-200 mt-1">{formatDate(invoice.createdAt)}</p>
+              <p className="text-sm text-blue-200 mt-1">{formatDate(issueDate)}</p>
             </div>
           </div>
         </div>
@@ -73,6 +77,13 @@ export function MixedGroupsA4Template({ invoice, profile , publicUrl }: Template
                       <p className="font-mono font-semibold text-[#1e293b]">{formatMoney(item.quantity * item.unitPrice, sym)}</p>
                     </div>
                   ))}
+
+                  {showGroupTotals && (
+                    <div className="flex justify-between items-center px-3 py-0.5 bg-transparent border-t border-slate-100/50">
+                      <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">Group Subtotal</div>
+                      <div className="text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</div>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -87,9 +98,17 @@ export function MixedGroupsA4Template({ invoice, profile , publicUrl }: Template
             )}
             <div className="w-full sm:w-64 print:w-64 ml-auto">
               <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
+              
+              {discountAmount > 0 && (
+                <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Discount {invoice.discount_type === 'percentage' ? `(${invoice.discount_value}%)` : ''}</span><span>-{formatMoney(discountAmount, sym)}</span></div>
+              )}
               <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Tax</span><span>{formatMoney(0, sym)}</span></div>
+              {shippingCost > 0 && (
+                <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Shipping</span><span>+{formatMoney(shippingCost, sym)}</span></div>
+              )}
+            
               <div className="flex justify-between py-3 mt-2 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8e] text-white px-4 rounded-lg font-bold font-mono text-lg">
-                <span>Total</span><span>{formatMoney(subtotal, sym)}</span>
+                <span>Total</span><span>{formatMoney(total, sym)}</span>
               </div>
               {amountPaid > 0 && (
                 <>

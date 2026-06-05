@@ -22,6 +22,9 @@ export interface Invoice {
   status: 'DRAFT' | 'PENDING' | 'PAID' | 'UNPAID' | 'PARTIAL';
   amountPaid?: number;
   groups: InvoiceGroup[];
+  discount_type?: 'amount' | 'percentage' | null;
+  discount_value?: number | null;
+  shipping_cost?: number | null;
   
   // Snapshots from Profile at generation time
   currency?: string | null;
@@ -38,6 +41,10 @@ export interface Invoice {
   template?: string;
   notes?: string | null;
   
+  // Dates
+  issued_at?: Date | string | null;
+  due_date?: Date | string | null;
+
   createdAt: Date;
   updatedAt: Date;
 }

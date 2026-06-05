@@ -2,6 +2,7 @@
 import { CustomerDetails } from '@/components/create/CustomerDetails';
 import { LineItemGroup } from '@/components/create/LineItemGroup';
 import { AddActions } from '@/components/create/AddActions';
+import { DiscountShippingInputs } from '@/components/create/DiscountShippingInputs';
 import { InvoiceTotalFooter } from '@/components/create/InvoiceTotalFooter';
 import { useCreateInvoice } from '@/core/contexts/CreateInvoiceContext';
 import { useSearchParams } from 'next/navigation';
@@ -16,7 +17,10 @@ function CreateInvoiceForm() {
     groups, setGroups,
     currency, currencySymbol,
     clientAddress, setClientAddress,
-    setSelectedTemplate
+    setSelectedTemplate,
+    discountType, setDiscountType,
+    discountValue, setDiscountValue,
+    shippingCost, setShippingCost
   } = useCreateInvoice();
 
   const searchParams = useSearchParams();
@@ -34,6 +38,9 @@ function CreateInvoiceForm() {
           setClientAddress(invoice.client_address || '');
           setGroups((invoice.line_items_snapshot as any) || []);
           if (invoice.template) setSelectedTemplate(invoice.template);
+          if (invoice.discount_type) setDiscountType(invoice.discount_type as 'amount' | 'percentage');
+          if (invoice.discount_value) setDiscountValue(invoice.discount_value);
+          if (invoice.shipping_cost) setShippingCost(invoice.shipping_cost);
         }
       }).catch(err => {
         console.error('Failed to load draft invoice', err);
@@ -103,9 +110,15 @@ function CreateInvoiceForm() {
     }
   };
 
-  const totalAmount = groups.reduce((acc, g) => 
+  const subtotal = groups.reduce((acc, g) => 
     acc + g.items.reduce((itemAcc, item) => itemAcc + (item.quantity * item.unitPrice), 0), 
   0);
+
+  const discountAmount = discountType === 'percentage' 
+    ? subtotal * ((discountValue || 0) / 100) 
+    : (discountValue || 0);
+
+  const totalAmount = Math.max(0, subtotal - discountAmount) + (shippingCost || 0);
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-lg pt-sm md:pt-0 pb-[100px]">
@@ -137,9 +150,19 @@ function CreateInvoiceForm() {
         ))}
 
         <AddActions onAddGroup={onAddGroup} onAddItem={onAddItem} />
+        
+        <DiscountShippingInputs />
       </section>
 
-      <InvoiceTotalFooter totalAmount={totalAmount} currency={currency} currencySymbol={currencySymbol} />
+      <InvoiceTotalFooter 
+        totalAmount={totalAmount} 
+        subtotal={subtotal}
+        discountType={discountType}
+        discountValue={discountValue}
+        shippingCost={shippingCost}
+        currency={currency} 
+        currencySymbol={currencySymbol} 
+      />
     </div>
   );
 }

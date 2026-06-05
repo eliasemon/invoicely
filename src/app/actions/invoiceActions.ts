@@ -10,6 +10,9 @@ export async function createInvoice(data: {
   clientAddress?: string;
   template: string;
   groups: GroupData[];
+  discountType?: 'amount' | 'percentage';
+  discountValue?: number;
+  shippingCost?: number;
 }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
@@ -24,9 +27,15 @@ export async function createInvoice(data: {
   const invoiceNumber = `INV-${new Date().getFullYear()}-${String(nextNum).padStart(3, '0')}`;
 
   // 2. Calculate Total
-  const totalAmount = data.groups.reduce((acc, g) => 
+  const subtotal = data.groups.reduce((acc, g) => 
     acc + g.items.reduce((itemAcc, item) => itemAcc + (item.quantity * item.unitPrice), 0), 
   0);
+
+  const discountAmount = data.discountType === 'percentage' 
+    ? subtotal * ((data.discountValue || 0) / 100) 
+    : (data.discountValue || 0);
+
+  const totalAmount = Math.max(0, subtotal - discountAmount) + (data.shippingCost || 0);
 
   // 3. Upsert all unique line items to global catalog
   const uniqueItems = new Map<string, number>();
@@ -55,6 +64,10 @@ export async function createInvoice(data: {
     .eq('id', userId)
     .single();
 
+  const now = new Date();
+  const dueDateValue = new Date(now);
+  dueDateValue.setDate(dueDateValue.getDate() + 30);
+
   const payload = {
       client_name: data.clientName,
       client_phone: data.clientPhone,
@@ -63,6 +76,11 @@ export async function createInvoice(data: {
       template: data.template,
       total_amount: totalAmount,
       line_items_snapshot: data.groups,
+      discount_type: data.discountType || null,
+      discount_value: data.discountValue || null,
+      shipping_cost: data.shippingCost || null,
+      issued_at: now.toISOString(),
+      due_date: dueDateValue.toISOString(),
       
       // Snapshot Profile details if enabled
       currency: profile?.default_currency || 'USD',
@@ -81,7 +99,7 @@ export async function createInvoice(data: {
       bank_account_holder: profile?.bank_enabled ? profile.bank_account_holder : null,
       bank_account_number: profile?.bank_enabled ? profile.bank_account_number : null,
       bank_swift: profile?.bank_enabled ? profile.bank_swift : null,
-      updated_at: new Date().toISOString()
+      updated_at: now.toISOString()
   };
 
   let invoice;
@@ -239,6 +257,9 @@ export async function saveDraftInvoice(data: {
   clientAddress?: string;
   template: string;
   groups: GroupData[];
+  discountType?: 'amount' | 'percentage';
+  discountValue?: number;
+  shippingCost?: number;
 }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
@@ -251,9 +272,15 @@ export async function saveDraftInvoice(data: {
   const nextNum = (count || 0) + 1;
   const invoiceNumber = `INV-${new Date().getFullYear()}-${String(nextNum).padStart(3, '0')}`;
 
-  const totalAmount = data.groups.reduce((acc, g) => 
+  const subtotal = data.groups.reduce((acc, g) => 
     acc + g.items.reduce((itemAcc, item) => itemAcc + (item.quantity * item.unitPrice), 0), 
   0);
+
+  const discountAmount = data.discountType === 'percentage' 
+    ? subtotal * ((data.discountValue || 0) / 100) 
+    : (data.discountValue || 0);
+
+  const totalAmount = Math.max(0, subtotal - discountAmount) + (data.shippingCost || 0);
 
   const { data: profile } = await supabaseAdmin
     .from('profiles')
@@ -269,6 +296,9 @@ export async function saveDraftInvoice(data: {
       template: data.template,
       total_amount: totalAmount,
       line_items_snapshot: data.groups,
+      discount_type: data.discountType || null,
+      discount_value: data.discountValue || null,
+      shipping_cost: data.shippingCost || null,
       amount_paid: 0,
       
       currency: profile?.default_currency || 'USD',

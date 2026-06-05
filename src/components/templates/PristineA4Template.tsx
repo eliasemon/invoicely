@@ -1,13 +1,17 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal, getAllItems } from './templateUtils';
+import { TemplateProps, formatDate, formatMoney, getIssueDate, getDueDate, getSubtotal, getDiscountAmount, getShippingCost, getTotal, getAllItems } from './templateUtils';
 
-export function PristineA4Template({ invoice, profile, showGroups , publicUrl }: TemplateProps) {
+export function PristineA4Template({ invoice, profile, showGroups, showGroupTotals, publicUrl }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
-  const dueDate = getDueDate(invoice.createdAt);
+  const issueDate = getIssueDate(invoice);
+  const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
+  const discountAmount = getDiscountAmount(invoice, subtotal);
+  const shippingCost = getShippingCost(invoice);
+  const total = getTotal(invoice);
   const amountPaid = invoice.amountPaid || 0;
-  const balanceDue = Math.max(0, subtotal - amountPaid);
+  const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
 
   return (
@@ -52,7 +56,7 @@ export function PristineA4Template({ invoice, profile, showGroups , publicUrl }:
             </div>
             <div>
               <p className="text-[11px] text-[#94a3b8] uppercase tracking-wider mb-2">Issue Date</p>
-              <p className="text-sm font-medium" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(invoice.createdAt)}</p>
+              <p className="text-sm font-medium" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(issueDate)}</p>
             </div>
             <div>
               <p className="text-[11px] text-[#94a3b8] uppercase tracking-wider mb-2">Due Date</p>
@@ -87,6 +91,13 @@ export function PristineA4Template({ invoice, profile, showGroups , publicUrl }:
                         <td className="py-1.5 text-right text-sm font-medium text-black">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
                       </tr>
                     ))}
+
+                  {showGroupTotals && (
+                    <tr className="bg-transparent">
+                      <td colSpan={3} className="py-0.5 px-3 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">Group Subtotal</td>
+                      <td className="py-0.5 px-3 text-right text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</td>
+                    </tr>
+                  )}
                   </React.Fragment>
                 ))
               ) : (
@@ -108,11 +119,23 @@ export function PristineA4Template({ invoice, profile, showGroups , publicUrl }:
               <div className="flex justify-between py-2 text-sm text-[#64748b]" style={{ fontFamily: 'Geist, monospace' }}>
                 <span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span>
               </div>
+              
+              {discountAmount > 0 && (
+                <div className="flex justify-between py-2 text-sm text-[#64748b]" style={{ fontFamily: 'Geist, monospace' }}>
+                <span>Discount {invoice.discount_type === 'percentage' ? `(${invoice.discount_value}%)` : ''}</span><span>-{formatMoney(discountAmount, sym)}</span>
+              </div>
+              )}
               <div className="flex justify-between py-2 text-sm text-[#64748b]" style={{ fontFamily: 'Geist, monospace' }}>
                 <span>Tax</span><span>{formatMoney(0, sym)}</span>
               </div>
+              {shippingCost > 0 && (
+                <div className="flex justify-between py-2 text-sm text-[#64748b]" style={{ fontFamily: 'Geist, monospace' }}>
+                <span>Shipping</span><span>+{formatMoney(shippingCost, sym)}</span>
+              </div>
+              )}
+            
               <div className="flex justify-between py-3 mt-2 border-t-2 border-[#0058be] text-lg font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>
-                <span>Total</span><span>{formatMoney(subtotal, sym)}</span>
+                <span>Total</span><span>{formatMoney(total, sym)}</span>
               </div>
               {amountPaid > 0 && (
                 <>

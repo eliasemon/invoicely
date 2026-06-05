@@ -115,11 +115,11 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-sm border-b border-surface-container-high pb-md mb-md">
               <div>
                 <p className="font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase">Issue Date</p>
-                <p className="font-body-md text-body-md text-primary font-medium">{dayjs(invoice.created_at).format('MMM D, YYYY')}</p>
+                <p className="font-body-md text-body-md text-primary font-medium">{dayjs(invoice.issued_at || invoice.created_at).format('MMM D, YYYY')}</p>
               </div>
               <div>
                 <p className="font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase">Due Date</p>
-                <p className="font-body-md text-body-md text-primary font-medium">{dayjs(invoice.created_at).add(30, 'day').format('MMM D, YYYY')}</p>
+                <p className="font-body-md text-body-md text-primary font-medium">{dayjs(invoice.due_date || dayjs(invoice.issued_at || invoice.created_at).add(30, 'day')).format('MMM D, YYYY')}</p>
               </div>
             </div>
 

@@ -1,13 +1,17 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { TemplateProps, formatDate, formatMoney, getDueDate, getSubtotal, getAllItems } from './templateUtils';
+import { TemplateProps, formatDate, formatMoney, getIssueDate, getDueDate, getSubtotal, getDiscountAmount, getShippingCost, getTotal, getAllItems } from './templateUtils';
 
-export function ElegantTemplate({ invoice, profile, isPreview, showGroups , publicUrl }: TemplateProps) {
+export function ElegantTemplate({ invoice, profile, isPreview, showGroups, showGroupTotals, publicUrl }: TemplateProps) {
   const sym = invoice.currency_symbol || '$';
-  const dueDate = getDueDate(invoice.createdAt, 14);
+  const issueDate = getIssueDate(invoice);
+  const dueDate = getDueDate(invoice, 14);
   const subtotal = getSubtotal(invoice);
+  const discountAmount = getDiscountAmount(invoice, subtotal);
+  const shippingCost = getShippingCost(invoice);
+  const total = getTotal(invoice);
   const amountPaid = invoice.amountPaid || 0;
-  const balanceDue = Math.max(0, subtotal - amountPaid);
+  const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
 
   return (
@@ -45,7 +49,7 @@ export function ElegantTemplate({ invoice, profile, isPreview, showGroups , publ
               <span className="text-[12px] text-[#76777d] text-left md:text-right print:text-right">Invoice No.</span>
               <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>{invoice.invoiceNumber || invoice.id?.substring(0, 8).toUpperCase()}</span>
               <span className="text-[12px] text-[#76777d] text-left md:text-right print:text-right">Issue Date</span>
-              <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(invoice.createdAt)}</span>
+              <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(issueDate)}</span>
               <span className="text-[12px] text-[#76777d] text-left md:text-right print:text-right">Due Date</span>
               <span className="text-sm font-semibold" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(dueDate)}</span>
             </div>
@@ -91,6 +95,13 @@ export function ElegantTemplate({ invoice, profile, isPreview, showGroups , publ
                       <div className="col-span-2 text-right text-sm" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(item.quantity * item.unitPrice, sym)}</div>
                     </div>
                   ))}
+
+                  {showGroupTotals && (
+                    <tr className="bg-transparent">
+                      <td colSpan={3} className="py-0.5 px-3 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">Group Subtotal</td>
+                      <td className="py-0.5 px-3 text-right text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</td>
+                    </tr>
+                  )}
                 </React.Fragment>
               ))
             ) : (
@@ -115,13 +126,27 @@ export function ElegantTemplate({ invoice, profile, isPreview, showGroups , publ
               <span className="text-[#565e74]">Subtotal</span>
               <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(subtotal, sym)}</span>
             </div>
-            <div className="flex justify-between py-2 border-b border-[#dce9ff]">
+            
+              {discountAmount > 0 && (
+                <div className="flex justify-between py-2 border-b border-[#dce9ff]">
+              <span className="text-[#565e74]">Discount {invoice.discount_type === 'percentage' ? `(${invoice.discount_value}%)` : ''}</span>
+              <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>-{formatMoney(discountAmount, sym)}</span>
+            </div>
+              )}
+              <div className="flex justify-between py-2 border-b border-[#dce9ff]">
               <span className="text-[#565e74]">Tax (0%)</span>
               <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(0, sym)}</span>
             </div>
+              {shippingCost > 0 && (
+                <div className="flex justify-between py-2 border-b border-[#dce9ff]">
+              <span className="text-[#565e74]">Shipping</span>
+              <span className="text-sm" style={{ fontFamily: 'Geist, monospace' }}>+{formatMoney(shippingCost, sym)}</span>
+            </div>
+              )}
+            
             <div className="flex justify-between py-3 mt-1">
               <span className="text-2xl font-semibold" style={{ fontFamily: 'Work Sans, sans-serif' }}>Total Due</span>
-              <span className="text-2xl font-bold" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(subtotal, sym)}</span>
+              <span className="text-2xl font-bold" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(total, sym)}</span>
             </div>
               {amountPaid > 0 && (
                 <>
