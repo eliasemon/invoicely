@@ -74,6 +74,7 @@ export default function ProfilePage() {
       const tour = driver({
         showProgress: true,
         allowClose: false,
+        allowKeyboardControl: false,
         onDestroyed: () => {
           if (needsOnboarding) {
             // Mark onboarding as completed silently when the user clicks 'Done'
