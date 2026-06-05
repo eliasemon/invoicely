@@ -14,7 +14,7 @@ export interface LineItemData {
 
 interface CatalogItem {
   name: string;
-  unit_price: number;
+  unit_price: Record<string, number>;
 }
 
 interface LineItemProps {
@@ -70,16 +70,22 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
 
   const handleSelectSuggestion = (suggestion: CatalogItem) => {
     updateItem(item.id, 'name', suggestion.name);
-    updateItem(item.id, 'unitPrice', suggestion.unit_price);
+    
+    // Only auto-populate the price if the catalog item has a price for the current currency
+    const priceForCurrency = suggestion.unit_price?.[currency];
+    if (priceForCurrency !== undefined && priceForCurrency !== null) {
+      updateItem(item.id, 'unitPrice', priceForCurrency);
+    }
+    
     setShowSuggestions(false);
   };
 
   const handlePriceChange = async (newPrice: number) => {
     updateItem(item.id, 'unitPrice', newPrice);
-    if (item.name.trim()) {
-      // Update global catalog in background
+    if (item.name.trim() && currency) {
+      // Update global catalog in background for specific currency
       try {
-        await upsertItem(item.name, newPrice);
+        await upsertItem(item.name, newPrice, currency);
       } catch (error) {
         console.error('Error updating global price:', error);
       }
@@ -118,7 +124,9 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
                     onClick={() => handleSelectSuggestion(suggestion)}
                   >
                     <span className="font-body-md text-on-surface">{suggestion.name}</span>
-                    <CurrencyDisplay amount={suggestion.unit_price} currency={currency} currencySymbol={currencySymbol} className="font-data-mono text-on-surface-variant" />
+                    {suggestion.unit_price?.[currency] !== undefined && (
+                      <CurrencyDisplay amount={suggestion.unit_price[currency]} currency={currency} currencySymbol={currencySymbol} className="font-data-mono text-on-surface-variant" />
+                    )}
                   </div>
                 ))
               )}
