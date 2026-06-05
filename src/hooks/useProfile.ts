@@ -40,6 +40,9 @@ export interface UserProfile {
   signature_url: string | null;
   signatory_name: string | null;
   qr_code_enabled: boolean;
+  
+  // Onboarding
+  onboarding_completed?: boolean;
 }
 
 export function useProfile() {

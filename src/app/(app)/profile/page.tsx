@@ -16,6 +16,8 @@ import { getProfile, updateProfile, uploadCompanyLogo, deleteCompanyLogo, upload
 import { UserProfile } from '@/hooks/useProfile';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '@/lib/cropImage';
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -51,6 +53,100 @@ export default function ProfilePage() {
     loadProfile();
   }, []);
 
+  // Initialize tour if user hasn't onboarded
+  useEffect(() => {
+    if (loading) return;
+
+    // Check if it's a new user (no data yet) or onboarding is explicitly false
+    const isNewUser = Object.keys(profile).length === 0;
+    const needsOnboarding = profile.onboarding_completed === false || isNewUser;
+    
+    // Also check URL params just in case they were redirected
+    const urlParams = new URLSearchParams(window.location.search);
+    const isTourRequested = urlParams.get('tour') === 'true';
+
+    if (needsOnboarding || isTourRequested) {
+      // Clean up the URL
+      if (isTourRequested) {
+        window.history.replaceState({}, '', '/profile');
+      }
+
+      const tour = driver({
+        showProgress: true,
+        allowClose: false,
+        onDestroyed: () => {
+          if (needsOnboarding) {
+            // Mark onboarding as completed silently when the user clicks 'Done'
+            // at the final step, so it doesn't trigger again.
+            updateProfile({ onboarding_completed: true }).catch(console.error);
+            setProfile(prev => ({ ...prev, onboarding_completed: true }));
+          }
+        },
+        steps: [
+          { 
+            element: '#profile-header', 
+            popover: { 
+              title: 'Welcome to Invoicely!', 
+              description: 'Let\'s get your profile set up so you can start generating beautiful invoices. We\'ll walk you through the key sections.', 
+              side: "bottom", 
+              align: 'start' 
+            }
+          },
+          { 
+            element: '#business-section', 
+            popover: { 
+              title: 'Business Info', 
+              description: 'Enter your company name, address, and optionally business registration and tax details. These will appear on your invoices.', 
+              side: "top", 
+              align: 'start' 
+            }
+          },
+          { 
+            element: '#regional-section', 
+            popover: { 
+              title: 'Regional Settings', 
+              description: 'Set your default currency. You can still change it per invoice, but this saves time!', 
+              side: "top", 
+              align: 'start' 
+            }
+          },
+          { 
+            element: '#contact-section', 
+            popover: { 
+              title: 'Contact Details', 
+              description: 'Provide the email, phone, and billing address you want your clients to use.', 
+              side: "top", 
+              align: 'start' 
+            }
+          },
+          { 
+            element: '#bank-details-section', 
+            popover: { 
+              title: 'Bank Details', 
+              description: 'Add your bank details so clients know how to pay you. You can turn this on or off anytime.', 
+              side: "top", 
+              align: 'start' 
+            }
+          },
+          { 
+            element: '#save-profile-btn', 
+            popover: { 
+              title: 'Save Profile', 
+              description: 'Once you\'ve filled out everything, click here to save. You\'re all set to start billing!', 
+              side: "top", 
+              align: 'end' 
+            }
+          }
+        ]
+      });
+      
+      // Delay to ensure DOM components are fully rendered
+      setTimeout(() => {
+        tour.drive();
+      }, 500);
+    }
+  }, [loading, profile]);
+
   const handleProfileChange = (updates: Partial<UserProfile>) => {
     setProfile(prev => ({ ...prev, ...updates }));
   };
@@ -60,6 +156,11 @@ export default function ProfilePage() {
     setError(null);
     try {
       let finalProfile = { ...profile };
+
+      // Ensure onboarding is marked completed if they save their profile
+      if (finalProfile.onboarding_completed === false || finalProfile.onboarding_completed === undefined) {
+        finalProfile.onboarding_completed = true;
+      }
 
       // If signature is a newly drawn base64 string, upload it first
       if (finalProfile.signature_url?.startsWith('data:image/')) {
@@ -170,7 +271,7 @@ export default function ProfilePage() {
       <ProfileNav />
       
       <div className="max-w-[800px] mx-auto py-8 md:py-12">
-        <div className="mb-8">
+        <div className="mb-8" id="profile-header">
           <div>
             <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2 font-bold">Company Profile</h1>
             <p className="text-on-surface-variant font-body-md text-body-md">Manage your business details and branding.</p>
@@ -270,6 +371,7 @@ export default function ProfilePage() {
               Close
             </button>
             <button 
+              id="save-profile-btn"
               onClick={handleSave}
               disabled={saving}
               className="w-full bg-primary text-on-primary font-label-sm text-label-sm px-6 py-4 rounded-xl hover:bg-primary-container hover:text-on-primary-container transition-all shadow-md active:scale-[0.98] duration-150 uppercase tracking-widest disabled:opacity-70 flex items-center justify-center gap-2"

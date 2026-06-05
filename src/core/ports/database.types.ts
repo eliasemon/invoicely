@@ -99,6 +99,9 @@ export interface UserProfile {
   // QR Code
   qr_code_enabled: boolean;
   
+  // Onboarding
+  onboarding_completed?: boolean;
+  
   created_at: Date;
   updated_at: Date;
 }
