@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { getProfile } from '@/app/actions/profileActions';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default async function LandingPage() {
   let defaultCurrency = 'USD';
@@ -40,8 +41,8 @@ export default async function LandingPage() {
           style={{ background: 'linear-gradient(135deg, #f7f9fb 0%, #e0e3e5 100%)' }}
         >
           {/* Decorative background elements */}
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary-fixed/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-tertiary-fixed/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary-fixed/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none animate-pulse" style={{ animationDuration: '8s' }}></div>
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-tertiary-fixed/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
           
           <div className="flex-1 flex flex-col justify-center items-center z-10 pt-lg md:pt-0">
             <div className="flex flex-col items-start text-left gap-md">
@@ -60,10 +61,10 @@ export default async function LandingPage() {
                   Get Started - Free
                   <MaterialIcon icon="arrow_forward" className="text-[18px]" />
                 </Link>
-                <button className="bg-transparent border border-outline-variant text-primary font-body-md text-body-md px-md py-sm rounded-lg hover:bg-surface-container transition-colors duration-200 active:scale-95 flex items-center justify-center gap-xs h-12 w-full sm:w-auto">
+                <Link href="/templates" className="bg-transparent border border-outline-variant text-primary font-body-md text-body-md px-md py-sm rounded-lg hover:bg-surface-container transition-colors duration-200 active:scale-95 flex items-center justify-center gap-xs h-12 w-full sm:w-auto">
                   <MaterialIcon icon="visibility" className="text-[18px]" />
-                  Try Live Preview
-                </button>
+                  Explore Templates
+                </Link>
               </div>
               
               <div className="mt-md flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
@@ -134,34 +135,31 @@ export default async function LandingPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-md auto-rows-[240px]">
               {/* Card 1: A4 Optimized */}
-              <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-md shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div className="absolute -right-12 -top-12 w-32 h-32 bg-secondary-container/30 rounded-full blur-2xl group-hover:bg-secondary-container/50 transition-colors"></div>
+              <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-md shadow-sm flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                <div className="absolute -right-12 -top-12 w-32 h-32 bg-secondary-container/30 rounded-full blur-2xl group-hover:bg-secondary-container/60 transition-colors duration-500 group-hover:scale-150"></div>
                 <div className="z-10">
-                  <MaterialIcon icon="description" className="text-primary mb-sm bg-surface-container p-2 rounded-lg" />
+                  <MaterialIcon icon="description" className="text-primary mb-sm bg-surface-container p-2 rounded-lg group-hover:rotate-12 transition-transform duration-300" />
                   <h3 className="font-headline-md text-headline-md text-primary mb-xs">A4 Optimized</h3>
                   <p className="font-body-md text-body-md text-on-surface-variant">Professional templates perfectly scaled for print and PDF generation.</p>
                 </div>
-                <div className="mt-auto z-10 flex items-center text-primary font-label-sm text-label-sm group-hover:translate-x-1 transition-transform cursor-pointer">
+                <Link href="/templates" className="mt-auto z-10 flex items-center text-primary font-label-sm text-label-sm group-hover:translate-x-1 transition-transform cursor-pointer">
                   Explore templates <MaterialIcon icon="arrow_forward" className="text-[16px] ml-1" />
-                </div>
+                </Link>
               </div>
 
-              {/* Card 2: Scan to Pay */}
-              <div className="bg-primary-container text-on-primary-container border border-primary-container rounded-xl p-md shadow-md flex flex-col justify-between md:col-span-2 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-50"></div>
+              {/* Card 2: Scan to Access */}
+              <div className="bg-primary-container text-on-primary-container border border-primary-container rounded-xl p-md shadow-md flex flex-col justify-between md:col-span-2 relative overflow-hidden group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
                 <div className="flex flex-col md:flex-row gap-md h-full z-10">
                   <div className="flex-1 flex flex-col justify-center">
-                    <MaterialIcon icon="qr_code_scanner" className="text-tertiary-fixed mb-sm bg-surface/10 w-fit p-2 rounded-lg" />
-                    <h3 className="font-headline-md text-headline-md text-surface-container-lowest mb-xs">Scan to Pay</h3>
-                    <p className="font-body-md text-body-md text-on-primary-container max-w-[30ch]">Generate secure QR codes directly on your invoices for instant, frictionless settlement.</p>
+                    <MaterialIcon icon="qr_code_scanner" className="text-tertiary-fixed mb-sm bg-surface/10 w-fit p-2 rounded-lg group-hover:rotate-12 transition-transform duration-300" />
+                    <h3 className="font-headline-md text-headline-md text-surface-container-lowest mb-xs">Scan to Access</h3>
+                    <p className="font-body-md text-body-md text-on-primary-container max-w-[30ch]">Generate secure QR codes directly on your invoices so clients can instantly scan and view their digital bills on any device.</p>
                   </div>
                   <div className="flex-1 flex items-center justify-center md:justify-end relative">
-                    <div className="w-32 h-32 bg-surface-container-lowest rounded-xl p-2 shadow-xl transform group-hover:scale-105 transition-transform flex flex-col items-center justify-center gap-2">
-                      <div className="w-full h-full border-4 border-primary rounded-lg p-1 flex flex-wrap gap-1">
-                        <div className="w-6 h-6 bg-primary rounded-sm"></div>
-                        <div className="w-6 h-6 bg-primary rounded-sm ml-auto"></div>
-                        <div className="w-full flex-1 bg-surface-variant rounded-sm flex items-center justify-center font-mono text-[8px] text-on-surface-variant overflow-hidden">DATA</div>
-                        <div className="w-6 h-6 bg-primary rounded-sm"></div>
+                    <div className="w-32 h-32 bg-surface-container-lowest rounded-xl p-3 shadow-xl transform group-hover:scale-110 transition-transform duration-500 flex flex-col items-center justify-center">
+                      <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                        <QRCodeSVG value="https://invoicely.app/preview" size={104} fgColor="#041627" bgColor="transparent" className="group-hover:animate-pulse" style={{ animationDuration: '2s' }} />
                       </div>
                     </div>
                   </div>
@@ -169,11 +167,11 @@ export default async function LandingPage() {
               </div>
 
               {/* Card 3: Global Ready */}
-              <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-md shadow-sm flex flex-col justify-between md:col-span-3 hover:shadow-md transition-shadow">
+              <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-md shadow-sm flex flex-col justify-between md:col-span-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
                 <div className="flex flex-col md:flex-row items-center gap-md">
                   <div className="flex-1">
                     <div className="flex items-center gap-sm mb-sm">
-                      <MaterialIcon icon="public" className="text-primary bg-surface-container p-2 rounded-lg" />
+                      <MaterialIcon icon="public" className="text-primary bg-surface-container p-2 rounded-lg group-hover:rotate-12 transition-transform duration-300" />
                       <h3 className="font-headline-md text-headline-md text-primary">Global Ready</h3>
                     </div>
                     <p className="font-body-md text-body-md text-on-surface-variant max-w-[40ch]">Multi-currency support with real-time symbol mapping and dynamic exchange rate calculations.</p>

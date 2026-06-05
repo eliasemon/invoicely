@@ -26,6 +26,8 @@ export function InvoiceCard({ invoiceId, id, clientName, amount, status, date, p
   const router = useRouter();
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [paymentNote, setPaymentNote] = useState('');
   
   const remainingAmount = amount - amountPaid;
   const [paymentAmount, setPaymentAmount] = useState(remainingAmount > 0 ? remainingAmount : amount);
@@ -34,8 +36,10 @@ export function InvoiceCard({ invoiceId, id, clientName, amount, status, date, p
     if (!paymentAmount || paymentAmount <= 0) return;
     setIsSubmitting(true);
     try {
-      await recordPayment(invoiceId, paymentAmount);
+      await recordPayment(invoiceId, paymentAmount, paymentNote);
       setShowPaymentForm(false);
+      setShowNotes(false);
+      setPaymentNote('');
       router.refresh();
     } catch (e) {
       console.error(e);
@@ -139,6 +143,25 @@ export function InvoiceCard({ invoiceId, id, clientName, amount, status, date, p
                   >
                     {isSubmitting ? 'Saving...' : 'Confirm'}
                   </button>
+                </div>
+                
+                <div className="flex flex-col mt-2">
+                  <button 
+                    onClick={() => setShowNotes(!showNotes)}
+                    className="flex items-center text-primary font-label-sm w-fit gap-1 hover:underline focus:outline-none"
+                  >
+                    <MaterialIcon icon={showNotes ? "expand_less" : "expand_more"} className="text-[16px]" />
+                    {showNotes ? 'Hide Note' : 'Add Note (Optional)'}
+                  </button>
+                  {showNotes && (
+                    <textarea
+                      placeholder="Add comments or notes..."
+                      value={paymentNote}
+                      onChange={(e) => setPaymentNote(e.target.value)}
+                      className="mt-2 w-full p-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-sm resize-none"
+                      rows={2}
+                    />
+                  )}
                 </div>
               </div>
             )}

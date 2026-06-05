@@ -8,6 +8,8 @@ import { saveDraftInvoice } from '@/app/actions/invoiceActions';
 interface CreateInvoiceContextType {
   draftInvoiceId: string | null;
   setDraftInvoiceId: (id: string | null) => void;
+  clientId: string | undefined;
+  setClientId: (id: string | undefined) => void;
   clientName: string;
   setClientName: (name: string) => void;
   mobileNumber: string;
@@ -33,6 +35,7 @@ const CreateInvoiceContext = createContext<CreateInvoiceContextType | undefined>
 export function CreateInvoiceProvider({ children, initialCurrency, initialCurrencySymbol }: { children: ReactNode, initialCurrency?: string, initialCurrencySymbol?: string }) {
   const { profile } = useProfile();
   const [draftInvoiceId, setDraftInvoiceId] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | undefined>(undefined);
   const [clientName, setClientName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [clientAddress, setClientAddress] = useState('');
@@ -77,6 +80,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
       try {
         const invoice = await saveDraftInvoice({
           invoiceId: draftIdRef.current || undefined,
+          clientId,
           clientName,
           clientPhone: mobileNumber,
           clientAddress,
@@ -96,11 +100,12 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost]);
+  }, [clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost]);
 
   return (
     <CreateInvoiceContext.Provider value={{
       draftInvoiceId, setDraftInvoiceId,
+      clientId, setClientId,
       clientName, setClientName,
       mobileNumber, setMobileNumber,
       clientAddress, setClientAddress,

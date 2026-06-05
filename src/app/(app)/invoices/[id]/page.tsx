@@ -8,6 +8,7 @@ import { revalidatePath } from 'next/cache';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import Link from 'next/link';
 import { DeleteInvoiceButton } from '@/components/invoices/DeleteInvoiceButton';
+import { MobileRecordPaymentButton } from '@/components/invoices/MobileRecordPaymentButton';
 
 export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -38,6 +39,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   const handlePayment = async (formData: FormData) => {
     'use server';
     const amountStr = formData.get('amount') as string;
+    const noteStr = formData.get('note') as string;
     let amountToPay = Number(amountStr);
     
     if (isNaN(amountToPay) || amountToPay <= 0) return;
@@ -45,7 +47,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
       amountToPay = remainingAmount;
     }
 
-    await recordPayment(invoice.id, amountToPay);
+    await recordPayment(invoice.id, amountToPay, noteStr);
     revalidatePath(`/invoices/${id}`);
   };
 
@@ -195,7 +197,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
           </section>
 
           {/* Action Area */}
-          <section className="bg-surface-container-lowest rounded-xl shadow-level1 border border-surface-variant p-md">
+          <section id="record-payment-section" className="bg-surface-container-lowest rounded-xl shadow-level1 border border-surface-variant p-md scroll-mt-24">
             <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-md uppercase">Record Payment</h3>
             
             {invoice.status !== 'PAID' ? (
@@ -217,6 +219,21 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                   <p className="font-label-sm text-label-sm text-on-surface-variant mt-1">
                     Remaining balance: <CurrencyDisplay amount={remainingAmount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
                   </p>
+                  
+                  <details className="mt-2 group">
+                    <summary className="flex items-center text-primary font-label-sm w-fit gap-1 hover:underline focus:outline-none cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                      <MaterialIcon icon="expand_more" className="text-[16px] group-open:hidden" />
+                      <MaterialIcon icon="expand_less" className="text-[16px] hidden group-open:block" />
+                      <span className="group-open:hidden">Add Note (Optional)</span>
+                      <span className="hidden group-open:inline">Hide Note</span>
+                    </summary>
+                    <textarea
+                      name="note"
+                      placeholder="Add comments or notes..."
+                      className="mt-2 w-full p-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-sm resize-none"
+                      rows={2}
+                    />
+                  </details>
                 </div>
                 
                 <button type="submit" className="w-full bg-primary hover:bg-on-primary-fixed text-on-primary font-label-sm text-label-sm py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 active:scale-[0.98]">
@@ -234,8 +251,39 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               </div>
             )}
           </section>
+
+          {/* Payment History */}
+          {invoice.logs && invoice.logs.length > 0 && (
+            <section className="bg-surface-container-lowest rounded-xl shadow-level1 border border-surface-variant p-md">
+              <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-md uppercase">Payment History</h3>
+              <div className="flex flex-col gap-sm">
+                {[...invoice.logs].reverse().map((log: any, idx: number) => (
+                  <div key={idx} className="flex justify-between items-start border-b border-surface-container-high last:border-0 pb-sm last:pb-0">
+                    <div>
+                      <p className="font-body-md text-primary font-medium">
+                        <CurrencyDisplay amount={log.amount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
+                      </p>
+                      <p className="font-label-sm text-on-surface-variant">
+                        {dayjs(log.date).format('MMM D, YYYY h:mm A')}
+                      </p>
+                      {log.note && (
+                        <p className="font-body-sm text-on-surface-variant mt-1 italic">
+                          "{log.note}"
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </main>
+
+      {/* Floating Action Button for Mobile */}
+      {invoice.status !== 'PAID' && (
+        <MobileRecordPaymentButton />
+      )}
     </div>
   );
 }

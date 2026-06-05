@@ -1,7 +1,7 @@
 'use client';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 
-interface TemplateOption {
+export interface TemplateOption {
   id: string;
   name: string;
   image?: string;
@@ -13,8 +13,7 @@ interface TemplateSelectorProps {
   onSelect: (id: string) => void;
 }
 
-export function TemplateSelector({ selectedTemplate, onSelect }: Readonly<TemplateSelectorProps>) {
-  const getWireframeForTemplate = (id: string) => {
+export const getWireframeForTemplateInternal = (id: string) => {
     switch (id) {
       case 'modern-purple':
         return (
@@ -90,25 +89,28 @@ export function TemplateSelector({ selectedTemplate, onSelect }: Readonly<Templa
           </div>
         );
     }
-  };
+};
 
-  const templates: TemplateOption[] = [
-    { id: 'corporate-template', name: 'Corporate', wireframe: getWireframeForTemplate('corporate-template') },
-    { id: 'elegant-template', name: 'Elegant', wireframe: getWireframeForTemplate('elegant-template') },
-    { id: 'modern-template', name: 'Modern', wireframe: getWireframeForTemplate('modern-template') },
-    { id: 'minimalist-with-qr-code', name: 'Minimalist QR', wireframe: getWireframeForTemplate('minimalist-with-qr-code') },
-    { id: 'pristine-a4', name: 'Pristine (A4)', wireframe: getWireframeForTemplate('pristine-a4') },
-    { id: 'grouped-fintech-a4', name: 'Grouped Fintech', wireframe: getWireframeForTemplate('grouped-fintech-a4') },
-    { id: 'high-density-flat-a4', name: 'High Density', wireframe: getWireframeForTemplate('high-density-flat-a4') },
-    { id: 'mixed-groups-a4', name: 'Mixed Groups', wireframe: getWireframeForTemplate('mixed-groups-a4') },
-    { id: 'red-classic-grouped', name: 'Red Classic', wireframe: getWireframeForTemplate('red-classic-grouped') },
-    { id: 'geometric-a4', name: 'Geometric', wireframe: getWireframeForTemplate('geometric-a4') },
-    { id: 'fintech-a4', name: 'Fintech (A4)', wireframe: getWireframeForTemplate('fintech-a4') },
-    { id: 'heritage-a4', name: 'Heritage (A4)', wireframe: getWireframeForTemplate('heritage-a4') },
-    { id: 'sleek-accent', name: 'Sleek Accent', wireframe: getWireframeForTemplate('sleek-accent') },
-    { id: 'modern-purple', name: 'Modern Purple', wireframe: getWireframeForTemplate('modern-purple') },
-    { id: 'enterprise-a4', name: 'Enterprise (A4)', wireframe: getWireframeForTemplate('enterprise-a4') },
-  ];
+export const availableTemplates: TemplateOption[] = [
+  { id: 'corporate-template', name: 'Corporate', wireframe: getWireframeForTemplateInternal('corporate-template') },
+  { id: 'elegant-template', name: 'Elegant', wireframe: getWireframeForTemplateInternal('elegant-template') },
+  { id: 'modern-template', name: 'Modern', wireframe: getWireframeForTemplateInternal('modern-template') },
+  { id: 'minimalist-with-qr-code', name: 'Minimalist QR', wireframe: getWireframeForTemplateInternal('minimalist-with-qr-code') },
+  { id: 'pristine-a4', name: 'Pristine (A4)', wireframe: getWireframeForTemplateInternal('pristine-a4') },
+  { id: 'grouped-fintech-a4', name: 'Grouped Fintech', wireframe: getWireframeForTemplateInternal('grouped-fintech-a4') },
+  { id: 'high-density-flat-a4', name: 'High Density', wireframe: getWireframeForTemplateInternal('high-density-flat-a4') },
+  { id: 'mixed-groups-a4', name: 'Mixed Groups', wireframe: getWireframeForTemplateInternal('mixed-groups-a4') },
+  { id: 'red-classic-grouped', name: 'Red Classic', wireframe: getWireframeForTemplateInternal('red-classic-grouped') },
+  { id: 'geometric-a4', name: 'Geometric', wireframe: getWireframeForTemplateInternal('geometric-a4') },
+  { id: 'fintech-a4', name: 'Fintech (A4)', wireframe: getWireframeForTemplateInternal('fintech-a4') },
+  { id: 'heritage-a4', name: 'Heritage (A4)', wireframe: getWireframeForTemplateInternal('heritage-a4') },
+  { id: 'sleek-accent', name: 'Sleek Accent', wireframe: getWireframeForTemplateInternal('sleek-accent') },
+  { id: 'modern-purple', name: 'Modern Purple', wireframe: getWireframeForTemplateInternal('modern-purple') },
+  { id: 'enterprise-a4', name: 'Enterprise (A4)', wireframe: getWireframeForTemplateInternal('enterprise-a4') },
+];
+
+export function TemplateSelector({ selectedTemplate, onSelect }: Readonly<TemplateSelectorProps>) {
+  const templates = availableTemplates;
 
   return (
     <section>

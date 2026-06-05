@@ -12,6 +12,7 @@ import { getInvoice } from '@/app/actions/invoiceActions';
 function CreateInvoiceForm() {
   const { 
     draftInvoiceId, setDraftInvoiceId,
+    clientId, setClientId,
     clientName, setClientName,
     mobileNumber, setMobileNumber,
     groups, setGroups,
@@ -33,6 +34,7 @@ function CreateInvoiceForm() {
       getInvoice(id).then(invoice => {
         if (invoice && invoice.status === 'DRAFT') {
           setDraftInvoiceId(invoice.id);
+          if (invoice.client_id) setClientId(invoice.client_id);
           setClientName(invoice.client_name || '');
           setMobileNumber(invoice.client_phone || '');
           setClientAddress(invoice.client_address || '');
@@ -129,6 +131,8 @@ function CreateInvoiceForm() {
       </section>
 
       <CustomerDetails 
+        clientId={clientId}
+        setClientId={setClientId}
         clientName={clientName} 
         setClientName={setClientName} 
         mobileNumber={mobileNumber} 

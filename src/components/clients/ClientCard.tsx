@@ -4,6 +4,7 @@ import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import { CurrencySummary } from '@/app/actions/clientActions';
 
 interface ClientCardProps {
+  id: string;
   name: string;
   phone: string;
   invoiceCount: number;
@@ -11,6 +12,7 @@ interface ClientCardProps {
 }
 
 export function ClientCard({
+  id,
   name,
   phone,
   invoiceCount,
@@ -20,7 +22,7 @@ export function ClientCard({
   const currencyList = Object.values(currencies);
 
   return (
-    <Link href={`/clients/${encodeURIComponent(name)}`} className="block group">
+    <Link href={`/clients/${encodeURIComponent(id)}`} className="block group">
       <div className="bg-surface-container-lowest rounded-2xl p-lg border border-outline-variant shadow-[0_4px_12px_rgba(26,43,60,0.03)] hover:shadow-[0_8px_24px_rgba(26,43,60,0.08)] flex flex-col gap-md transition-all duration-300 hover:-translate-y-1 h-full">
         
         {/* Header: Name and Badge */}

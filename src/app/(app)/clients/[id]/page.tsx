@@ -9,17 +9,19 @@ import { ClientHeader } from '@/components/clients/ClientHeader';
 import dayjs from 'dayjs';
 import { notFound } from 'next/navigation';
 
-export async function generateMetadata({ params }: { params: Promise<{ name: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
-  const decodedName = decodeURIComponent(resolvedParams.name);
+  const clientId = resolvedParams.id;
+  const clientSummary = await getClientSummary(clientId);
+  
   return {
-    title: `${decodedName} | Invoicely Clients`,
+    title: `${clientSummary?.name || 'Client'} | Invoicely Clients`,
   };
 }
 
 export default async function ClientDetailsPage(
   props: {
-    params: Promise<{ name: string }>;
+    params: Promise<{ id: string }>;
     searchParams?: Promise<{
       search?: string;
       status?: string;
@@ -27,13 +29,13 @@ export default async function ClientDetailsPage(
   }
 ) {
   const resolvedParams = await props.params;
-  const decodedName = decodeURIComponent(resolvedParams.name);
+  const clientId = resolvedParams.id;
   const searchParams = await props.searchParams;
   
   const [clientSummary, allInvoices] = await Promise.all([
-    getClientSummary(decodedName),
+    getClientSummary(clientId),
     getInvoices({
-      clientName: decodedName,
+      clientId: clientId,
       search: searchParams?.search,
       status: searchParams?.status,
     })
@@ -58,6 +60,7 @@ export default async function ClientDetailsPage(
   return (
     <div className="flex-1 flex flex-col w-full max-w-4xl mx-auto">
       <ClientHeader 
+        id={clientSummary.id}
         name={clientSummary.name}
         phone={clientSummary.phone}
         address={clientSummary.address}

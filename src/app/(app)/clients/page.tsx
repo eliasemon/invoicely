@@ -31,7 +31,8 @@ export default async function ClientsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
         {clients.map((client) => (
           <ClientCard 
-            key={client.name}
+            key={client.id}
+            id={client.id}
             name={client.name}
             phone={client.phone}
             invoiceCount={client.invoiceCount}

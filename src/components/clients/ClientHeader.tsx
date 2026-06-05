@@ -1,9 +1,14 @@
+'use client';
+
+import { useState } from 'react';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import { CurrencySummary } from '@/app/actions/clientActions';
+import { EditClientDialog } from '@/components/clients/EditClientDialog';
 import Link from 'next/link';
 
 interface ClientHeaderProps {
+  id: string;
   name: string;
   phone: string;
   address: string;
@@ -12,12 +17,14 @@ interface ClientHeaderProps {
 }
 
 export function ClientHeader({
+  id,
   name,
   phone,
   address,
   invoiceCount,
   currencies
 }: Readonly<ClientHeaderProps>) {
+  const [isEditing, setIsEditing] = useState(false);
   
   const currencyList = Object.values(currencies);
 
@@ -34,9 +41,18 @@ export function ClientHeader({
             <h1 className="font-display-sm text-display-sm md:font-display-md md:text-display-md text-primary">{name}</h1>
           </div>
         </div>
-        <div className="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full flex items-center gap-2">
-          <MaterialIcon icon="receipt_long" className="text-[18px]" />
-          <span className="font-label-lg text-label-lg font-semibold">{invoiceCount} Invoices</span>
+        <div className="flex items-center gap-3">
+          <div className="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full flex items-center gap-2">
+            <MaterialIcon icon="receipt_long" className="text-[18px]" />
+            <span className="font-label-lg text-label-lg font-semibold">{invoiceCount} Invoices</span>
+          </div>
+          <button 
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-2 bg-surface-container-high hover:bg-surface-variant text-primary px-4 py-2 rounded-full transition-colors font-label-lg font-semibold shadow-sm"
+          >
+            <MaterialIcon icon="edit" className="text-[18px]" />
+            Edit
+          </button>
         </div>
       </div>
 
@@ -136,6 +152,16 @@ export function ClientHeader({
         </div>
 
       </div>
+
+      {isEditing && (
+        <EditClientDialog 
+          id={id}
+          name={name}
+          phone={phone}
+          address={address}
+          onClose={() => setIsEditing(false)}
+        />
+      )}
     </div>
   );
 }

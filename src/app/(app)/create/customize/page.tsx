@@ -12,7 +12,7 @@ import { InvoiceTemplateRenderer } from '@/components/templates/InvoiceTemplateR
 
 export default function CustomizeInvoicePage() {
   const router = useRouter();
-  const { draftInvoiceId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, setSelectedTemplate, discountType, discountValue, shippingCost } = useCreateInvoice();
+  const { draftInvoiceId, clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, setSelectedTemplate, discountType, discountValue, shippingCost } = useCreateInvoice();
   const { profile } = useProfile();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -24,6 +24,7 @@ export default function CustomizeInvoicePage() {
   const mockInvoice = {
     id: draftInvoiceId || 'preview',
     userId: profile?.id || '',
+    clientId: clientId || null,
     invoiceNumber: 'INV-PREVIEW',
     clientName: clientName || 'Client Name',
     clientPhone: mobileNumber || '',
@@ -51,6 +52,7 @@ export default function CustomizeInvoicePage() {
     try {
       const invoice = await createInvoice({
         invoiceId: draftInvoiceId || undefined,
+        clientId,
         clientName,
         clientPhone: mobileNumber,
         clientAddress,
@@ -73,6 +75,7 @@ export default function CustomizeInvoicePage() {
     try {
       const invoice = await saveDraftInvoice({
         invoiceId: draftInvoiceId || undefined,
+        clientId,
         clientName,
         clientPhone: mobileNumber,
         clientAddress,

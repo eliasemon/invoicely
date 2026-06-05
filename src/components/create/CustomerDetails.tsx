@@ -6,6 +6,8 @@ import 'react-phone-number-input/style.css';
 import { searchClients } from '@/app/actions/invoiceActions';
 
 interface CustomerDetailsProps {
+  clientId?: string;
+  setClientId?: (id: string | undefined) => void;
   clientName: string;
   setClientName: (name: string) => void;
   mobileNumber: string;
@@ -15,12 +17,14 @@ interface CustomerDetailsProps {
 }
 
 interface ClientSuggestion {
+  id: string;
   name: string;
   phone: string;
   address: string;
 }
 
 export function CustomerDetails({ 
+  clientId, setClientId,
   clientName, setClientName, 
   mobileNumber, setMobileNumber,
   clientAddress = '', setClientAddress = () => {}
@@ -47,6 +51,7 @@ export function CustomerDetails({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setClientName(val);
+    if (setClientId) setClientId(undefined); // Reset client ID when typing
     
     if (val.trim().length >= 2) {
       setIsSearching(true);
@@ -73,6 +78,7 @@ export function CustomerDetails({
   };
 
   const handleSelectSuggestion = (client: ClientSuggestion) => {
+    if (setClientId) setClientId(client.id);
     setClientName(client.name);
     if (client.phone) setMobileNumber(client.phone);
     if (client.address && setClientAddress) setClientAddress(client.address);

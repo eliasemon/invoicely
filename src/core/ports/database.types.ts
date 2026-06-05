@@ -14,6 +14,7 @@ export interface InvoiceGroup {
 export interface Invoice {
   id: string;
   userId: string;
+  clientId?: string | null;
   invoiceNumber: string;
   clientName: string;
   clientPhone: string;
@@ -51,13 +52,13 @@ export interface Invoice {
 
 export interface Client {
   id: string;
-  userId: string;
+  profile_id: string;
   name: string;
-  email: string;
-  phone: string;
-  address: string;
-  createdAt: Date;
-  updatedAt: Date;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  created_at: Date | string;
+  updated_at: Date | string;
 }
 
 export interface UserProfile {

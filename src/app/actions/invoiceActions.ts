@@ -3,8 +3,36 @@
 import { supabaseAdmin, getUserId } from '@/lib/supabase/admin';
 import { GroupData } from '@/components/create/LineItemGroup';
 
+async function resolveClientId(userId: string, data: { clientId?: string, clientName: string, clientPhone?: string, clientAddress?: string }) {
+  if (data.clientId) return data.clientId;
+  if (!data.clientName) return null;
+  
+  const { data: existing } = await supabaseAdmin
+    .from('clients')
+    .select('id')
+    .eq('profile_id', userId)
+    .ilike('name', data.clientName.trim())
+    .maybeSingle();
+    
+  if (existing) return existing.id;
+  
+  const { data: newClient } = await supabaseAdmin
+    .from('clients')
+    .insert({
+      profile_id: userId,
+      name: data.clientName.trim(),
+      phone: data.clientPhone || null,
+      address: data.clientAddress || null
+    })
+    .select('id')
+    .single();
+    
+  return newClient?.id || null;
+}
+
 export async function createInvoice(data: {
   invoiceId?: string;
+  clientId?: string;
   clientName: string;
   clientPhone: string;
   clientAddress?: string;
@@ -67,8 +95,11 @@ export async function createInvoice(data: {
   const now = new Date();
   const dueDateValue = new Date(now);
   dueDateValue.setDate(dueDateValue.getDate() + 30);
+  
+  const resolvedClientId = await resolveClientId(userId, data);
 
   const payload = {
+      client_id: resolvedClientId,
       client_name: data.clientName,
       client_phone: data.clientPhone,
       client_address: data.clientAddress || null,
@@ -137,7 +168,7 @@ export async function createInvoice(data: {
   return invoice;
 }
 
-export async function getInvoices(filters?: { search?: string, status?: string, clientName?: string }) {
+export async function getInvoices(filters?: { search?: string, status?: string, clientName?: string, clientId?: string }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
 
@@ -151,7 +182,9 @@ export async function getInvoices(filters?: { search?: string, status?: string, 
     query = query.eq('status', filters.status.toUpperCase());
   }
 
-  if (filters?.clientName) {
+  if (filters?.clientId) {
+    query = query.eq('client_id', filters.clientId);
+  } else if (filters?.clientName) {
     query = query.eq('client_name', filters.clientName);
   }
 
@@ -236,13 +269,12 @@ export async function searchClients(query: string) {
 
   if (!query || query.trim().length < 2) return [];
 
-  // Query distinct clients based on name or phone from previous invoices
   const { data, error } = await supabaseAdmin
-    .from('invoices')
-    .select('client_name, client_phone, client_address')
+    .from('clients')
+    .select('id, name, phone, address')
     .eq('profile_id', userId)
-    .or(`client_name.ilike.%${query}%,client_phone.ilike.%${query}%`)
-    .order('created_at', { ascending: false })
+    .ilike('name', `%${query}%`)
+    .order('name', { ascending: true })
     .limit(20);
 
   if (error) {
@@ -250,23 +282,12 @@ export async function searchClients(query: string) {
     return [];
   }
 
-  // Deduplicate by name
-  const uniqueClients = new Map<string, any>();
-  data?.forEach(row => {
-    if (row.client_name && !uniqueClients.has(row.client_name)) {
-      uniqueClients.set(row.client_name, {
-        name: row.client_name,
-        phone: row.client_phone || '',
-        address: row.client_address || ''
-      });
-    }
-  });
-
-  return Array.from(uniqueClients.values());
+  return data || [];
 }
 
 export async function saveDraftInvoice(data: {
   invoiceId?: string;
+  clientId?: string;
   clientName: string;
   clientPhone: string;
   clientAddress?: string;
@@ -302,8 +323,11 @@ export async function saveDraftInvoice(data: {
     .select('*')
     .eq('id', userId)
     .single();
+    
+  const resolvedClientId = await resolveClientId(userId, data);
 
   const payload = {
+      client_id: resolvedClientId,
       client_name: data.clientName,
       client_phone: data.clientPhone,
       client_address: data.clientAddress || null,
@@ -370,14 +394,14 @@ export async function saveDraftInvoice(data: {
   return invoice;
 }
 
-export async function recordPayment(id: string, amount: number) {
+export async function recordPayment(id: string, amount: number, note?: string) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
 
   // Fetch current invoice to calculate new status
   const { data: invoice, error: fetchError } = await supabaseAdmin
     .from('invoices')
-    .select('total_amount, amount_paid')
+    .select('*')
     .eq('id', id)
     .eq('profile_id', userId)
     .single();
@@ -396,11 +420,22 @@ export async function recordPayment(id: string, amount: number) {
     newStatus = 'UNPAID';
   }
 
+  const paymentLog = {
+    amount,
+    note: note || '',
+    date: new Date().toISOString(),
+    invoice_snapshot: invoice
+  };
+
+  const currentLogs = invoice.logs || [];
+  const newLogs = [...currentLogs, paymentLog];
+
   const { error } = await supabaseAdmin
     .from('invoices')
     .update({ 
       amount_paid: newAmountPaid, 
       status: newStatus,
+      logs: newLogs,
       updated_at: new Date().toISOString() 
     })
     .eq('id', id)
