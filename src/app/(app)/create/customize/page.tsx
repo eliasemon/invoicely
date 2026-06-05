@@ -178,7 +178,7 @@ export default function CustomizeInvoicePage() {
                   invoice={mockInvoice} 
                   profile={profile}
                   isPreview={true}
-                  publicUrl="https://invoicely.app/public/invoice/mock-12345"
+                  publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || ''}/public/invoice/mock-12345`}
                 />
               </div>
             </div>

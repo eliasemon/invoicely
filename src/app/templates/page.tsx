@@ -211,7 +211,7 @@ export default function TemplatesGalleryPage() {
                         invoice={mockInvoice} 
                         profile={mockProfile}
                         isPreview={true}
-                        publicUrl="https://invoicely.app/public/invoice/demo-123"
+                        publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || ''}/public/invoice/demo-123`}
                       />
                     </div>
                   </TransformComponent>

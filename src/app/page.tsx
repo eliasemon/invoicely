@@ -159,7 +159,7 @@ export default async function LandingPage() {
                   <div className="flex-1 flex items-center justify-center md:justify-end relative">
                     <div className="w-32 h-32 bg-surface-container-lowest rounded-xl p-3 shadow-xl transform group-hover:scale-110 transition-transform duration-500 flex flex-col items-center justify-center">
                       <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity duration-300">
-                        <QRCodeSVG value="https://invoicely.app/preview" size={104} fgColor="#041627" bgColor="transparent" className="group-hover:animate-pulse" style={{ animationDuration: '2s' }} />
+                        <QRCodeSVG value={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || ''}/preview`} size={104} fgColor="#041627" bgColor="transparent" className="group-hover:animate-pulse" style={{ animationDuration: '2s' }} />
                       </div>
                     </div>
                   </div>
