@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 interface FilterChipsProps {
   onFilterChange?: (filter: string) => void;
@@ -9,10 +9,20 @@ interface FilterChipsProps {
 const filters = ['All', 'Paid', 'Unpaid', 'Partial', 'Draft'];
 
 export function FilterChips({ onFilterChange }: Readonly<FilterChipsProps>) {
-  const [active, setActive] = useState('All');
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const active = searchParams.get('status') || 'All';
 
   const handleClick = (filter: string) => {
-    setActive(filter);
+    const params = new URLSearchParams(searchParams);
+    if (filter === 'All') {
+      params.delete('status');
+    } else {
+      params.set('status', filter);
+    }
+    replace(`${pathname}?${params.toString()}`);
     if (onFilterChange) onFilterChange(filter);
   };
 

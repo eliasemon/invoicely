@@ -5,6 +5,7 @@ import { InvoiceListItem } from '@/components/dashboard/InvoiceListItem';
 import { getInvoices } from '@/app/actions/invoiceActions';
 import { getProfile } from '@/app/actions/profileActions';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
+import { SearchBar } from '@/components/invoices/SearchBar';
 import Link from 'next/link';
 import dayjs from 'dayjs';
 import { StatusType } from '@/components/shared/StatusBadge';
@@ -17,8 +18,13 @@ interface CurrencyStats {
   paidCount: number;
 }
 
-export default async function DashboardPage() {
-  const allInvoices = await getInvoices();
+export default async function DashboardPage(
+  props: {
+    searchParams?: Promise<{ search?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const allInvoices = await getInvoices({ search: searchParams?.search });
   
   let defaultCurrency = 'USD';
   let defaultCurrencySymbol: string | undefined = undefined;
@@ -71,69 +77,71 @@ export default async function DashboardPage() {
     <>
       {/* Search Section */}
       <section className="w-full">
-        <div className="relative">
-          <MaterialIcon icon="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
-          <input 
-            className="w-full bg-surface-container-lowest border border-outline-variant rounded-full py-3 pl-10 pr-4 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors shadow-[0_4px_12px_rgba(26,43,60,0.05)]" 
-            placeholder="Search invoices by ID, name, or phone..." 
-            type="text" 
-          />
-        </div>
+        <SearchBar placeholder="Search invoices by ID, name, or phone..." />
       </section>
 
       {/* Summary Cards - grouped by currency */}
-      {currencyEntries.map(([cur, stats]) => (
-        <section key={cur} className="space-y-xs">
-          {currencyEntries.length > 1 && (
-            <h3 className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider px-1">{cur} Summary</h3>
-          )}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-sm">
-            <SummaryCard 
-              title="Total Revenue"
-              amount={<CurrencyDisplay amount={stats.total} currency={cur} />}
-              subtitle=""
-              trend="+0% from last month"
-              type="total"
-            />
-            <SummaryCard 
-              title="Unpaid"
-              amount={<CurrencyDisplay amount={stats.unpaid} currency={cur} />}
-              subtitle={`${stats.unpaidCount} Invoices`}
-              type="unpaid"
-            />
-            <SummaryCard 
-              title="Paid"
-              amount={<CurrencyDisplay amount={stats.paid} currency={cur} />}
-              subtitle={`${stats.paidCount} Invoices`}
-              type="paid"
-            />
-          </div>
-        </section>
-      ))}
+      <details className="w-full group" open>
+        <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between mb-md focus:outline-none">
+          <h2 className="font-headline-md text-headline-md text-primary font-bold">Summary Details</h2>
+          <MaterialIcon icon="expand_more" className="text-on-surface-variant transition-transform group-open:rotate-180" />
+        </summary>
+        
+        <div className="space-y-md">
+          {currencyEntries.map(([cur, stats]) => (
+            <section key={cur} className="space-y-xs">
+              {currencyEntries.length > 1 && (
+                <h3 className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider px-1">{cur} Summary</h3>
+              )}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-sm">
+                <SummaryCard 
+                  title="Total Revenue"
+                  amount={<CurrencyDisplay amount={stats.total} currency={cur} />}
+                  subtitle=""
+                  trend="+0% from last month"
+                  type="total"
+                />
+                <SummaryCard 
+                  title="Unpaid"
+                  amount={<CurrencyDisplay amount={stats.unpaid} currency={cur} />}
+                  subtitle={`${stats.unpaidCount} Invoices`}
+                  type="unpaid"
+                />
+                <SummaryCard 
+                  title="Paid"
+                  amount={<CurrencyDisplay amount={stats.paid} currency={cur} />}
+                  subtitle={`${stats.paidCount} Invoices`}
+                  type="paid"
+                />
+              </div>
+            </section>
+          ))}
 
-      {currencyEntries.length === 0 && (
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-sm">
-          <SummaryCard 
-            title="Total Revenue"
-            amount={<CurrencyDisplay amount={0} currency={defaultCurrency} currencySymbol={defaultCurrencySymbol} />}
-            subtitle=""
-            trend="+0% from last month"
-            type="total"
-          />
-          <SummaryCard 
-            title="Unpaid"
-            amount={<CurrencyDisplay amount={0} currency={defaultCurrency} currencySymbol={defaultCurrencySymbol} />}
-            subtitle="0 Invoices"
-            type="unpaid"
-          />
-          <SummaryCard 
-            title="Paid"
-            amount={<CurrencyDisplay amount={0} currency={defaultCurrency} currencySymbol={defaultCurrencySymbol} />}
-            subtitle="0 Invoices"
-            type="paid"
-          />
-        </section>
-      )}
+          {currencyEntries.length === 0 && (
+            <section className="grid grid-cols-2 md:grid-cols-4 gap-sm">
+              <SummaryCard 
+                title="Total Revenue"
+                amount={<CurrencyDisplay amount={0} currency={defaultCurrency} currencySymbol={defaultCurrencySymbol} />}
+                subtitle=""
+                trend="+0% from last month"
+                type="total"
+              />
+              <SummaryCard 
+                title="Unpaid"
+                amount={<CurrencyDisplay amount={0} currency={defaultCurrency} currencySymbol={defaultCurrencySymbol} />}
+                subtitle="0 Invoices"
+                type="unpaid"
+              />
+              <SummaryCard 
+                title="Paid"
+                amount={<CurrencyDisplay amount={0} currency={defaultCurrency} currencySymbol={defaultCurrencySymbol} />}
+                subtitle="0 Invoices"
+                type="paid"
+              />
+            </section>
+          )}
+        </div>
+      </details>
 
       {/* Quick Actions */}
       <QuickActions />

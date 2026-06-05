@@ -14,6 +14,8 @@ import { GeometricA4Template } from './GeometricA4Template';
 import { EnterpriseA4Template } from './EnterpriseA4Template';
 import { FintechA4Template } from './FintechA4Template';
 import { RedClassicGroupedTemplate } from './RedClassicGroupedTemplate';
+import { SleekAccentTemplate } from './SleekAccentTemplate';
+import { ModernPurpleTemplate } from './ModernPurpleTemplate';
 
 interface InvoiceTemplateRendererProps extends TemplateProps {
   templateId?: string;
@@ -33,6 +35,8 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
   'enterprise-a4': EnterpriseA4Template,
   'fintech-a4': FintechA4Template,
   'red-classic-grouped': RedClassicGroupedTemplate,
+  'sleek-accent': SleekAccentTemplate,
+  'modern-purple': ModernPurpleTemplate,
 };
 
 export function InvoiceTemplateRenderer({ templateId, invoice, profile, isPreview, publicUrl }: InvoiceTemplateRendererProps) {

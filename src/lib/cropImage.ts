@@ -19,9 +19,15 @@ export default async function getCroppedImg(
     return null
   }
 
-  // set canvas size to match the bounding box
-  canvas.width = pixelCrop.width
-  canvas.height = pixelCrop.height
+  // Compress logo: set max dimensions
+  const MAX_SIZE = 600;
+  let scale = 1;
+  if (pixelCrop.width > MAX_SIZE || pixelCrop.height > MAX_SIZE) {
+    scale = MAX_SIZE / Math.max(pixelCrop.width, pixelCrop.height);
+  }
+
+  canvas.width = pixelCrop.width * scale;
+  canvas.height = pixelCrop.height * scale;
 
   ctx.drawImage(
     image,
@@ -31,11 +37,11 @@ export default async function getCroppedImg(
     pixelCrop.height,
     0,
     0,
-    pixelCrop.width,
-    pixelCrop.height
+    canvas.width,
+    canvas.height
   )
 
-  // As Blob
+  // As Blob (WebP to preserve transparency and compress well)
   return new Promise((resolve, reject) => {
     canvas.toBlob((file) => {
       if (file) {
@@ -43,6 +49,6 @@ export default async function getCroppedImg(
       } else {
         reject(new Error('Canvas is empty'))
       }
-    }, 'image/jpeg')
+    }, 'image/webp', 0.8)
   })
 }

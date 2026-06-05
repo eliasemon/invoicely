@@ -30,6 +30,7 @@ export default function ProfilePage() {
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [aspect, setAspect] = useState<number | undefined>(undefined);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const [isCropping, setIsCropping] = useState(false);
 
@@ -88,10 +89,16 @@ export default function ProfilePage() {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      setCropImageSrc(reader.result as string);
-      setIsCropping(true);
-      setZoom(1);
-      setCrop({ x: 0, y: 0 });
+      const src = reader.result as string;
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        setCropImageSrc(src);
+        setIsCropping(true);
+        setZoom(1);
+        setCrop({ x: 0, y: 0 });
+        setAspect(img.width / img.height);
+      };
     };
   };
 
@@ -115,6 +122,15 @@ export default function ProfilePage() {
       formData.append('logo', file);
       
       const publicUrl = await uploadCompanyLogo(formData);
+
+      if (profile.company_logo && profile.company_logo !== publicUrl) {
+        try {
+          await deleteCompanyLogo(profile.company_logo);
+        } catch (e) {
+          console.error("Failed to delete old company logo:", e);
+        }
+      }
+
       setProfile(prev => ({ ...prev, company_logo: publicUrl }));
     } catch (err: any) {
       console.error('Failed to upload cropped logo:', err);
@@ -177,13 +193,13 @@ export default function ProfilePage() {
               )}
               
               <div 
-                className="w-32 h-32 rounded-full bg-surface-container-high flex items-center justify-center text-primary mb-2 overflow-hidden border-2 border-outline-variant border-dashed relative cursor-pointer group-hover:border-primary transition-colors duration-300 shadow-inner"
+                className="w-full max-w-[240px] h-32 rounded-xl bg-surface-container-high flex items-center justify-center text-primary mb-2 overflow-hidden border-2 border-outline-variant border-dashed relative cursor-pointer group-hover:border-primary transition-colors duration-300 shadow-inner"
                 onClick={() => fileInputRef.current?.click()}
               >
                 {profile.company_logo ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={profile.company_logo} alt="Company Logo" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <img src={profile.company_logo} alt="Company Logo" className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
                       <MaterialIcon icon="edit" className="text-white text-3xl drop-shadow-md" />
                     </div>
@@ -290,10 +306,9 @@ export default function ProfilePage() {
                 image={cropImageSrc}
                 crop={crop}
                 zoom={zoom}
-                aspect={1}
-                cropShape="round"
+                aspect={aspect}
                 showGrid={false}
-                objectFit="cover"
+                objectFit="contain"
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}

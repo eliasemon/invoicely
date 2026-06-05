@@ -137,15 +137,26 @@ export async function createInvoice(data: {
   return invoice;
 }
 
-export async function getInvoices() {
+export async function getInvoices(filters?: { search?: string, status?: string }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
 
-  const { data, error } = await supabaseAdmin
+  let query = supabaseAdmin
     .from('invoices')
     .select('*')
     .eq('profile_id', userId)
     .order('created_at', { ascending: false });
+
+  if (filters?.status && filters.status !== 'All') {
+    query = query.eq('status', filters.status.toUpperCase());
+  }
+
+  if (filters?.search) {
+    const searchLower = filters.search.toLowerCase();
+    query = query.or(`client_name.ilike.%${searchLower}%,client_phone.ilike.%${searchLower}%,invoice_number.ilike.%${searchLower}%`);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching invoices:', error);

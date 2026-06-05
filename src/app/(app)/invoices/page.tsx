@@ -6,9 +6,19 @@ import { getInvoices } from '@/app/actions/invoiceActions';
 import { getProfile } from '@/app/actions/profileActions';
 import dayjs from 'dayjs';
 
-export default async function InvoicesPage() {
-  const allInvoices = await getInvoices();
-  
+export default async function InvoicesPage(
+  props: {
+    searchParams?: Promise<{
+      search?: string;
+      status?: string;
+    }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const allInvoices = await getInvoices({
+    search: searchParams?.search,
+    status: searchParams?.status,
+  });
   let defaultCurrency = 'USD';
   let defaultCurrencySymbol: string | undefined = undefined;
   try {
