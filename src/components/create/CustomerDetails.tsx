@@ -146,7 +146,7 @@ export function CustomerDetails({
           <PhoneInput
             international
             defaultCountry="US"
-            value={mobileNumber}
+            value={mobileNumber ? (mobileNumber.startsWith('+') ? '+' + mobileNumber.replace(/\D/g, '') : '+' + mobileNumber.replace(/\D/g, '')) : undefined}
             onChange={(val) => setMobileNumber(val ? val.toString() : '')}
             className="w-full h-[48px] px-sm rounded-lg border border-outline-variant bg-surface focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-colors font-body-md text-body-md text-on-surface phone-input-container"
           />
