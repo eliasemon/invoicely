@@ -91,3 +91,39 @@ export function getAllItems(invoice: Invoice): { name: string; quantity: number;
   });
   return items;
 }
+
+export function numberToWords(num: number): string {
+  if (num === 0) return 'Zero';
+  
+  const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  const scales = ['', 'Thousand', 'Million', 'Billion'];
+
+  let words = '';
+  let scaleIdx = 0;
+
+  num = Math.floor(num);
+
+  while (num > 0) {
+    let chunk = num % 1000;
+    if (chunk > 0) {
+      let chunkWords = '';
+      if (chunk > 99) {
+        chunkWords += ones[Math.floor(chunk / 100)] + ' Hundred ';
+        chunk %= 100;
+      }
+      if (chunk > 19) {
+        chunkWords += tens[Math.floor(chunk / 10)] + (chunk % 10 !== 0 ? '-' : ' ');
+        chunk %= 10;
+      }
+      if (chunk > 0) {
+        chunkWords += ones[chunk] + ' ';
+      }
+      words = chunkWords + scales[scaleIdx] + ' ' + words;
+    }
+    num = Math.floor(num / 1000);
+    scaleIdx++;
+  }
+
+  return words.trim();
+}

@@ -13,6 +13,7 @@ import { MixedGroupsA4Template } from './MixedGroupsA4Template';
 import { GeometricA4Template } from './GeometricA4Template';
 import { EnterpriseA4Template } from './EnterpriseA4Template';
 import { FintechA4Template } from './FintechA4Template';
+import { RedClassicGroupedTemplate } from './RedClassicGroupedTemplate';
 
 interface InvoiceTemplateRendererProps extends TemplateProps {
   templateId?: string;
@@ -31,6 +32,7 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
   'geometric-a4': GeometricA4Template,
   'enterprise-a4': EnterpriseA4Template,
   'fintech-a4': FintechA4Template,
+  'red-classic-grouped': RedClassicGroupedTemplate,
 };
 
 export function InvoiceTemplateRenderer({ templateId, invoice, profile, isPreview, publicUrl }: InvoiceTemplateRendererProps) {

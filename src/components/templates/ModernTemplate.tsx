@@ -18,8 +18,8 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showG
     <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
       {/* Action Bar - hidden in print */}
       {!isPreview && (
-        <div className="max-w-[210mm] mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 print:hidden">
-          <span className="text-2xl font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>Invoicely</span>
+        <div className="max-w-[210mm] mx-auto mb-3 flex flex-col sm:flex-row justify-between items-center gap-2 print:hidden">
+          <span className="text-sm font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>Invoicely</span>
           <button onClick={() => window.print()} className="px-4 py-2 border border-[#c6c6cd] rounded-lg text-xs hover:bg-[#eff4ff] transition-colors flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px]">download</span>
             Download / Print PDF
@@ -32,45 +32,45 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showG
         {/* Sidebar */}
         <div className="bg-[#0058be] text-white w-full md:w-[30%] print:w-[30%] p-6 flex flex-col justify-between">
           <div>
-            <div className="mb-6">
+            <div className="mb-3">
               {profile?.company_logo && (
-                <img alt="Logo" className="max-h-20 max-w-[160px] bg-white p-1 rounded-lg mb-3 object-contain w-auto h-auto" src={profile.company_logo} />
+                <img alt="Logo" className="max-h-16 max-w-[160px] bg-white p-1 rounded-lg mb-3 object-contain w-auto h-auto" src={profile.company_logo} />
               )}
-              <h2 className="text-lg font-semibold mb-1" style={{ fontFamily: 'Work Sans, sans-serif' }}>{profile?.company_name || 'Your Company'}</h2>
-              {profile?.email && <p className="text-xs opacity-80" style={{ fontFamily: 'Geist, monospace' }}>{profile.email}</p>}
-              {profile?.phone && <p className="text-xs opacity-80" style={{ fontFamily: 'Geist, monospace' }}>{profile.phone}</p>}
+              <h2 className="text-sm font-semibold mb-1" style={{ fontFamily: 'Work Sans, sans-serif' }}>{profile?.company_name || 'Your Company'}</h2>
+              {profile?.email && <p className="text-[11px] opacity-80" style={{ fontFamily: 'Geist, monospace' }}>{profile.email}</p>}
+              {profile?.phone && <p className="text-[11px] opacity-80" style={{ fontFamily: 'Geist, monospace' }}>{profile.phone}</p>}
               {profile?.company_address && (
                 <p className="text-[11px] opacity-70 mt-1.5 whitespace-pre-line font-light" style={{ fontFamily: 'Geist, monospace' }}>
                   {profile.company_address}
                 </p>
               )}
             </div>
-            <div className="mb-4">
+            <div className="mb-2">
               <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">Invoice Number</p>
               <p className="text-base font-semibold">{invoice.invoiceNumber || invoice.id?.substring(0, 8).toUpperCase()}</p>
             </div>
-            <div className="mb-4">
+            <div className="mb-2">
               <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">Date Issued</p>
-              <p className="text-xs">{formatDate(issueDate)}</p>
+              <p className="text-[11px]">{formatDate(issueDate)}</p>
             </div>
-            <div className="mb-4">
+            <div className="mb-2">
               <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">Due Date</p>
-              <p className="text-xs font-semibold">{formatDate(dueDate)}</p>
+              <p className="text-[11px] font-semibold">{formatDate(dueDate)}</p>
             </div>
           </div>
           {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) && (
-            <div className="mt-8 hidden md:block">
+            <div className="mt-4 hidden md:block">
               <p className="text-[12px] uppercase tracking-wider opacity-70 mb-2">Payment Details</p>
               <div className="bg-white/10 p-4 rounded-lg text-white w-full border border-white/10">
-                <p className="text-sm font-semibold">{invoice.bank_name || profile?.bank_name}</p>
+                <p className="text-[11px] font-semibold">{invoice.bank_name || profile?.bank_name}</p>
                 {(invoice.bank_account_holder || profile?.bank_account_holder) && (
-                  <p className="text-xs mt-1 opacity-80">{invoice.bank_account_holder || profile?.bank_account_holder}</p>
+                  <p className="text-[11px] mt-1 opacity-80">{invoice.bank_account_holder || profile?.bank_account_holder}</p>
                 )}
                 {(invoice.bank_account_number || profile?.bank_account_number) && (
-                  <p className="text-xs mt-1 opacity-80 font-mono">{invoice.bank_account_number || profile?.bank_account_number}</p>
+                  <p className="text-[11px] mt-1 opacity-80 font-mono">{invoice.bank_account_number || profile?.bank_account_number}</p>
                 )}
                 {(invoice.bank_swift || profile?.bank_swift) && (
-                  <p className="text-xs mt-1 opacity-80">SWIFT: {invoice.bank_swift || profile?.bank_swift}</p>
+                  <p className="text-[11px] mt-1 opacity-80">SWIFT: {invoice.bank_swift || profile?.bank_swift}</p>
                 )}
               </div>
             </div>
@@ -86,11 +86,11 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showG
 
         {/* Main Content */}
         <div className="w-full md:w-[70%] print:w-[70%] p-6 print:p-6">
-          <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-2 mb-2">
             <div>
               <p className="text-[10px] uppercase text-[#76777d] mb-1">Billed To</p>
-              <h3 className="text-lg font-semibold mb-0.5" style={{ fontFamily: 'Work Sans, sans-serif' }}>{invoice.clientName}</h3>
-              <p className="text-xs text-[#45464d] whitespace-pre-line">{invoice.clientAddress || invoice.clientPhone}</p>
+              <h3 className="text-sm font-semibold mb-0.5" style={{ fontFamily: 'Work Sans, sans-serif' }}>{invoice.clientName}</h3>
+              <p className="text-[11px] text-[#45464d] whitespace-pre-line">{invoice.clientAddress || invoice.clientPhone}</p>
             </div>
             <div className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
               invoice.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
@@ -100,7 +100,7 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showG
           </div>
 
           {/* Items */}
-          <div className="mb-4">
+          <div className="mb-2">
             <p className="text-[10px] uppercase text-[#76777d] mb-1.5 border-b border-[#dce9ff] pb-1">Description</p>
             {invoice.groups?.map((group, gIdx) => (
               <div key={gIdx} className="mb-3">
@@ -111,7 +111,7 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showG
                       <h4 className="font-semibold text-xs">{item.name}</h4>
                       <p className="text-[10px] text-[#45464d] mt-0.5" style={{ fontFamily: 'Geist, monospace' }}>Qty: {item.quantity} × {formatMoney(item.unitPrice, sym)}</p>
                     </div>
-                    <p className="text-xs whitespace-nowrap" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(item.quantity * item.unitPrice, sym)}</p>
+                    <p className="text-[11px] whitespace-nowrap" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(item.quantity * item.unitPrice, sym)}</p>
                   </div>
                 ))}
 
@@ -158,7 +158,7 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showG
             <div className="flex justify-end">
               <div className="w-full md:w-2/3 print:w-2/3 bg-[#131b2e] py-3 px-4 rounded-lg flex justify-between items-center">
                 <p className="text-[10px] uppercase tracking-wider text-[#bec6e0]">Total</p>
-                <p className="text-xl font-bold text-white" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(total, sym)}</p>
+                <p className="text-[11px] font-bold text-white" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(total, sym)}</p>
               </div>
             </div>
             {amountPaid > 0 && (
@@ -166,13 +166,13 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showG
                 <div className="flex justify-end mt-2">
                   <div className="w-full md:w-2/3 print:w-2/3 py-2 px-4 flex justify-between items-center text-sm">
                     <p className="text-[10px] uppercase tracking-wider text-[#76777d]">Paid</p>
-                    <p className="text-sm font-medium text-green-600" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(amountPaid, sym)}</p>
+                    <p className="text-[11px] font-medium text-green-600" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(amountPaid, sym)}</p>
                   </div>
                 </div>
                 <div className="flex justify-end">
                   <div className="w-full md:w-2/3 print:w-2/3 bg-[#eff6ff] py-3 px-4 rounded-lg flex justify-between items-center border border-[#bfdbfe]">
                     <p className="text-[10px] uppercase tracking-wider text-[#1e40af]">Due</p>
-                    <p className="text-xl font-bold text-[#1e40af]" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(balanceDue, sym)}</p>
+                    <p className="text-[11px] font-bold text-[#1e40af]" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(balanceDue, sym)}</p>
                   </div>
                 </div>
               </>
@@ -180,12 +180,12 @@ export function ModernTemplate({ invoice, profile, isPreview , publicUrl , showG
           </div>
 
           {/* Notes and Signature */}
-          <div className="mt-4 pt-3 border-t border-[#dce9ff] flex flex-col md:flex-row print:flex-row justify-between items-start gap-4">
+          <div className="mt-4 pt-3 border-t border-[#dce9ff] flex flex-col md:flex-row print:flex-row justify-between items-start gap-2">
             <div className="flex-1">
               <p className="text-[10px] uppercase text-[#76777d] mb-1">Notes</p>
-              <p className="text-xs text-[#45464d]">{invoice.notes || 'Thank you for your business. Please process payment within 30 days of receiving this invoice.'}</p>
+              <p className="text-[11px] text-[#45464d]">{invoice.notes || 'Thank you for your business. Please process payment within 30 days of receiving this invoice.'}</p>
             </div>
-            <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-auto shrink-0">
+            <div className="flex flex-row items-end gap-3 justify-start md:justify-end print:justify-end w-auto shrink-0">
                     
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
               <div className="flex flex-col items-start md:items-end min-w-[160px]">

@@ -20,22 +20,22 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
         {/* Top accent */}
         <div className="h-1 bg-gradient-to-r from-[#0058be] via-[#2170e4] to-[#0058be]"></div>
         
-        <div className="p-6 md:p-10 print:p-6">
+        <div className="p-6 md:p-6 print:p-6">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-4 sm:gap-6 mb-6">
+          <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-2 sm:gap-3 mb-3">
             <div>
-              {profile?.company_logo && <img src={profile.company_logo} alt="Logo" className="max-h-20 max-w-[200px] mb-4 object-contain w-auto h-auto" />}
-              <h1 className="text-3xl font-bold text-black mb-1" style={{ fontFamily: 'Work Sans, sans-serif' }}>{profile?.company_name || 'Your Company'}</h1>
-              <p className="text-sm text-[#64748b] whitespace-pre-line">{profile?.company_address || ''}</p>
+              {profile?.company_logo && <img src={profile.company_logo} alt="Logo" className="max-h-16 max-w-[200px] mb-2 object-contain w-auto h-auto" />}
+              <h1 className="text-sm font-bold text-black mb-1" style={{ fontFamily: 'Work Sans, sans-serif' }}>{profile?.company_name || 'Your Company'}</h1>
+              <p className="text-[11px] text-[#64748b] whitespace-pre-line">{profile?.company_address || ''}</p>
               {(profile?.email || profile?.phone) && (
-                <p className="text-sm text-[#64748b] mt-1">
+                <p className="text-[11px] text-[#64748b] mt-1">
                   {profile.email}{profile.email && profile.phone ? ' • ' : ''}{profile.phone}
                 </p>
               )}
             </div>
             <div className="text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto">
               <p className="text-[12px] text-[#94a3b8] uppercase tracking-[0.15em] mb-1">Invoice</p>
-              <p className="text-lg font-bold text-black" style={{ fontFamily: 'Geist, monospace' }}>{invoice.invoiceNumber}</p>
+              <p className="text-[11px] font-bold text-black" style={{ fontFamily: 'Geist, monospace' }}>{invoice.invoiceNumber}</p>
               {profile?.qr_code_enabled && publicUrl && (
                 <div className="mt-3 flex justify-end sm:justify-start print:justify-end">
                   <QRCodeSVG value={publicUrl} size={54} />
@@ -48,30 +48,30 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
           </div>
 
           {/* Info Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 print:grid-cols-3 gap-4 sm:gap-8 mb-6 pb-4 border-b border-[#e2e8f0]">
+          <div className="grid grid-cols-1 sm:grid-cols-3 print:grid-cols-3 gap-2 sm:gap-2 mb-3 pb-4 border-b border-[#e2e8f0]">
             <div>
               <p className="text-[11px] text-[#94a3b8] uppercase tracking-wider mb-2">Bill To</p>
               <p className="font-semibold text-black">{invoice.clientName}</p>
-              <p className="text-sm text-[#64748b] whitespace-pre-line mt-1">{invoice.clientAddress || invoice.clientPhone}</p>
+              <p className="text-[11px] text-[#64748b] whitespace-pre-line mt-1">{invoice.clientAddress || invoice.clientPhone}</p>
             </div>
             <div>
               <p className="text-[11px] text-[#94a3b8] uppercase tracking-wider mb-2">Issue Date</p>
-              <p className="text-sm font-medium" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(issueDate)}</p>
+              <p className="text-[11px] font-medium" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(issueDate)}</p>
             </div>
             <div>
               <p className="text-[11px] text-[#94a3b8] uppercase tracking-wider mb-2">Due Date</p>
-              <p className="text-sm font-medium" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(dueDate)}</p>
+              <p className="text-[11px] font-medium" style={{ fontFamily: 'Geist, monospace' }}>{formatDate(dueDate)}</p>
             </div>
           </div>
 
           {/* Items */}
-          <table className="w-full mb-4">
+          <table className="w-full mb-2">
             <thead>
               <tr className="border-b-2 border-[#0058be]">
-                <th className="text-left py-1.5 text-[11px] text-[#64748b] uppercase tracking-wider">Description</th>
-                <th className="text-right py-1.5 text-[11px] text-[#64748b] uppercase tracking-wider w-20">Qty</th>
-                <th className="text-right py-1.5 text-[11px] text-[#64748b] uppercase tracking-wider w-28">Rate</th>
-                <th className="text-right py-1.5 text-[11px] text-[#64748b] uppercase tracking-wider w-28">Amount</th>
+                <th className="text-left py-0.5 text-[11px] text-[#64748b] uppercase tracking-wider">Description</th>
+                <th className="text-right py-0.5 text-[11px] text-[#64748b] uppercase tracking-wider w-20">Qty</th>
+                <th className="text-right py-0.5 text-[11px] text-[#64748b] uppercase tracking-wider w-28">Rate</th>
+                <th className="text-right py-0.5 text-[11px] text-[#64748b] uppercase tracking-wider w-28">Amount</th>
               </tr>
             </thead>
             <tbody style={{ fontFamily: 'Geist, monospace' }}>
@@ -80,22 +80,22 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
                   <React.Fragment key={gIdx}>
                     {group.name && (
                       <tr className="bg-slate-100 font-bold">
-                        <td colSpan={4} className="py-1.5 px-3 text-xs text-black border-b border-[#f1f5f9] uppercase text-left font-semibold" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>{group.name}</td>
+                        <td className="py-0.5 px-2 text-[10px] text-black border-b border-[#f1f5f9] uppercase text-left font-semibold" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>{group.name}</td>
                       </tr>
                     )}
                     {group.items.map((item, iIdx) => (
                       <tr key={iIdx} className="border-b border-[#f1f5f9]">
-                        <td className="py-1.5 font-medium text-black" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>{item.name}</td>
-                        <td className="py-1.5 text-right text-sm text-[#64748b]">{item.quantity}</td>
-                        <td className="py-1.5 text-right text-sm text-[#64748b]">{formatMoney(item.unitPrice, sym)}</td>
-                        <td className="py-1.5 text-right text-sm font-medium text-black">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
+                        <td className="py-0.5 font-medium text-black" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>{item.name}</td>
+                        <td className="py-0.5 text-right text-[11px] text-[#64748b]">{item.quantity}</td>
+                        <td className="py-0.5 text-right text-[11px] text-[#64748b]">{formatMoney(item.unitPrice, sym)}</td>
+                        <td className="py-0.5 text-right text-[11px] font-medium text-black">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
                       </tr>
                     ))}
 
                   {showGroupTotals && (
                     <tr className="bg-transparent">
-                      <td colSpan={3} className="py-0.5 px-3 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">Group Subtotal</td>
-                      <td className="py-0.5 px-3 text-right text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</td>
+                      <td className="py-0.5 px-2 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">Group Subtotal</td>
+                      <td className="py-0.5 px-2 text-right text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</td>
                     </tr>
                   )}
                   </React.Fragment>
@@ -103,10 +103,10 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
               ) : (
                 items.map((item, idx) => (
                   <tr key={idx} className="border-b border-[#f1f5f9]">
-                    <td className="py-1.5 font-medium text-black" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>{item.name}</td>
-                    <td className="py-1.5 text-right text-sm text-[#64748b]">{item.quantity}</td>
-                    <td className="py-1.5 text-right text-sm text-[#64748b]">{formatMoney(item.unitPrice, sym)}</td>
-                    <td className="py-1.5 text-right text-sm font-medium text-black">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
+                    <td className="py-0.5 font-medium text-black" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>{item.name}</td>
+                    <td className="py-0.5 text-right text-[11px] text-[#64748b]">{item.quantity}</td>
+                    <td className="py-0.5 text-right text-[11px] text-[#64748b]">{formatMoney(item.unitPrice, sym)}</td>
+                    <td className="py-0.5 text-right text-[11px] font-medium text-black">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
                   </tr>
                 ))
               )}
@@ -134,7 +134,7 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
               </div>
               )}
             
-              <div className="flex justify-between py-3 mt-2 border-t-2 border-[#0058be] text-lg font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>
+              <div className="flex justify-between py-3 mt-2 border-t-2 border-[#0058be] text-sm font-bold text-black" style={{ fontFamily: 'Work Sans, sans-serif' }}>
                 <span>Total</span><span>{formatMoney(total, sym)}</span>
               </div>
               {amountPaid > 0 && (
@@ -143,7 +143,7 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
                     <span>Paid</span>
                     <span>{formatMoney(amountPaid, sym)}</span>
                   </div>
-                  <div className="flex justify-between py-3 mt-2 border-t-2 border-gray-800 text-lg font-bold text-gray-900">
+                  <div className="flex justify-between py-3 mt-2 border-t-2 border-gray-800 text-sm font-bold text-gray-900">
                     <span>Due</span>
                     <span>{formatMoney(balanceDue, sym)}</span>
                   </div>
@@ -153,19 +153,19 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
           </div>
 
           {/* Bank Details & Signature Section */}
-          <div className="mt-8 pt-4 border-t border-[#e2e8f0] flex flex-col md:flex-row print:flex-row justify-between items-start gap-4 w-full">
+          <div className="mt-4 pt-4 border-t border-[#e2e8f0] flex flex-col md:flex-row print:flex-row justify-between items-start gap-2 w-full">
             {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
               <div className="flex-1">
                 <p className="text-[11px] text-[#94a3b8] uppercase tracking-wider mb-2">Bank Details</p>
-                <p className="text-sm font-semibold text-black">{invoice.bank_name || profile?.bank_name}</p>
-                <p className="text-xs text-[#64748b] mt-0.5">
+                <p className="text-[11px] font-semibold text-black">{invoice.bank_name || profile?.bank_name}</p>
+                <p className="text-[11px] text-[#64748b] mt-0.5">
                   {invoice.bank_account_holder || profile?.bank_account_holder} • {invoice.bank_account_number || profile?.bank_account_number}
                   {(invoice.bank_swift || profile?.bank_swift) ? ` • SWIFT: ${invoice.bank_swift || profile?.bank_swift}` : ''}
                 </p>
               </div>
             ) : <div className="flex-1"></div>}
 
-            <div className="flex flex-row items-end gap-6 justify-start md:justify-end print:justify-end w-auto shrink-0">
+            <div className="flex flex-row items-end gap-3 justify-start md:justify-end print:justify-end w-auto shrink-0">
                     
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
               <div className="flex flex-col items-start md:items-end print:items-end min-w-[200px]">
@@ -173,7 +173,7 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
                   <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-10 mb-2 object-contain" />
                 )}
                 <div className="w-full border-b border-[#e2e8f0] mb-1"></div>
-                <p className="text-xs text-[#76777d]">{invoice.signatory_name || profile?.signatory_name || 'Authorized Signatory'}</p>
+                <p className="text-[11px] text-[#76777d]">{invoice.signatory_name || profile?.signatory_name || 'Authorized Signatory'}</p>
               </div>
             )}
                   </div>

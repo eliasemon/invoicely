@@ -23,6 +23,7 @@ export function TemplateSelector({ selectedTemplate, onSelect }: Readonly<Templa
     { id: 'grouped-fintech-a4', name: 'Grouped Fintech', image: '/templates/grouped-fintech-a4.png' },
     { id: 'high-density-flat-a4', name: 'High Density', image: '/templates/high-density-flat-a4.png' },
     { id: 'mixed-groups-a4', name: 'Mixed Groups', image: '/templates/mixed-groups-a4.png' },
+    { id: 'red-classic-grouped', name: 'Red Classic', image: '/templates/grouped-fintech-a4.png' },
     { id: 'geometric-a4', name: 'Geometric', image: '/templates/geometric-a4.png' },
     { id: 'fintech-a4', name: 'Fintech (A4)', image: '/templates/fintech-a4.png' },
     { id: 'heritage-a4', name: 'Heritage (A4)', image: '/templates/heritage-a4.png' },
