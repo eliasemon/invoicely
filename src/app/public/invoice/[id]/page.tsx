@@ -29,7 +29,7 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
     due_date: invoice.due_date,
   };
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const publicUrl = `${baseUrl}/public/invoice/${id}`;
 
   return (
