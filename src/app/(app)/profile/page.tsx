@@ -35,6 +35,7 @@ export default function ProfilePage() {
   const [aspect, setAspect] = useState<number | undefined>(undefined);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const [isCropping, setIsCropping] = useState(false);
+  const tourStartedRef = useRef(false);
 
   useEffect(() => {
     async function loadProfile() {
@@ -56,6 +57,7 @@ export default function ProfilePage() {
   // Initialize tour if user hasn't onboarded
   useEffect(() => {
     if (loading) return;
+    if (tourStartedRef.current) return;
 
     // Check if it's a new user (no data yet) or onboarding is explicitly false
     const isNewUser = Object.keys(profile).length === 0;
@@ -66,6 +68,7 @@ export default function ProfilePage() {
     const isTourRequested = urlParams.get('tour') === 'true';
 
     if (needsOnboarding || isTourRequested) {
+      tourStartedRef.current = true;
       // Clean up the URL
       if (isTourRequested) {
         window.history.replaceState({}, '', '/profile');
