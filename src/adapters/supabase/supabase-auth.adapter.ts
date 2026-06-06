@@ -1,6 +1,13 @@
 import { IAuthProvider, AuthUser, AuthCredentials, SignupCredentials } from '@/core/ports';
 import { createClient } from '@/lib/supabase/client';
 
+function getBaseUrl() {
+  let url = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+  // Make sure to include `http` when missing
+  url = url.startsWith('http') ? url : `https://${url}`;
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+}
+
 export class SupabaseAuthAdapter implements IAuthProvider {
   private supabase = createClient();
   private authStateListener: ((user: AuthUser | null) => void) | null = null;
@@ -75,13 +82,6 @@ export class SupabaseAuthAdapter implements IAuthProvider {
     if (!authUser) throw new Error('User data missing after signup');
     return authUser;
   }
-
-function getBaseUrl() {
-  let url = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
-  // Make sure to include `http` when missing
-  url = url.startsWith('http') ? url : `https://${url}`;
-  return url.endsWith('/') ? url.slice(0, -1) : url;
-}
 
   async signInWithGoogle(): Promise<AuthUser> {
     const { error } = await this.supabase.auth.signInWithOAuth({
