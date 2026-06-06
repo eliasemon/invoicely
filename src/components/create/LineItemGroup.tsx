@@ -17,6 +17,7 @@ interface LineItemGroupProps {
   addItemToGroup: (groupId: string) => void;
   updateItemInGroup: (groupId: string, itemId: string, field: keyof LineItemData, value: string | number) => void;
   deleteItemFromGroup: (groupId: string, itemId: string) => void;
+  deleteGroup?: (groupId: string) => void;
 }
 
 export function LineItemGroup({ 
@@ -24,7 +25,8 @@ export function LineItemGroup({
   updateGroupName, 
   addItemToGroup, 
   updateItemInGroup, 
-  deleteItemFromGroup 
+  deleteItemFromGroup,
+  deleteGroup
 }: Readonly<LineItemGroupProps>) {
   const [isExpanded, setIsExpanded] = useState(true);
   const { currency, currencySymbol } = useCreateInvoice();
@@ -52,7 +54,18 @@ export function LineItemGroup({
             className="font-headline-md text-headline-md text-primary ml-auto mr-sm whitespace-nowrap" 
           />
         </div>
-        <MaterialIcon icon={isExpanded ? 'expand_less' : 'expand_more'} className="text-primary transition-transform" />
+        <div className="flex items-center gap-2">
+          {deleteGroup && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); deleteGroup(group.id); }}
+              className="text-error hover:bg-error-container hover:text-on-error-container p-1 rounded-full transition-colors flex items-center justify-center"
+              title="Delete group"
+            >
+              <MaterialIcon icon="delete" className="text-[20px]" />
+            </button>
+          )}
+          <MaterialIcon icon={isExpanded ? 'expand_less' : 'expand_more'} className="text-primary transition-transform" />
+        </div>
       </div>
       
       <div className={`transition-all duration-300 ${isExpanded ? 'block' : 'hidden'}`}>

@@ -100,6 +100,10 @@ function CreateInvoiceForm() {
     }));
   };
 
+  const deleteGroup = (groupId: string) => {
+    setGroups(groups.filter(g => g.id !== groupId));
+  };
+
   const onAddGroup = () => {
     setGroups([...groups, { id: Date.now().toString(), name: 'New Group', items: [] }]);
   };
@@ -150,6 +154,7 @@ function CreateInvoiceForm() {
             addItemToGroup={addItemToGroup}
             updateItemInGroup={updateItemInGroup}
             deleteItemFromGroup={deleteItemFromGroup}
+            deleteGroup={deleteGroup}
           />
         ))}
 
