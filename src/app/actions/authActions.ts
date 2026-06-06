@@ -4,7 +4,11 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
 function getBaseUrl() {
-  let url = process.env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const envUrl = process.env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL;
+  if (!envUrl) {
+    throw new Error('APP_BASE_URL environment variable is missing.');
+  }
+  let url = envUrl;
   url = url.startsWith('http') ? url : `https://${url}`;
   return url.endsWith('/') ? url.slice(0, -1) : url;
 }
