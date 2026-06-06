@@ -27,11 +27,10 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // IMPORTANT: Validates the JWT signature locally using published public keys.
-  // Do NOT use getSession() here — it does not validate the token.
-  // getClaims() is preferred over getUser() because it avoids a network round-trip.
-  const { data } = await supabase.auth.getClaims()
-  const user = data?.claims
+  // IMPORTANT: Validates the JWT signature by fetching the user from the Supabase API.
+  // This is required to automatically refresh expired tokens.
+  // Do NOT use getSession() or getClaims() here, as they do not reliably refresh tokens.
+  const { data: { user } } = await supabase.auth.getUser()
 
   return { supabaseResponse, user }
 }
