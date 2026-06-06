@@ -1,12 +1,6 @@
 import { IAuthProvider, AuthUser, AuthCredentials, SignupCredentials } from '@/core/ports';
 import { createClient } from '@/lib/supabase/client';
-
-function getBaseUrl() {
-  let url = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
-  // Make sure to include `http` when missing
-  url = url.startsWith('http') ? url : `https://${url}`;
-  return url.endsWith('/') ? url.slice(0, -1) : url;
-}
+import { signInWithGoogleAction, resetPasswordAction } from '@/app/actions/authActions';
 
 export class SupabaseAuthAdapter implements IAuthProvider {
   private supabase = createClient();
@@ -84,16 +78,8 @@ export class SupabaseAuthAdapter implements IAuthProvider {
   }
 
   async signInWithGoogle(): Promise<AuthUser> {
-    const { error } = await this.supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${getBaseUrl()}/auth/callback`,
-      },
-    });
-
-    if (error) throw new Error(error.message);
-    // OAuth redirects, so we won't actually return an AuthUser here
-    // The state will be picked up by onAuthStateChanged after redirect
+    // Delegate to server action so that APP_BASE_URL can be securely accessed on the server
+    await signInWithGoogleAction();
     return null as unknown as AuthUser;
   }
 
@@ -103,10 +89,8 @@ export class SupabaseAuthAdapter implements IAuthProvider {
   }
 
   async resetPassword(email: string): Promise<void> {
-    const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${getBaseUrl()}/reset-password`,
-    });
-    if (error) throw new Error(error.message);
+    // Delegate to server action
+    await resetPasswordAction(email);
   }
 
   async updateProfile(data: { displayName?: string; photoURL?: string }): Promise<void> {
