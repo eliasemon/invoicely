@@ -29,6 +29,24 @@ export async function proxy(request: NextRequest) {
     const { supabaseResponse, user } = await updateSupabaseSession(request);
     response = supabaseResponse;
     isAuthenticated = !!user;
+  } else if (provider === 'hybrid') {
+    // Let Auth0 handle its routes first
+    const auth0Response = await auth0.middleware(request);
+    const session = await auth0.getSession(request);
+    const hasAuth0Session = !!session?.user;
+
+    // Check Supabase session
+    const { supabaseResponse, user: supabaseUser } = await updateSupabaseSession(request);
+    const hasSupabaseSession = !!supabaseUser;
+
+    // Authenticated if either session is valid
+    isAuthenticated = hasAuth0Session || hasSupabaseSession;
+
+    // Supabase needs to return its response to persist cookies. Auth0's middleware 
+    // mostly handles Auth0 API routes. For hybrid, we return supabaseResponse to keep 
+    // the Supabase token alive if they are using Supabase auth.
+    // If they were using Auth0 routes (/auth/login), Auth0 middleware intercepts it anyway.
+    response = supabaseResponse;
   } else {
     // Mock provider allows access
     isAuthenticated = true;

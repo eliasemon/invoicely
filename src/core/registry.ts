@@ -3,8 +3,9 @@ import type { IDatabaseProvider } from './ports/database.port';
 import { MockAuthAdapter, MockDatabaseAdapter } from '@/adapters/mock';
 import { SupabaseAuthAdapter } from '@/adapters/supabase';
 import { Auth0AuthAdapter } from '@/adapters/auth0';
+import { HybridAuthAdapter } from '@/adapters/hybrid';
 
-export type AuthProviderType = 'mock' | 'auth0' | 'supabase';
+export type AuthProviderType = 'mock' | 'auth0' | 'supabase' | 'hybrid';
 export type DatabaseProviderType = 'mock' | 'postgres' | 'mongodb';
 
 let authInstance: IAuthProvider | null = null;
@@ -26,6 +27,10 @@ export function getAuthAdapter(): IAuthProvider {
     }
     case 'supabase': {
       authInstance = new SupabaseAuthAdapter();
+      break;
+    }
+    case 'hybrid': {
+      authInstance = new HybridAuthAdapter();
       break;
     }
     default:

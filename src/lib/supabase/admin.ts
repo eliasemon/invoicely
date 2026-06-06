@@ -15,14 +15,25 @@ const supabaseAdmin = createClient(
   }
 );
 
-export async function getAuthenticatedSupabaseClient() {
+import { createClient as createServerClient } from '@/lib/supabase/server';
+
+export async function getUserId() {
+  // Try Supabase first
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) return user.id;
+
+  // Fallback to Auth0
   const session = await auth0.getSession();
+  return session?.user?.sub;
+}
+
+export async function getAuthenticatedSupabaseClient() {
+  const userId = await getUserId();
   
-  if (!session?.user?.sub) {
+  if (!userId) {
     throw new Error('Not authenticated');
   }
-
-  const userId = session.user.sub;
 
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,17 +47,6 @@ export async function getAuthenticatedSupabaseClient() {
       }
     }
   );
-}
-
-// A better approach for Server Actions when using Auth0 with Supabase is:
-// 1. Fetch user from Auth0 session
-// 2. Pass userId to every query explicitly, OR
-// 3. Just use the service role key and manually add `.eq('user_id', userId)` to every query.
-// Since we control the server actions, this is secure.
-
-export async function getUserId() {
-  const session = await auth0.getSession();
-  return session?.user?.sub;
 }
 
 export { supabaseAdmin };
