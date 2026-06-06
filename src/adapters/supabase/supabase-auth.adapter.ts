@@ -76,11 +76,18 @@ export class SupabaseAuthAdapter implements IAuthProvider {
     return authUser;
   }
 
+function getBaseUrl() {
+  let url = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+  // Make sure to include `http` when missing
+  url = url.startsWith('http') ? url : `https://${url}`;
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+}
+
   async signInWithGoogle(): Promise<AuthUser> {
     const { error } = await this.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${getBaseUrl()}/auth/callback`,
       },
     });
 
@@ -97,7 +104,7 @@ export class SupabaseAuthAdapter implements IAuthProvider {
 
   async resetPassword(email: string): Promise<void> {
     const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${getBaseUrl()}/reset-password`,
     });
     if (error) throw new Error(error.message);
   }
