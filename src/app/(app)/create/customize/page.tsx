@@ -178,7 +178,7 @@ export default function CustomizeInvoicePage() {
                   invoice={mockInvoice} 
                   profile={profile}
                   isPreview={true}
-                  publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/public/invoice/mock-12345`}
+                  publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/public/invoice/mock-12345`}
                 />
               </div>
             </div>

@@ -29,7 +29,11 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
     due_date: invoice.due_date,
   };
 
-  const baseUrl = process.env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const headersList = await import('next/headers').then(m => m.headers());
+  const host = headersList.get('host');
+  const protocol = headersList.get('x-forwarded-proto') || (host?.includes('localhost') ? 'http' : 'https');
+  const fallbackUrl = host ? `${protocol}://${host}` : '';
+  const baseUrl = process.env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || fallbackUrl;
   const publicUrl = `${baseUrl}/public/invoice/${id}`;
 
   return (

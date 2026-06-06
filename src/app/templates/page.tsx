@@ -211,7 +211,7 @@ export default function TemplatesGalleryPage() {
                         invoice={mockInvoice} 
                         profile={mockProfile}
                         isPreview={true}
-                        publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/public/invoice/demo-123`}
+                        publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/public/invoice/demo-123`}
                       />
                     </div>
                   </TransformComponent>
