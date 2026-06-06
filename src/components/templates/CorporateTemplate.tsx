@@ -16,8 +16,8 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups, sho
 
   return (
     <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] pb-20 md:pb-0 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>
-      <div className="flex justify-center items-start p-4 md:p-6 print:p-0 print:m-0 print:block print:w-[210mm]">
-        <div className="w-full max-w-[210mm] min-h-[297mm] mx-auto print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm]">
+      <div className="flex justify-center items-start p-4 md:p-6 print:p-0 print:m-0 print:block print:w-[210mm] max-w-full overflow-hidden print:overflow-visible">
+        <div className="w-full max-w-[210mm] min-w-0 min-h-[297mm] mx-auto print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm]">
           {/* Action Bar */}
           {!isPreview && (
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-white p-4 rounded-xl border border-[#c6c6cd] shadow-sm mb-3 print:hidden">
@@ -53,7 +53,7 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups, sho
                       <div className="text-[12px] text-[#45464d] uppercase tracking-widest font-bold mb-1">From</div>
                     )}
                   </div>
-                  <h1 className="text-[40px] leading-tight font-bold text-black uppercase" style={{ fontFamily: 'Work Sans, sans-serif', letterSpacing: '-0.02em' }}>Invoice</h1>
+                  <h1 className="text-3xl md:text-[40px] leading-tight font-bold text-black uppercase" style={{ fontFamily: 'Work Sans, sans-serif', letterSpacing: '-0.02em' }}>Invoice</h1>
                 </div>
 
                 {/* Divider Line */}
@@ -76,7 +76,7 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups, sho
                   <div className="flex flex-col gap-1 md:text-right print:text-right w-full md:w-auto print:w-auto">
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-left md:text-right print:text-right">
                       <div className="text-[12px] text-[#45464d] uppercase font-bold">Invoice Number:</div>
-                      <div className="text-sm font-semibold text-black" style={{ fontFamily: 'Geist, monospace' }}>{invoice.invoiceNumber}</div>
+                      <div className="text-sm font-semibold text-black break-all" style={{ fontFamily: 'Geist, monospace' }}>{invoice.invoiceNumber}</div>
                       {profile?.qr_code_enabled && publicUrl && (
                         <div className="col-span-2 flex justify-start md:justify-end print:justify-end mt-4">
                           <QRCodeSVG value={publicUrl} size={64} />
@@ -100,7 +100,7 @@ export function CorporateTemplate({ invoice, profile, isPreview, showGroups, sho
                 </div>
                 <div className="flex-shrink-0">
                   <div className="text-[12px] text-[#45464d] uppercase tracking-widest font-bold mb-2 border-b border-[#c6c6cd] pb-2 inline-block">Amount Due</div>
-                  <div className="text-[32px] leading-tight font-bold text-[#0058be] mt-2" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(subtotal, sym)}</div>
+                  <div className="text-2xl md:text-[32px] leading-tight font-bold text-[#0058be] mt-2" style={{ fontFamily: 'Work Sans, sans-serif' }}>{formatMoney(subtotal, sym)}</div>
                 </div>
               </div>
 

@@ -10,6 +10,8 @@ interface InvoiceTotalFooterProps {
   shippingCost?: number;
   currency?: string;
   currencySymbol?: string;
+  isValid?: boolean;
+  onValidationFailed?: () => void;
 }
 
 export function InvoiceTotalFooter({ 
@@ -19,7 +21,9 @@ export function InvoiceTotalFooter({
   discountValue = 0, 
   shippingCost = 0,
   currency = 'USD', 
-  currencySymbol 
+  currencySymbol,
+  isValid = true,
+  onValidationFailed
 }: Readonly<InvoiceTotalFooterProps>) {
   
   const discountAmount = discountType === 'percentage' 
@@ -65,8 +69,14 @@ export function InvoiceTotalFooter({
           />
         </div>
         <Link 
-          href="/create/customize"
-          className="h-[48px] px-xl bg-primary text-on-primary rounded-lg font-body-md text-body-md font-medium hover:bg-primary-container transition-colors shadow-sm flex items-center gap-xs whitespace-nowrap"
+          href={isValid ? "/create/customize" : "#"}
+          onClick={(e) => {
+            if (!isValid) {
+              e.preventDefault();
+              if (onValidationFailed) onValidationFailed();
+            }
+          }}
+          className={`h-[48px] px-xl rounded-lg font-body-md text-body-md font-medium transition-colors shadow-sm flex items-center gap-xs whitespace-nowrap ${isValid ? 'bg-primary text-on-primary hover:bg-primary-container' : 'bg-surface-variant text-on-surface-variant opacity-50 cursor-not-allowed'}`}
         >
           Next <MaterialIcon icon="arrow_forward" className="text-[20px]" />
         </Link>

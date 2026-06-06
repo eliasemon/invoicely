@@ -126,6 +126,18 @@ function CreateInvoiceForm() {
 
   const totalAmount = Math.max(0, subtotal - discountAmount) + (shippingCost || 0);
 
+  const isClientNameValid = clientName.trim().length > 0;
+  const hasValidGroupsAndItems = groups.length > 0 && groups.some(g => g.items.length > 0);
+  const isValid = isClientNameValid && hasValidGroupsAndItems;
+
+  const handleValidationFailed = () => {
+    let message = 'Please fix the following to proceed:\n';
+    if (!isClientNameValid) message += '- Customer name is required\n';
+    if (groups.length === 0) message += '- At least one group is required\n';
+    else if (!groups.some(g => g.items.length > 0)) message += '- At least one item is required\n';
+    alert(message);
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto space-y-lg pt-sm md:pt-0 pb-[100px]">
       {/* Header Section */}
@@ -171,6 +183,8 @@ function CreateInvoiceForm() {
         shippingCost={shippingCost}
         currency={currency} 
         currencySymbol={currencySymbol} 
+        isValid={isValid}
+        onValidationFailed={handleValidationFailed}
       />
     </div>
   );
