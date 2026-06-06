@@ -14,4 +14,5 @@ export interface IAuthProvider {
 
   // Profile
   updateProfile(data: { displayName?: string; photoURL?: string }): Promise<void>;
+  updatePassword(password: string): Promise<void>;
 }

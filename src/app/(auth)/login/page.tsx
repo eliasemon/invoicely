@@ -96,7 +96,7 @@ function LoginForm() {
             <label className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" htmlFor="password">
               Password
             </label>
-            <Link href="#" className="font-label-sm text-label-sm text-primary hover:underline">
+            <Link href="/forgot-password" className="font-label-sm text-label-sm text-primary hover:underline">
               Forgot password?
             </Link>
           </div>

@@ -18,10 +18,10 @@ export async function proxy(request: NextRequest) {
   if (provider === 'auth0') {
     // Let Auth0 handle its routes first
     const auth0Response = await auth0.middleware(request);
-    
+
     const session = await auth0.getSession(request);
     isAuthenticated = !!session?.user;
-    
+
     // Use the response from Auth0 middleware
     response = auth0Response;
   } else if (provider === 'supabase') {

@@ -111,4 +111,9 @@ export class SupabaseAuthAdapter implements IAuthProvider {
     });
     if (error) throw new Error(error.message);
   }
+
+  async updatePassword(password: string): Promise<void> {
+    const { error } = await this.supabase.auth.updateUser({ password });
+    if (error) throw new Error(error.message);
+  }
 }

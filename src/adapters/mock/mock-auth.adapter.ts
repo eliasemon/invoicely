@@ -80,4 +80,8 @@ export class MockAuthAdapter implements IAuthProvider {
       this.authStateListener(this.currentUser);
     }
   }
+
+  async updatePassword(password: string): Promise<void> {
+    console.log(`Mock: Password updated to ${password}`);
+  }
 }

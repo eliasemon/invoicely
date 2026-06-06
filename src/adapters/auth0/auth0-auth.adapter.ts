@@ -90,4 +90,8 @@ export class Auth0AuthAdapter implements IAuthProvider {
   async updateProfile(data: { displayName?: string; photoURL?: string }): Promise<void> {
     throw new Error('Profile updates should be done via Auth0 Management API or dashboard.');
   }
+
+  async updatePassword(password: string): Promise<void> {
+    throw new Error('Password updates must be handled via Universal Login in Auth0.');
+  }
 }
