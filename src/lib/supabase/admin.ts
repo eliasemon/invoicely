@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { auth0 } from '@/lib/auth0';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 
 // Create a Supabase client using the anon key, but passing the RPC secret via header
 // This allows the RLS policy check_api_secret() to bypass RLS securely for server actions.
@@ -15,17 +15,10 @@ const supabaseAdmin = createClient(
   }
 );
 
-import { createClient as createServerClient } from '@/lib/supabase/server';
-
 export async function getUserId() {
-  // Try Supabase first
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (user) return user.id;
-
-  // Fallback to Auth0
-  const session = await auth0.getSession();
-  return session?.user?.sub;
+  return user?.id;
 }
 
 export async function getAuthenticatedSupabaseClient() {
