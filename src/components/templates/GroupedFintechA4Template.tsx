@@ -33,7 +33,7 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl , showGr
             </div>
             <div className="text-left sm:text-right print:text-right w-full sm:w-auto">
               <p className="text-[11px] text-[#64748b] uppercase tracking-widest mb-1">Invoice</p>
-              <p className="text-[11px] font-bold text-[#0891b2] font-mono">{invoice.invoiceNumber}</p>
+              <p className="text-[11px] font-bold text-[#0891b2] font-mono break-all">{invoice.invoiceNumber}</p>
               <div className={`inline-block mt-2 px-3 py-1 rounded-full text-[11px] font-semibold ${
                 invoice.status === 'PAID' ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-amber-100 text-amber-700 border border-amber-300'
               }`}>{invoice.status}</div>
@@ -67,7 +67,8 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl , showGr
                 <h3 className="text-sm font-bold text-[#0f172a] uppercase tracking-wider">{group.name || `Group ${gIdx + 1}`}</h3>
               </div>
               <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl overflow-hidden">
-                <table className="w-full text-xs">
+                <div className="overflow-x-auto mb-2">
+                <table className="w-full min-w-[500px] text-xs">
                   <thead>
                     <tr className="border-b border-[#e2e8f0] bg-[#f1f5f9]">
                       <th className="text-left py-0.5 px-2 text-[10px] text-[#64748b] uppercase">Item</th>
@@ -94,6 +95,7 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl , showGr
                   )}
                   </tbody>
                 </table>
+              </div>
               </div>
             </div>
           ))}

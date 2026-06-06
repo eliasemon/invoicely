@@ -24,7 +24,7 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups, showGr
             <span className="text-sm font-bold">{profile?.company_name || 'Your Company'}</span>
           </div>
           <div className="text-center sm:text-right print:text-right w-full sm:w-auto print:w-auto">
-            <span className="text-sm font-bold font-mono">{invoice.invoiceNumber}</span>
+            <span className="text-sm font-bold font-mono break-all">{invoice.invoiceNumber}</span>
             {profile?.qr_code_enabled && publicUrl && (
               <div className="mt-4 flex justify-center sm:justify-end print:justify-end">
                 <QRCodeSVG value={publicUrl} size={54} />
@@ -67,7 +67,8 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups, showGr
           </div>
 
           {/* Dense table */}
-          <table className="w-full mb-2 text-xs">
+          <div className="overflow-x-auto mb-2">
+                <table className="w-full min-w-[500px] mb-2 text-xs">
             <thead>
               <tr className="bg-[#f8fafc]">
                 <th className="text-left py-0.5 px-2 text-[10px] text-[#94a3b8] uppercase font-semibold border-b border-[#e2e8f0]">#</th>
@@ -117,6 +118,7 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups, showGr
               )}
             </tbody>
           </table>
+              </div>
 
           {/* Totals */}
           <div className="flex justify-end">

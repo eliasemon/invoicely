@@ -37,7 +37,7 @@ export function FintechA4Template({ invoice, profile, showGroups, showGroupTotal
             <div className="flex flex-col items-start sm:items-end print:items-end gap-3 text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto">
               <div className="inline-block bg-[#f8fafc] border border-[#e2e8f0] rounded-xl px-5 py-2.5">
                 <p className="text-[10px] text-[#64748b] uppercase tracking-wider font-semibold">Invoice</p>
-                <p className="text-[11px] font-bold text-[#10b981] font-mono">{invoice.invoiceNumber}</p>
+                <p className="text-[11px] font-bold text-[#10b981] font-mono break-all">{invoice.invoiceNumber}</p>
               </div>
 
               {/* Compact Client, Issued, Due Meta Card */}
@@ -73,7 +73,8 @@ export function FintechA4Template({ invoice, profile, showGroups, showGroupTotal
 
           {/* Items */}
           <div className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] overflow-hidden mb-3">
-            <table className="w-full text-xs">
+            <div className="overflow-x-auto mb-2">
+                <table className="w-full min-w-[500px] text-xs">
               <thead>
                 <tr className="border-b border-[#e2e8f0] bg-[#f1f5f9]">
                   <th className="text-left py-1 px-2 text-[10px] text-[#64748b] uppercase tracking-wider">Item</th>
@@ -120,6 +121,7 @@ export function FintechA4Template({ invoice, profile, showGroups, showGroupTotal
                 )}
               </tbody>
             </table>
+              </div>
           </div>
 
           {/* Totals */}

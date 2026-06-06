@@ -45,7 +45,7 @@ export function GeometricA4Template({ invoice, profile, showGroups, showGroupTot
             </div>
             <div className="text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto bg-[#f8fafc] p-4 rounded-xl border border-[#e2e8f0]">
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider">Invoice</p>
-              <p className="text-[11px] font-bold text-[#3b82f6] font-mono">{invoice.invoiceNumber}</p>
+              <p className="text-[11px] font-bold text-[#3b82f6] font-mono break-all">{invoice.invoiceNumber}</p>
               <p className="text-[11px] text-[#64748b] mt-2 font-mono">{formatDate(issueDate)}</p>
               {profile?.qr_code_enabled && publicUrl && (
                 <div className="mt-4 flex justify-start sm:justify-end print:justify-end">

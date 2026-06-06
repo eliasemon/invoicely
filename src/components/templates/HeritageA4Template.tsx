@@ -54,7 +54,8 @@ export function HeritageA4Template({ invoice, profile, showGroups, showGroupTota
           </div>
 
           {/* Items */}
-          <table className="w-full mb-3">
+          <div className="overflow-x-auto mb-2">
+                <table className="w-full min-w-[500px] mb-3">
             <thead>
               <tr className="border-y-2 border-[#8b7355]">
                 <th className="text-left py-0.5 text-[11px] text-[#8b7355] uppercase tracking-wider">Item</th>
@@ -101,6 +102,7 @@ export function HeritageA4Template({ invoice, profile, showGroups, showGroupTota
               )}
             </tbody>
           </table>
+              </div>
 
           {/* Totals */}
           <div className="flex justify-end mb-3">

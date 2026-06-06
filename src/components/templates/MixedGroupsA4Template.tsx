@@ -31,7 +31,7 @@ export function MixedGroupsA4Template({ invoice, profile , publicUrl , showGroup
               )}
             </div>
             <div className="text-left sm:text-right print:text-right w-full sm:w-auto">
-              <p className="text-[11px] font-bold font-mono">{invoice.invoiceNumber}</p>
+              <p className="text-[11px] font-bold font-mono break-all">{invoice.invoiceNumber}</p>
               <p className="text-[11px] text-blue-200 mt-1">{formatDate(issueDate)}</p>
             </div>
           </div>

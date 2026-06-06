@@ -65,7 +65,8 @@ export function RedClassicGroupedTemplate({ invoice, profile, publicUrl, showGro
 
         {/* Table */}
         <div className="mb-4 w-full">
-          <table className="w-full text-[11px] border-collapse border border-gray-300">
+          <div className="overflow-x-auto mb-2">
+                <table className="w-full min-w-[500px] text-[11px] border-collapse border border-gray-300">
             <thead>
               <tr className="bg-[#8b0000] text-white">
                 <th className="border border-gray-300 py-1 px-1 text-center w-10 font-bold">Sl<br/>No</th>
@@ -147,6 +148,7 @@ export function RedClassicGroupedTemplate({ invoice, profile, publicUrl, showGro
               </tr>
             </tbody>
           </table>
+              </div>
         </div>
 
         {/* Amount in Words */}

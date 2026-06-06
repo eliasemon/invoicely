@@ -65,7 +65,8 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
           </div>
 
           {/* Items */}
-          <table className="w-full mb-2">
+          <div className="overflow-x-auto mb-2">
+                <table className="w-full min-w-[500px] mb-2">
             <thead>
               <tr className="border-b-2 border-[#0058be]">
                 <th className="text-left py-0.5 text-[11px] text-[#64748b] uppercase tracking-wider">Description</th>
@@ -112,6 +113,7 @@ export function PristineA4Template({ invoice, profile, showGroups, showGroupTota
               )}
             </tbody>
           </table>
+              </div>
 
           {/* Totals */}
           <div className="flex justify-end">

@@ -35,7 +35,7 @@ export function EnterpriseA4Template({ invoice, profile, showGroups, showGroupTo
               </div>
               <div className="text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto">
                 <h2 className="text-xs text-[#94a3b8] uppercase tracking-[0.2em] mb-1">Tax Invoice</h2>
-                <p className="text-[11px] font-bold text-[#1e40af] font-mono">{invoice.invoiceNumber}</p>
+                <p className="text-[11px] font-bold text-[#1e40af] font-mono break-all">{invoice.invoiceNumber}</p>
                 {profile?.qr_code_enabled && publicUrl && (
                   <div className="mt-4 flex justify-start sm:justify-end print:justify-end">
                     <QRCodeSVG value={publicUrl} size={54} />
@@ -53,53 +53,55 @@ export function EnterpriseA4Template({ invoice, profile, showGroups, showGroupTo
             </div>
 
             {/* Items */}
-            <table className="w-full mb-2 text-xs">
-              <thead>
-                <tr className="bg-[#1e40af] text-white">
-                  <th className="text-left py-0.5 px-2 text-[10px] uppercase tracking-wider font-semibold">Description</th>
-                  <th className="text-right py-0.5 px-2 text-[10px] uppercase tracking-wider font-semibold w-20">Qty</th>
-                  <th className="text-right py-0.5 px-2 text-[10px] uppercase tracking-wider font-semibold w-28">Unit Price</th>
-                  <th className="text-right py-0.5 px-2 text-[10px] uppercase tracking-wider font-semibold w-28">Amount</th>
-                </tr>
-              </thead>
-              <tbody className="font-mono">
-                {showGroups && invoice.groups && invoice.groups.length > 0 ? (
-                  invoice.groups.map((group, gIdx) => (
-                    <React.Fragment key={gIdx}>
-                      {group.name && (
-                        <tr className="bg-slate-100 font-bold">
-                          <td className="py-0.5 px-2 text-[10px] text-[#1e293b] border-b border-[#e2e8f0] uppercase text-left font-semibold" style={{ fontFamily: 'Geist, sans-serif' }}>{group.name}</td>
-                        </tr>
-                      )}
-                      {group.items.map((item, iIdx) => (
-                        <tr key={iIdx} className={`border-b border-[#f1f5f9] ${iIdx % 2 === 1 ? 'bg-[#f8fafc]' : ''}`}>
-                          <td className="py-0.5 px-2 text-[#1e293b]" style={{ fontFamily: 'Geist, sans-serif' }}>{item.name}</td>
-                          <td className="py-0.5 px-2 text-right text-[#64748b]">{item.quantity}</td>
-                          <td className="py-0.5 px-2 text-right text-[#64748b]">{formatMoney(item.unitPrice, sym)}</td>
-                          <td className="py-0.5 px-2 text-right font-semibold text-[#1e293b]">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
-                        </tr>
-                      ))}
+            <div className="overflow-x-auto mb-2">
+              <table className="w-full text-xs min-w-[500px]">
+                <thead>
+                  <tr className="bg-[#1e40af] text-white">
+                    <th className="text-left py-0.5 px-2 text-[10px] uppercase tracking-wider font-semibold">Description</th>
+                    <th className="text-right py-0.5 px-2 text-[10px] uppercase tracking-wider font-semibold w-20">Qty</th>
+                    <th className="text-right py-0.5 px-2 text-[10px] uppercase tracking-wider font-semibold w-28">Unit Price</th>
+                    <th className="text-right py-0.5 px-2 text-[10px] uppercase tracking-wider font-semibold w-28">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="font-mono">
+                  {showGroups && invoice.groups && invoice.groups.length > 0 ? (
+                    invoice.groups.map((group, gIdx) => (
+                      <React.Fragment key={gIdx}>
+                        {group.name && (
+                          <tr className="bg-slate-100 font-bold">
+                            <td colSpan={4} className="py-0.5 px-2 text-[10px] text-[#1e293b] border-b border-[#e2e8f0] uppercase text-left font-semibold" style={{ fontFamily: 'Geist, sans-serif' }}>{group.name}</td>
+                          </tr>
+                        )}
+                        {group.items.map((item, iIdx) => (
+                          <tr key={iIdx} className={`border-b border-[#f1f5f9] ${iIdx % 2 === 1 ? 'bg-[#f8fafc]' : ''}`}>
+                            <td className="py-0.5 px-2 text-[#1e293b]" style={{ fontFamily: 'Geist, sans-serif' }}>{item.name}</td>
+                            <td className="py-0.5 px-2 text-right text-[#64748b]">{item.quantity}</td>
+                            <td className="py-0.5 px-2 text-right text-[#64748b]">{formatMoney(item.unitPrice, sym)}</td>
+                            <td className="py-0.5 px-2 text-right font-semibold text-[#1e293b]">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
+                          </tr>
+                        ))}
 
-                  {showGroupTotals && (
-                    <tr className="bg-transparent">
-                      <td className="py-0.5 px-2 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">Group Subtotal</td>
-                      <td className="py-0.5 px-2 text-right text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</td>
-                    </tr>
+                    {showGroupTotals && (
+                      <tr className="bg-transparent">
+                        <td colSpan={3} className="py-0.5 px-2 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">Group Subtotal</td>
+                        <td className="py-0.5 px-2 text-right text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</td>
+                      </tr>
+                    )}
+                      </React.Fragment>
+                    ))
+                  ) : (
+                    items.map((item, idx) => (
+                      <tr key={idx} className={`border-b border-[#f1f5f9] ${idx % 2 === 1 ? 'bg-[#f8fafc]' : ''}`}>
+                        <td className="py-0.5 px-2 text-[#1e293b]" style={{ fontFamily: 'Geist, sans-serif' }}>{item.name}</td>
+                        <td className="py-0.5 px-2 text-right text-[#64748b]">{item.quantity}</td>
+                        <td className="py-0.5 px-2 text-right text-[#64748b]">{formatMoney(item.unitPrice, sym)}</td>
+                        <td className="py-0.5 px-2 text-right font-semibold text-[#1e293b]">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
+                      </tr>
+                    ))
                   )}
-                    </React.Fragment>
-                  ))
-                ) : (
-                  items.map((item, idx) => (
-                    <tr key={idx} className={`border-b border-[#f1f5f9] ${idx % 2 === 1 ? 'bg-[#f8fafc]' : ''}`}>
-                      <td className="py-0.5 px-2 text-[#1e293b]" style={{ fontFamily: 'Geist, sans-serif' }}>{item.name}</td>
-                      <td className="py-0.5 px-2 text-right text-[#64748b]">{item.quantity}</td>
-                      <td className="py-0.5 px-2 text-right text-[#64748b]">{formatMoney(item.unitPrice, sym)}</td>
-                      <td className="py-0.5 px-2 text-right font-semibold text-[#1e293b]">{formatMoney(item.quantity * item.unitPrice, sym)}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
 
             {/* Totals */}
             <div className="flex justify-end">
