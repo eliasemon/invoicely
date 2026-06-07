@@ -9,7 +9,7 @@ export interface AuthContextValue {
   loading: boolean;
   error: string | null;
   signIn: (credentials: AuthCredentials) => Promise<void>;
-  signUp: (credentials: SignupCredentials) => Promise<void>;
+  signUp: (credentials: SignupCredentials) => Promise<AuthUser | null>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -45,10 +45,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (credentials: SignupCredentials) => {
+  const signUp = async (credentials: SignupCredentials): Promise<AuthUser | null> => {
     setError(null);
     try {
-      await authAdapter.signUpWithEmail(credentials);
+      const result = await authAdapter.signUpWithEmail(credentials);
+      return result;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to sign up';
       setError(msg);

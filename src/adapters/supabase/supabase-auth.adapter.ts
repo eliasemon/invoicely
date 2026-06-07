@@ -79,7 +79,10 @@ export class SupabaseAuthAdapter implements IAuthProvider {
 
   async signInWithGoogle(): Promise<AuthUser> {
     // Delegate to server action so that APP_BASE_URL can be securely accessed on the server
-    await signInWithGoogleAction();
+    const res = await signInWithGoogleAction();
+    if (res?.url) {
+      window.location.href = res.url;
+    }
     return null as unknown as AuthUser;
   }
 

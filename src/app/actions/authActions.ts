@@ -32,9 +32,7 @@ export async function signInWithGoogleAction() {
     throw new Error(error.message);
   }
 
-  if (data.url) {
-    redirect(data.url);
-  }
+  return { url: data.url };
 }
 
 export async function resetPasswordAction(email: string) {

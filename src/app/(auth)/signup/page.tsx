@@ -11,6 +11,8 @@ function SignupForm() {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
+  const [isVerificationSent, setIsVerificationSent] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
   const { signUp, signInWithGoogle, error: authError } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,15 +34,59 @@ function SignupForm() {
     setIsSubmitting(true);
     
     try {
-      await signUp({ email, password, displayName: name });
-      router.refresh();
-      router.push(redirectPath);
+      const user = await signUp({ email, password, displayName: name });
+      if (user && !user.emailVerified) {
+        setRegisteredEmail(email);
+        setIsVerificationSent(true);
+      } else {
+        router.refresh();
+        router.push(redirectPath);
+      }
     } catch (err) {
       console.error(err);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isVerificationSent) {
+    return (
+      <div className="w-full max-w-[448px] bg-surface-container-lowest border border-outline-variant shadow-lg rounded-2xl p-6 sm:p-xl my-8">
+        <div className="mb-lg text-center">
+          <div className="w-16 h-16 bg-primary-container text-primary rounded-full flex items-center justify-center mx-auto mb-md">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0l-7.5-4.615a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+          </div>
+          <h1 className="font-headline-lg text-headline-lg text-primary mb-xs">Verify your email</h1>
+          <p className="font-body-md text-body-md text-on-surface-variant">
+            We have sent a verification link to <span className="font-semibold text-on-surface">{registeredEmail}</span>.
+          </p>
+        </div>
+
+        <div className="space-y-md text-center">
+          <p className="font-body-md text-body-md text-on-surface-variant mb-md">
+            Please check your email inbox and click on the activation link to activate your account.
+          </p>
+
+          <Link
+            href="/login"
+            className="w-full h-12 flex items-center justify-center bg-primary text-on-primary rounded-lg font-body-md text-body-md font-medium hover:bg-primary-container transition-colors shadow-md active:scale-[0.98] duration-150"
+          >
+            Go to Sign In
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => setIsVerificationSent(false)}
+            className="w-full text-center font-label-sm text-label-sm text-primary hover:underline font-medium mt-sm"
+          >
+            Did you make a typo? Change email
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-[448px] bg-surface-container-lowest border border-outline-variant shadow-lg rounded-2xl p-6 sm:p-xl my-8">
