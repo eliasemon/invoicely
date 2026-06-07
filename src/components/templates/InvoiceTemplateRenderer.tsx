@@ -19,6 +19,7 @@ import { ModernPurpleTemplate } from './ModernPurpleTemplate';
 
 interface InvoiceTemplateRendererProps extends TemplateProps {
   templateId?: string;
+  hideToggles?: boolean;
 }
 
 const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
@@ -39,9 +40,29 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
   'modern-purple': ModernPurpleTemplate,
 };
 
-export function InvoiceTemplateRenderer({ templateId, invoice, profile, isPreview, publicUrl }: InvoiceTemplateRendererProps) {
-  const [showGroups, setShowGroups] = useState(false);
-  const [showGroupTotals, setShowGroupTotals] = useState(false);
+export function InvoiceTemplateRenderer({ 
+  templateId, 
+  invoice, 
+  profile, 
+  isPreview, 
+  publicUrl,
+  hideToggles = false,
+  showGroups: controlledShowGroups,
+  showGroupTotals: controlledShowGroupTotals,
+}: InvoiceTemplateRendererProps) {
+  const [internalShowGroups, setInternalShowGroups] = useState(false);
+  const [internalShowGroupTotals, setInternalShowGroupTotals] = useState(false);
+
+  const showGroups = controlledShowGroups !== undefined ? controlledShowGroups : internalShowGroups;
+  const showGroupTotals = controlledShowGroupTotals !== undefined ? controlledShowGroupTotals : internalShowGroupTotals;
+
+  const setShowGroups = (val: boolean) => {
+    setInternalShowGroups(val);
+  };
+  const setShowGroupTotals = (val: boolean) => {
+    setInternalShowGroupTotals(val);
+  };
+
   const TemplateComponent = TEMPLATE_MAP[templateId || 'modern-template'] || ModernTemplate;
 
   // Normalize profile to make sure company_address falls back to billing_address
@@ -57,7 +78,7 @@ export function InvoiceTemplateRenderer({ templateId, invoice, profile, isPrevie
 
   return (
     <div className="flex flex-col items-center w-full print:block print:w-[210mm] print:p-0 print:m-0">
-      {hasGroups && (
+      {hasGroups && !hideToggles && (
         <div className="mb-6 flex flex-col gap-3 bg-white border border-[#e2e8f0] rounded-xl px-5 py-3 shadow-md text-sm print:hidden max-w-[210mm] w-full mx-auto">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
