@@ -4,7 +4,11 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
 function getBaseUrl() {
-  const envUrl = process.env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL;
+  const envUrl =
+    process.env.APP_BASE_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+    process.env.VERCEL_URL;
   if (!envUrl) {
     throw new Error('APP_BASE_URL environment variable is missing.');
   }
@@ -15,7 +19,7 @@ function getBaseUrl() {
 
 export async function signInWithGoogleAction() {
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -35,7 +39,7 @@ export async function signInWithGoogleAction() {
 
 export async function resetPasswordAction(email: string) {
   const supabase = await createClient();
-  
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${getBaseUrl()}/reset-password`,
   });
