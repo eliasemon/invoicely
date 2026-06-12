@@ -107,6 +107,7 @@ export function CustomerDetails({
             id="customerName" 
             placeholder="e.g. Acme Corp" 
             type="text" 
+            maxLength={50}
             value={clientName}
             onChange={handleNameChange}
             onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
@@ -173,6 +174,7 @@ export function CustomerDetails({
             className="w-full min-h-[80px] p-sm rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors font-body-md text-body-md text-on-surface placeholder:text-outline resize-y" 
             id="customerAddress" 
             placeholder="123 Business St&#10;City, Country 12345" 
+            maxLength={300}
             value={clientAddress}
             onChange={(e) => setClientAddress(e.target.value)}
           />

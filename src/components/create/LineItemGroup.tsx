@@ -43,6 +43,7 @@ export function LineItemGroup({
           <input 
             className="font-headline-md text-headline-md text-primary bg-transparent border-none p-0 focus:ring-0 w-full truncate font-semibold" 
             type="text" 
+            maxLength={100}
             value={group.name}
             onChange={(e) => updateGroupName(group.id, e.target.value)}
             onClick={(e) => e.stopPropagation()}

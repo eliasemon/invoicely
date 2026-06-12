@@ -17,6 +17,7 @@ export function BusinessInfoSection({ profile, onChange }: SectionProps) {
           <input 
             className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
             type="text" 
+            maxLength={50}
             value={profile.company_name || ''}
             onChange={(e) => onChange({ company_name: e.target.value })}
             placeholder="Acme Corporation Ltd."
@@ -28,6 +29,7 @@ export function BusinessInfoSection({ profile, onChange }: SectionProps) {
             <input 
               className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-data-mono text-data-mono text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
               type="text" 
+              maxLength={50}
               value={profile.business_registration || ''}
               onChange={(e) => onChange({ business_registration: e.target.value })}
               placeholder="CRN-98765432"
@@ -38,6 +40,7 @@ export function BusinessInfoSection({ profile, onChange }: SectionProps) {
             <input 
               className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-data-mono text-data-mono text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
               type="text" 
+              maxLength={50}
               value={profile.tax_id || ''}
               onChange={(e) => onChange({ tax_id: e.target.value })}
               placeholder="US123456789"
@@ -99,6 +102,7 @@ export function RegionalSettingsSection({ profile, onChange }: SectionProps) {
             className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
             placeholder="e.g. $" 
             type="text" 
+            maxLength={10}
             value={profile.currency_symbol || '$'}
             onChange={(e) => onChange({ currency_symbol: e.target.value })}
           />
@@ -118,6 +122,7 @@ export function ContactDetailsSection({ profile, onChange }: SectionProps) {
           <input 
             className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
             type="email" 
+            maxLength={150}
             value={profile.email || ''}
             onChange={(e) => onChange({ email: e.target.value })}
             placeholder="billing@acmecorp.com"
@@ -129,6 +134,7 @@ export function ContactDetailsSection({ profile, onChange }: SectionProps) {
             <input 
               className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
               type="tel" 
+              maxLength={30}
               value={profile.phone || ''}
               onChange={(e) => onChange({ phone: e.target.value })}
               placeholder="+1 (555) 123-4567"
@@ -139,6 +145,7 @@ export function ContactDetailsSection({ profile, onChange }: SectionProps) {
             <input 
               className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
               type="url" 
+              maxLength={200}
               value={profile.website || ''}
               onChange={(e) => onChange({ website: e.target.value })}
               placeholder="https://acmecorp.com"
@@ -150,6 +157,7 @@ export function ContactDetailsSection({ profile, onChange }: SectionProps) {
           <textarea 
             className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline resize-none" 
             rows={3} 
+            maxLength={300}
             value={profile.billing_address || ''}
             onChange={(e) => onChange({ billing_address: e.target.value })}
             placeholder="123 Corporate Blvd, Suite 400&#10;San Francisco, CA 94105&#10;United States"
@@ -248,6 +256,7 @@ export function SignatureSection({ profile, onChange }: SectionProps) {
             className="bg-transparent border-b border-outline-variant px-2 py-1 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-0 transition-colors w-1/2 hover:border-outline" 
             placeholder="Signatory Name (e.g. John Doe)" 
             type="text" 
+            maxLength={50}
             value={profile.signatory_name || ''}
             onChange={(e) => onChange({ signatory_name: e.target.value })}
           />
@@ -286,6 +295,7 @@ export function BankDetailsSection({ profile, onChange }: SectionProps) {
                 className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
                 placeholder="e.g. Chase Bank" 
                 type="text"
+                maxLength={100}
                 value={profile.bank_name || ''}
                 onChange={(e) => onChange({ bank_name: e.target.value })}
               />
@@ -296,6 +306,7 @@ export function BankDetailsSection({ profile, onChange }: SectionProps) {
                 className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
                 placeholder="e.g. Acme Corp Ltd" 
                 type="text"
+                maxLength={100}
                 value={profile.bank_account_holder || ''}
                 onChange={(e) => onChange({ bank_account_holder: e.target.value })}
               />
@@ -308,6 +319,7 @@ export function BankDetailsSection({ profile, onChange }: SectionProps) {
                 className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-data-mono text-data-mono text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
                 placeholder="e.g. US89 3704 ..." 
                 type="text"
+                maxLength={50}
                 value={profile.bank_account_number || ''}
                 onChange={(e) => onChange({ bank_account_number: e.target.value })}
               />
@@ -318,6 +330,7 @@ export function BankDetailsSection({ profile, onChange }: SectionProps) {
                 className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-data-mono text-data-mono text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
                 placeholder="e.g. CHASUS33" 
                 type="text"
+                maxLength={30}
                 value={profile.bank_swift || ''}
                 onChange={(e) => onChange({ bank_swift: e.target.value })}
               />

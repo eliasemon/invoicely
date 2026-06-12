@@ -100,6 +100,7 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
             className="font-body-md text-body-md text-on-surface font-medium bg-transparent border-none p-0 focus:ring-0 w-full truncate placeholder:text-outline" 
             type="text" 
             placeholder="Item name"
+            maxLength={150}
             value={item.name}
             onChange={(e) => {
               updateItem(item.id, 'name', e.target.value);

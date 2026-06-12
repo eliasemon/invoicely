@@ -26,8 +26,8 @@ export function RedClassicGroupedTemplate({ invoice, profile, publicUrl, showGro
   return (
  <div className="min-h-screen py-8 bg-gray-100 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Arial, sans-serif' }}> <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-black shadow-xl overflow-hidden print:shadow-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 p-8 print:p-6 relative">         
         {/* Header section */}
-        <div className="flex flex-row items-center justify-between mb-4 pb-4 border-b-4 border-[#8b0000]">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-row items-start justify-between mb-4 pb-4 border-b-4 border-[#8b0000]">
+          <div className="flex items-start gap-4">
             {profile?.company_logo && (
               <img alt="Company Logo" className="h-16 w-auto object-contain drop-shadow-sm" src={profile.company_logo} />
             )}
@@ -36,7 +36,7 @@ export function RedClassicGroupedTemplate({ invoice, profile, publicUrl, showGro
                 {profile?.company_name || 'COMPANY NAME'}
               </h1>
               {profile?.company_address && (
-                <p className="text-xs text-gray-600 mt-1.5 font-medium max-w-sm">{profile.company_address}</p>
+                <p className="text-xs text-gray-600 mt-1.5 font-medium max-w-[450px] whitespace-pre-line leading-tight">{profile.company_address}</p>
               )}
             </div>
           </div>
