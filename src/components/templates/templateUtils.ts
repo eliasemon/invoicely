@@ -22,6 +22,9 @@ export interface TemplateProps {
     signature_url?: string | null;
     signatory_name?: string | null;
     qr_code_enabled?: boolean;
+    terms_and_conditions?: string | null;
+    brand_voice_enabled?: boolean;
+    brand_voice?: string | null;
     tax_id?: string | null;
     business_registration?: string | null;
   } | null;

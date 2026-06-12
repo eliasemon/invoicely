@@ -365,3 +365,69 @@ export function QrCodeSection({ profile, onChange }: SectionProps) {
     </div>
   );
 }
+
+export function TermsAndConditionsSection({ profile, onChange }: SectionProps) {
+  return (
+    <div className="scroll-mt-36 bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300" id="terms-section">
+      <div className="flex items-center gap-3 mb-6 border-b border-surface-container-high pb-5">
+        <MaterialIcon icon="gavel" className="text-secondary text-[24px]" />
+        <div>
+          <h2 className="font-headline-md text-headline-md">Terms & Conditions</h2>
+          <p className="font-label-sm text-label-sm text-on-surface-variant mt-1">Add default terms, conditions, or notes to be displayed at the bottom of your invoices.</p>
+        </div>
+      </div>
+      
+      <div className="flex flex-col gap-2">
+        <label className="font-label-sm text-label-sm text-on-surface-variant uppercase">Standard Terms</label>
+        <textarea 
+          className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline min-h-[120px] resize-y" 
+          placeholder="e.g. Please pay within 15 days of receiving this invoice. Late payments are subject to a 2% monthly fee." 
+          value={profile.terms_and_conditions || ''}
+          maxLength={2000}
+          onChange={(e) => onChange({ terms_and_conditions: e.target.value })}
+        />
+        <p className="text-xs text-on-surface-variant mt-1">This text will be included on all new invoices.</p>
+      </div>
+    </div>
+  );
+}
+
+export function BrandVoiceSection({ profile, onChange }: SectionProps) {
+  const enabled = profile.brand_voice_enabled ?? true;
+
+  return (
+    <div className="scroll-mt-36 bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300" id="brand-voice-section">
+      <div className="flex items-center justify-between mb-6 border-b border-surface-container-high pb-5">
+        <div className="flex items-center gap-3">
+          <MaterialIcon icon="record_voice_over" className="text-secondary text-[24px]" />
+          <div>
+            <h2 className="font-headline-md text-headline-md">Brand Voice & Note</h2>
+            <p className="font-label-sm text-label-sm text-on-surface-variant mt-1">Add a company tagline, slogan, or a short note to appear below your company name.</p>
+          </div>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input 
+            checked={enabled} 
+            onChange={(e) => onChange({ brand_voice_enabled: e.target.checked })} 
+            className="sr-only peer" 
+            type="checkbox"
+          />
+          <div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+        </label>
+      </div>
+      
+      <div className={`transition-all duration-300 overflow-hidden ${enabled ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="flex flex-col gap-2">
+          <label className="font-label-sm text-label-sm text-on-surface-variant uppercase">Note / Tagline</label>
+          <textarea 
+            className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline min-h-[80px] resize-y" 
+            placeholder="e.g. Empowering Your Business | Thanks for working with us!" 
+            value={profile.brand_voice || ''}
+            maxLength={500}
+            onChange={(e) => onChange({ brand_voice: e.target.value })}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,9 +1,24 @@
-import React from 'react';
-import { QRCodeSVG } from 'qrcode.react';
-import { TemplateProps, formatDate, formatMoney, getIssueDate, getDueDate, getSubtotal, getDiscountAmount, getShippingCost, getTotal } from './templateUtils';
+import React from "react";
+import { QRCodeSVG } from "qrcode.react";
+import {
+  TemplateProps,
+  formatDate,
+  formatMoney,
+  getIssueDate,
+  getDueDate,
+  getSubtotal,
+  getDiscountAmount,
+  getShippingCost,
+  getTotal,
+} from "./templateUtils";
 
-export function MixedGroupsA4Template({ invoice, profile , publicUrl , showGroupTotals }: TemplateProps) {
-  const sym = invoice.currency_symbol || '$';
+export function MixedGroupsA4Template({
+  invoice,
+  profile,
+  publicUrl,
+  showGroupTotals,
+}: TemplateProps) {
+  const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
@@ -14,72 +29,162 @@ export function MixedGroupsA4Template({ invoice, profile , publicUrl , showGroup
   const balanceDue = Math.max(0, total - amountPaid);
 
   return (
- <div className="min-h-screen py-8 bg-[#f8fafc] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}> <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-md rounded-lg overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">         {/* Header */}
+    <div
+      className="min-h-screen py-8 bg-[#f8fafc] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
+      style={{ fontFamily: "Hanken Grotesk, sans-serif" }}
+    >
+      {" "}
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-md rounded-lg overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
+        {" "}
+        {/* Header */}
         <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8e] text-white px-6 py-4">
           <div className="flex flex-row print:flex-row justify-between items-start gap-3">
             <div>
               {profile?.company_logo && (
-                <img alt="Company Logo" className="max-h-16 max-w-[200px] mb-2 object-contain brightness-0 invert w-auto h-auto" src={profile.company_logo} />
+                <img
+                  alt="Company Logo"
+                  className="max-h-16 max-w-[200px] mb-2 object-contain brightness-0 invert w-auto h-auto"
+                  src={profile.company_logo}
+                />
               )}
-              <h1 className="text-sm font-bold mb-1" style={{ fontFamily: 'Work Sans, sans-serif' }}>{profile?.company_name || 'Your Company'}</h1>
-              {profile?.email && <p className="text-[11px] text-blue-200">{profile.email}</p>}
-              {profile?.phone && <p className="text-[11px] text-blue-200">{profile.phone}</p>}
+              <h1
+                className="text-sm font-bold mb-1"
+                style={{ fontFamily: "Work Sans, sans-serif" }}
+              >
+                {profile?.company_name || "Your Company"}
+              </h1>
+              {((invoice.brand_voice_enabled ?? profile?.brand_voice_enabled ?? true) && (invoice.brand_voice || profile?.brand_voice)) && (
+                <p className="text-[11px] text-blue-200/90 italic mb-1">
+                  {invoice.brand_voice || profile?.brand_voice}
+                </p>
+              )}
+              {profile?.email && (
+                <p className="text-[11px] text-blue-200">{profile.email}</p>
+              )}
+              {profile?.phone && (
+                <p className="text-[11px] text-blue-200">{profile.phone}</p>
+              )}
               {profile?.company_address && (
-                <p className="text-[11px] text-blue-200/80 mt-2 whitespace-pre-line">{profile.company_address}</p>
+                <p className="text-[11px] text-blue-200/80 mt-2 whitespace-pre-line">
+                  {profile.company_address}
+                </p>
               )}
             </div>
             <div className="text-right print:text-right w-auto">
-              <p className="text-[11px] font-bold font-mono break-all">{invoice.invoiceNumber}</p>
-              <p className="text-[11px] text-blue-200 mt-1">{formatDate(issueDate)}</p>
+              <p className="text-[11px] font-bold font-mono break-all">
+                {invoice.invoiceNumber}
+              </p>
+              <p className="text-[11px] text-blue-200 mt-1">
+                {formatDate(issueDate)}
+              </p>
             </div>
           </div>
         </div>
-
         <div className="p-6 p-6 print:p-6">
           {/* Client & dates */}
           <div className="flex flex-row print:flex-row justify-between gap-3 mb-3 pb-4 border-b border-[#e2e8f0]">
             <div>
-              <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-semibold mb-2">Bill To</p>
-              <p className="text-[11px] font-bold text-[#1e293b]">{invoice.clientName}</p>
-              <p className="text-[11px] text-[#64748b] whitespace-pre-line mt-1">{invoice.clientAddress || invoice.clientPhone}</p>
+              <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-semibold mb-2">
+                Bill To
+              </p>
+              <p className="text-[11px] font-bold text-[#1e293b]">
+                {invoice.clientName}
+              </p>
+              <p className="text-[11px] text-[#64748b] whitespace-pre-line mt-1">
+                {invoice.clientAddress || invoice.clientPhone}
+              </p>
             </div>
             <div className="text-right print:text-right w-auto">
-              <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-semibold mb-2">Due Date</p>
+              <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-semibold mb-2">
+                Due Date
+              </p>
               <p className="text-[11px] font-mono">{formatDate(dueDate)}</p>
-              <div className={`inline-block mt-2 px-3 py-1 rounded text-[11px] font-bold uppercase ${
-                invoice.status === 'PAID' ? 'bg-emerald-50 text-emerald-700' : 'bg-orange-50 text-orange-700'
-              }`}>{invoice.status}</div>
+              <div
+                className={`inline-block mt-2 px-3 py-1 rounded text-[11px] font-bold uppercase ${
+                  invoice.status === "PAID"
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "bg-orange-50 text-orange-700"
+                }`}
+              >
+                {invoice.status}
+              </div>
             </div>
           </div>
 
           {/* Grouped items with alternating colors */}
           {invoice.groups?.map((group, gIdx) => {
-            const colors = ['#eef2ff', '#ecfdf5', '#fff7ed', '#fef2f2', '#f5f3ff'];
-            const borderColors = ['#c7d2fe', '#a7f3d0', '#fed7aa', '#fecaca', '#ddd6fe'];
+            const colors = [
+              "#eef2ff",
+              "#ecfdf5",
+              "#fff7ed",
+              "#fef2f2",
+              "#f5f3ff",
+            ];
+            const borderColors = [
+              "#c7d2fe",
+              "#a7f3d0",
+              "#fed7aa",
+              "#fecaca",
+              "#ddd6fe",
+            ];
             const color = colors[gIdx % colors.length];
             const borderColor = borderColors[gIdx % borderColors.length];
-            
+
             return (
               <div key={gIdx} className="mb-2">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-3 h-3 rounded" style={{ backgroundColor: borderColor }}></div>
-                  <h3 className="text-sm font-bold text-[#334155] uppercase tracking-wider">{group.name || `Category ${gIdx + 1}`}</h3>
+                  <div
+                    className="w-3 h-3 rounded"
+                    style={{ backgroundColor: borderColor }}
+                  ></div>
+                  <h3 className="text-sm font-bold text-[#334155] uppercase tracking-wider">
+                    {group.name || `Category ${gIdx + 1}`}
+                  </h3>
                 </div>
-                <div className="rounded-lg overflow-hidden border" style={{ borderColor }}>
+                <div
+                  className="rounded-lg overflow-hidden border"
+                  style={{ borderColor }}
+                >
                   {group.items.map((item, iIdx) => (
-                    <div key={iIdx} className="flex justify-between items-center px-3 py-1.5 border-b last:border-b-0" style={{ backgroundColor: iIdx % 2 === 0 ? color : 'white', borderColor }}>
+                    <div
+                      key={iIdx}
+                      className="flex justify-between items-center px-3 py-1.5 border-b last:border-b-0"
+                      style={{
+                        backgroundColor: iIdx % 2 === 0 ? color : "white",
+                        borderColor,
+                      }}
+                    >
                       <div>
-                        <p className="font-medium text-[#1e293b]">{item.name}</p>
-                        <p className="text-[11px] text-[#94a3b8] font-mono mt-0.5">{item.quantity} × {formatMoney(item.unitPrice, sym)}</p>
+                        <p className="font-medium text-[#1e293b]">
+                          {item.name}
+                        </p>
+                        <p className="text-[11px] text-[#94a3b8] font-mono mt-0.5">
+                          {item.quantity} × {formatMoney(item.unitPrice, sym)}
+                        </p>
                       </div>
-                      <p className="font-mono font-semibold text-[#1e293b]">{formatMoney(item.quantity * item.unitPrice, sym)}</p>
+                      <p className="font-mono font-semibold text-[#1e293b]">
+                        {formatMoney(item.quantity * item.unitPrice, sym)}
+                      </p>
                     </div>
                   ))}
 
                   {showGroupTotals && (
                     <div className="flex justify-between items-center px-3 py-0.5 bg-transparent border-t border-slate-100/50">
-                      <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">Group Subtotal</div>
-                      <div className="text-[10px] font-medium text-slate-500" style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(group.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), sym)}</div>
+                      <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">
+                        Group Subtotal
+                      </div>
+                      <div
+                        className="text-[10px] font-medium text-slate-500"
+                        style={{ fontFamily: "Geist, monospace" }}
+                      >
+                        {formatMoney(
+                          group.items.reduce(
+                            (sum, item) => sum + item.quantity * item.unitPrice,
+                            0,
+                          ),
+                          sym,
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -95,18 +200,36 @@ export function MixedGroupsA4Template({ invoice, profile , publicUrl , showGroup
               </div>
             )}
             <div className="w-64 print:w-64 ml-auto">
-              <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
-              
+              <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono">
+                <span>Subtotal</span>
+                <span>{formatMoney(subtotal, sym)}</span>
+              </div>
+
               {discountAmount > 0 && (
-                <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Discount {invoice.discount_type === 'percentage' ? `(${invoice.discount_value}%)` : ''}</span><span>-{formatMoney(discountAmount, sym)}</span></div>
+                <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono">
+                  <span>
+                    Discount{" "}
+                    {invoice.discount_type === "percentage"
+                      ? `(${invoice.discount_value}%)`
+                      : ""}
+                  </span>
+                  <span>-{formatMoney(discountAmount, sym)}</span>
+                </div>
               )}
-              <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Tax</span><span>{formatMoney(0, sym)}</span></div>
+              <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono">
+                <span>Tax</span>
+                <span>{formatMoney(0, sym)}</span>
+              </div>
               {shippingCost > 0 && (
-                <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono"><span>Shipping</span><span>+{formatMoney(shippingCost, sym)}</span></div>
+                <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono">
+                  <span>Shipping</span>
+                  <span>+{formatMoney(shippingCost, sym)}</span>
+                </div>
               )}
-            
+
               <div className="flex justify-between py-3 mt-2 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8e] text-white px-4 rounded-lg font-bold font-mono text-sm">
-                <span>Total</span><span>{formatMoney(total, sym)}</span>
+                <span>Total</span>
+                <span>{formatMoney(total, sym)}</span>
               </div>
               {amountPaid > 0 && (
                 <>
@@ -123,42 +246,113 @@ export function MixedGroupsA4Template({ invoice, profile , publicUrl , showGroup
             </div>
           </div>
           {/* Bank Details & Signature Section */}
-          {(((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ||
-            ((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name))) && (
+          {(((profile?.bank_enabled ?? true) &&
+            (invoice.bank_name || profile?.bank_name)) ||
+            ((profile?.signature_enabled ?? true) &&
+              (invoice.signature_url ||
+                profile?.signature_url ||
+                invoice.signatory_name ||
+                profile?.signatory_name))) && (
             <div className="grid grid-cols-2 print:grid-cols-2 gap-2 mt-3 border-t border-[#e2e8f0] pt-4 text-left w-full">
               {/* Bank Details */}
-              {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
+              {(profile?.bank_enabled ?? true) &&
+              (invoice.bank_name || profile?.bank_name) ? (
                 <div>
-                  <h4 className="text-[10px] text-[#64748b] uppercase tracking-wider font-semibold mb-2">Settlement Details</h4>
+                  <h4 className="text-[10px] text-[#64748b] uppercase tracking-wider font-semibold mb-2">
+                    Settlement Details
+                  </h4>
                   <div className="text-sm text-[#475569] space-y-1 font-mono">
-                    <p><span className="font-semibold text-[#1e293b]" style={{ fontFamily: 'Geist, sans-serif' }}>Bank:</span> {invoice.bank_name || profile?.bank_name}</p>
-                    {(invoice.bank_account_holder || profile?.bank_account_holder) && (
-                      <p><span className="font-semibold text-[#1e293b]" style={{ fontFamily: 'Geist, sans-serif' }}>Holder:</span> {invoice.bank_account_holder || profile?.bank_account_holder}</p>
+                    <p>
+                      <span
+                        className="font-semibold text-[#1e293b]"
+                        style={{ fontFamily: "Geist, sans-serif" }}
+                      >
+                        Bank:
+                      </span>{" "}
+                      {invoice.bank_name || profile?.bank_name}
+                    </p>
+                    {(invoice.bank_account_holder ||
+                      profile?.bank_account_holder) && (
+                      <p>
+                        <span
+                          className="font-semibold text-[#1e293b]"
+                          style={{ fontFamily: "Geist, sans-serif" }}
+                        >
+                          Holder:
+                        </span>{" "}
+                        {invoice.bank_account_holder ||
+                          profile?.bank_account_holder}
+                      </p>
                     )}
-                    {(invoice.bank_account_number || profile?.bank_account_number) && (
-                      <p><span className="font-semibold text-[#1e293b]" style={{ fontFamily: 'Geist, sans-serif' }}>Account:</span> {invoice.bank_account_number || profile?.bank_account_number}</p>
+                    {(invoice.bank_account_number ||
+                      profile?.bank_account_number) && (
+                      <p>
+                        <span
+                          className="font-semibold text-[#1e293b]"
+                          style={{ fontFamily: "Geist, sans-serif" }}
+                        >
+                          Account:
+                        </span>{" "}
+                        {invoice.bank_account_number ||
+                          profile?.bank_account_number}
+                      </p>
                     )}
                     {(invoice.bank_swift || profile?.bank_swift) && (
-                      <p><span className="font-semibold text-[#1e293b]" style={{ fontFamily: 'Geist, sans-serif' }}>SWIFT:</span> {invoice.bank_swift || profile?.bank_swift}</p>
+                      <p>
+                        <span
+                          className="font-semibold text-[#1e293b]"
+                          style={{ fontFamily: "Geist, sans-serif" }}
+                        >
+                          SWIFT:
+                        </span>{" "}
+                        {invoice.bank_swift || profile?.bank_swift}
+                      </p>
                     )}
                   </div>
                 </div>
-              ) : <div></div>}
+              ) : (
+                <div></div>
+              )}
 
               {/* Signature */}
               <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
-                    
-                    {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
-                <div className="flex flex-col items-end">
-                  {(invoice.signature_url || profile?.signature_url) && (
-                    <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-10 mb-2 object-contain" />
+                {(profile?.signature_enabled ?? true) &&
+                  (invoice.signature_url ||
+                    profile?.signature_url ||
+                    invoice.signatory_name ||
+                    profile?.signatory_name) && (
+                    <div className="flex flex-col items-end">
+                      {(invoice.signature_url || profile?.signature_url) && (
+                        <img
+                          src={
+                            invoice.signature_url ||
+                            profile?.signature_url ||
+                            undefined
+                          }
+                          alt="Signature"
+                          className="h-10 mb-2 object-contain"
+                        />
+                      )}
+                      <div className="w-full border-b border-[#e2e8f0] mb-1"></div>
+                      <p className="text-[11px] text-[#64748b] font-semibold">
+                        {invoice.signatory_name ||
+                          profile?.signatory_name ||
+                          "Authorized Signatory"}
+                      </p>
+                    </div>
                   )}
-                  <div className="w-full border-b border-[#e2e8f0] mb-1"></div>
-                  <p className="text-[11px] text-[#64748b] font-semibold">{invoice.signatory_name || profile?.signatory_name || 'Authorized Signatory'}</p>
-                </div>
-              )}
-                  </div>
-            
+              </div>
+            </div>
+          )}
+
+          {(invoice.terms_and_conditions || profile?.terms_and_conditions) && (
+            <div className="mt-4 pt-4 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-wrap">
+              <p className="font-semibold text-[#1e293b] mb-1">
+                Terms & Conditions
+              </p>
+              <p>
+                {invoice.terms_and_conditions || profile?.terms_and_conditions}
+              </p>
             </div>
           )}
         </div>

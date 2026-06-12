@@ -43,6 +43,13 @@ export interface UserProfile {
   
   // Onboarding
   onboarding_completed?: boolean;
+  
+  // Terms
+  terms_and_conditions: string | null;
+
+  // Brand Voice
+  brand_voice_enabled: boolean;
+  brand_voice: string | null;
 }
 
 export function useProfile() {

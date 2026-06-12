@@ -10,7 +10,9 @@ import {
   ContactDetailsSection, 
   SignatureSection, 
   BankDetailsSection,
-  QrCodeSection
+  QrCodeSection,
+  TermsAndConditionsSection,
+  BrandVoiceSection
 } from '@/components/profile/ProfileSections';
 import { getProfile, updateProfile, uploadCompanyLogo, deleteCompanyLogo, uploadSignature } from '@/app/actions/profileActions';
 import { UserProfile } from '@/hooks/useProfile';
@@ -359,6 +361,8 @@ export default function ProfilePage() {
             <ContactDetailsSection profile={profile} onChange={handleProfileChange} />
             <SignatureSection profile={profile} onChange={handleProfileChange} />
             <BankDetailsSection profile={profile} onChange={handleProfileChange} />
+            <TermsAndConditionsSection profile={profile} onChange={handleProfileChange} />
+            <BrandVoiceSection profile={profile} onChange={handleProfileChange} />
             <QrCodeSection profile={profile} onChange={handleProfileChange} />
           </div>
         </div>
