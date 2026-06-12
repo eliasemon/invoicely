@@ -272,17 +272,17 @@ export default function CustomizeInvoicePage() {
             {/* Scrollable Document Canvas Viewport */}
             <div 
               ref={previewViewportRef}
-              className="flex-1 overflow-auto flex justify-center items-start bg-surface-container select-text"
+              className="flex-1 overflow-auto bg-surface-container select-text"
               style={{ touchAction: 'manipulation' }}
             >
               {/* Zoom Wrapper - Reserves space for the scaled container */}
               <div 
                 style={{ 
                   height: `${previewInvoiceHeight * previewZoom}px`,
-                  width: '100%',
+                  width: previewViewportRef.current ? `${Math.max(previewViewportRef.current.clientWidth, 794 * previewZoom)}px` : '100%',
                   position: 'relative' 
                 }} 
-                className="transition-all duration-200"
+                className="transition-all duration-200 mx-auto"
               >
                 {/* Scaled Invoice Document */}
                 <div
