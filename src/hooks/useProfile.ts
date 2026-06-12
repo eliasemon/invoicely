@@ -45,6 +45,7 @@ export interface UserProfile {
   onboarding_completed?: boolean;
   
   // Terms
+  terms_and_conditions_enabled: boolean;
   terms_and_conditions: string | null;
 
   // Brand Voice

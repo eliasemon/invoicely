@@ -379,7 +379,7 @@ export function FintechA4Template({
             </div>
           </div>
 
-          {(invoice.terms_and_conditions || profile?.terms_and_conditions) && (
+          {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
             <div className="mt-4 pt-4 border-t border-[#e2e8f0]">
               <p className="text-[10px] text-[#64748b] uppercase mb-1 font-semibold">
                 Terms & Conditions

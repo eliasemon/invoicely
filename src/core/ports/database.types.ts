@@ -41,6 +41,7 @@ export interface Invoice {
   // Template
   template?: string;
   notes?: string | null;
+  terms_and_conditions_enabled?: boolean;
   terms_and_conditions?: string | null;
   
   // Brand Voice
@@ -109,6 +110,7 @@ export interface UserProfile {
   onboarding_completed?: boolean;
   
   // Terms
+  terms_and_conditions_enabled: boolean;
   terms_and_conditions: string | null;
   
   // Brand Voice

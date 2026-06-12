@@ -290,8 +290,7 @@ export function SleekAccentTemplate({
                 </div>
               )}
 
-              {(invoice.terms_and_conditions ||
-                profile?.terms_and_conditions) && (
+              {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
                 <div className="mt-8">
                   <h4 className="text-xs font-bold text-[#0b1b3d] uppercase mb-2">
                     TERMS & CONDITIONS

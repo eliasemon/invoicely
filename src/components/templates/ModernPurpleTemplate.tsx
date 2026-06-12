@@ -302,8 +302,7 @@ export function ModernPurpleTemplate({
                 </p>
               </div>
 
-              {(invoice.terms_and_conditions ||
-                profile?.terms_and_conditions) && (
+              {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
                 <div className="w-1/2 whitespace-pre-wrap">
                   <h4 className="text-sm font-bold text-gray-800 mb-1">
                     Terms and Conditions

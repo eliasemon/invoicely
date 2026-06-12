@@ -375,7 +375,7 @@ export function HighDensityFlatA4Template({
             </div>
           </div>
 
-          {(invoice.terms_and_conditions || profile?.terms_and_conditions) && (
+          {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
             <div className="mt-4 pt-4 border-t border-[#e2e8f0]">
               <p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">
                 Terms & Conditions

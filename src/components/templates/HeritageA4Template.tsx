@@ -368,7 +368,7 @@ export function HeritageA4Template({
           )}
 
           {/* Terms & Conditions */}
-          {(invoice.terms_and_conditions || profile?.terms_and_conditions) && (
+          {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
             <div className="mb-3 pt-3 border-t border-[#d4c5b0] text-left">
               <h4 className="text-[11px] text-[#8b7355] uppercase tracking-wider mb-1">
                 Terms & Conditions

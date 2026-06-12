@@ -353,8 +353,7 @@ export function ModernTemplate({
                     "Thank you for your business. Please process payment within 30 days of receiving this invoice."}
                 </p>
               </div>
-              {(invoice.terms_and_conditions ||
-                profile?.terms_and_conditions) && (
+              {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
                 <div>
                   <p className="text-[10px] uppercase text-[#76777d] mb-1">
                     Terms & Conditions

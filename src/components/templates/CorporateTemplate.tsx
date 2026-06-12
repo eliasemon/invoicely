@@ -487,8 +487,7 @@ export function CorporateTemplate({
               )}
 
               {/* Footer */}
-              {(invoice.terms_and_conditions ||
-                profile?.terms_and_conditions) && (
+              {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
                 <div className="border-t-2 border-[#c6c6cd] pt-3 text-left">
                   <div
                     className="text-[11px] text-[#45464d] max-w-[500px] whitespace-pre-wrap"

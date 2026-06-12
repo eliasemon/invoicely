@@ -130,7 +130,8 @@ export async function createInvoice(data: {
       bank_account_holder: profile?.bank_enabled ? profile.bank_account_holder : null,
       bank_account_number: profile?.bank_enabled ? profile.bank_account_number : null,
       bank_swift: profile?.bank_enabled ? profile.bank_swift : null,
-      terms_and_conditions: profile?.terms_and_conditions || null,
+      terms_and_conditions_enabled: profile?.terms_and_conditions_enabled ?? true,
+      terms_and_conditions: profile?.terms_and_conditions_enabled ? profile.terms_and_conditions : null,
       brand_voice_enabled: profile?.brand_voice_enabled ?? true,
       brand_voice: profile?.brand_voice_enabled ? profile.brand_voice : null,
       updated_at: now.toISOString()

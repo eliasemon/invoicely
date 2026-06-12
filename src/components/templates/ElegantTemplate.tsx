@@ -331,8 +331,7 @@ export function ElegantTemplate({
         {/* Footer */}
         <footer className="flex flex-row print:flex-row justify-between items-end print:items-end gap-3 mt-auto w-full pt-6 border-t border-[#dce9ff]">
           <div className="w-1/2 print:w-1/2 space-y-3">
-            {(invoice.terms_and_conditions ||
-              profile?.terms_and_conditions) && (
+            {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
               <div className="whitespace-pre-wrap">
                 <h4
                   className="text-[12px] text-[#76777d] mb-2 uppercase tracking-wider font-semibold"

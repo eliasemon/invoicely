@@ -385,8 +385,7 @@ export function EnterpriseA4Template({
             )}
 
             {/* Footer */}
-            {(invoice.terms_and_conditions ||
-              profile?.terms_and_conditions) && (
+            {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
               <div className="mt-4 pt-4 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-wrap">
                 <p className="font-semibold text-[#1e293b] mb-1">
                   Terms & Conditions

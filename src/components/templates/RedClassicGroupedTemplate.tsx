@@ -279,7 +279,7 @@ export function RedClassicGroupedTemplate({
         ) : null}
 
         {/* Terms & Conditions */}
-        {(invoice.terms_and_conditions || profile?.terms_and_conditions) && (
+        {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
           <div className="mb-4 text-[11px]">
             <p className="font-bold mb-0.5">Terms & Conditions:</p>
             <p className="text-gray-800 whitespace-pre-line">

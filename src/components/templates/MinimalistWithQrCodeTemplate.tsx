@@ -316,7 +316,7 @@ export function MinimalistWithQrCodeTemplate({
             )}
           </div>
         </section>
-        {(invoice.terms_and_conditions || profile?.terms_and_conditions) && (
+        {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
           <section className="mb-4 pt-4 border-t border-[#f1f5f9]">
             <h2 className="text-[12px] text-[#45464d] mb-1 uppercase tracking-widest">
               Terms & Conditions
