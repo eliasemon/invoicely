@@ -15,16 +15,14 @@ export function GeometricA4Template({ invoice, profile, showGroups, showGroupTot
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f0f4f8] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}>
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-lg relative overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        {/* Geometric decorations */}
+ <div className="min-h-screen py-8 bg-[#f0f4f8] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}> <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-lg relative overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">         {/* Geometric decorations */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-[#dbeafe] rounded-bl-[100px] opacity-60"></div>
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#e0e7ff] rounded-tr-[80px] opacity-40"></div>
         <div className="absolute top-1/3 left-0 w-2 h-24 bg-[#3b82f6]"></div>
 
-        <div className="relative z-10 p-6 md:p-6 print:p-6">
+        <div className="relative z-10 p-6 p-6 print:p-6">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-2 sm:gap-3 mb-3">
+          <div className="flex flex-row print:flex-row justify-between items-start gap-3 mb-3">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 {profile?.company_logo ? (
@@ -43,12 +41,12 @@ export function GeometricA4Template({ invoice, profile, showGroups, showGroupTot
                 </p>
               )}
             </div>
-            <div className="text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto bg-[#f8fafc] p-4 rounded-xl border border-[#e2e8f0]">
+            <div className="text-right print:text-right w-auto print:w-auto bg-[#f8fafc] p-4 rounded-xl border border-[#e2e8f0]">
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider">Invoice</p>
               <p className="text-[11px] font-bold text-[#3b82f6] font-mono break-all">{invoice.invoiceNumber}</p>
               <p className="text-[11px] text-[#64748b] mt-2 font-mono">{formatDate(issueDate)}</p>
               {profile?.qr_code_enabled && publicUrl && (
-                <div className="mt-4 flex justify-start sm:justify-end print:justify-end">
+                <div className="mt-4 flex justify-end print:justify-end">
                   <QRCodeSVG value={publicUrl} size={54} />
                 </div>
               )}
@@ -56,7 +54,7 @@ export function GeometricA4Template({ invoice, profile, showGroups, showGroupTot
           </div>
 
           {/* Client & Dates */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 print:grid-cols-2 gap-2 sm:gap-2 mb-3 p-4 bg-[#f8fafc] rounded-xl border border-[#e2e8f0]">
+          <div className="grid grid-cols-2 print:grid-cols-2 gap-2 gap-2 mb-3 p-4 bg-[#f8fafc] rounded-xl border border-[#e2e8f0]">
             <div>
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider mb-2 font-semibold">Bill To</p>
               <p className="font-bold text-[#1e293b]">{invoice.clientName}</p>
@@ -127,7 +125,7 @@ export function GeometricA4Template({ invoice, profile, showGroups, showGroupTot
 
           {/* Totals */}
           <div className="flex justify-end">
-            <div className="w-full sm:w-60 print:w-60 bg-[#f8fafc] rounded-xl p-2.5 border border-[#e2e8f0]">
+            <div className="w-60 print:w-60 bg-[#f8fafc] rounded-xl p-2.5 border border-[#e2e8f0]">
               <div className="flex justify-between py-1 text-xs text-[#64748b] font-mono"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
               
               {discountAmount > 0 && (
@@ -156,7 +154,7 @@ export function GeometricA4Template({ invoice, profile, showGroups, showGroupTot
           {/* Bank Details & Signature Section */}
           {(((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ||
             ((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name))) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-2 mt-3 border-t border-[#e2e8f0] pt-4 text-left w-full">
+            <div className="grid grid-cols-2 print:grid-cols-2 gap-2 mt-3 border-t border-[#e2e8f0] pt-4 text-left w-full">
               {/* Bank Details */}
               {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
                 <div>
@@ -177,10 +175,10 @@ export function GeometricA4Template({ invoice, profile, showGroups, showGroupTot
               ) : <div></div>}
 
               {/* Signature */}
-              <div className="flex flex-row items-end gap-3 justify-start md:justify-end print:justify-end w-auto shrink-0">
+              <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
                     
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
-                <div className="flex flex-col items-start md:items-end print:items-end">
+                <div className="flex flex-col items-end print:items-end">
                   {(invoice.signature_url || profile?.signature_url) && (
                     <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-10 mb-2 object-contain" />
                   )}

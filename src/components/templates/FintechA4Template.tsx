@@ -15,14 +15,12 @@ export function FintechA4Template({ invoice, profile, showGroups, showGroupTotal
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f8fafc] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}>
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#1e293b] rounded-2xl border border-[#e2e8f0] shadow-xl overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        {/* Gradient top */}
+ <div className="min-h-screen py-8 bg-[#f8fafc] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}> <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#1e293b] rounded-2xl border border-[#e2e8f0] shadow-xl overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">         {/* Gradient top */}
         <div className="h-1 bg-gradient-to-r from-[#22c55e] via-[#10b981] to-[#14b8a6]"></div>
         
-        <div className="p-6 md:p-6 print:p-6">
+        <div className="p-6 p-6 print:p-6">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-3 mb-3">
+          <div className="flex flex-row print:flex-row justify-between items-start gap-3 mb-3">
             <div>
               {profile?.company_logo && (
                 <img alt="Company Logo" className="max-h-16 max-w-[200px] mb-2 object-contain w-auto h-auto" src={profile.company_logo} />
@@ -34,14 +32,14 @@ export function FintechA4Template({ invoice, profile, showGroups, showGroupTotal
                 <p className="text-[11px] text-[#475569] mt-2 whitespace-pre-line">{profile.company_address}</p>
               )}
             </div>
-            <div className="flex flex-col items-start sm:items-end print:items-end gap-3 text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto">
+            <div className="flex flex-col items-end print:items-end gap-3 text-right print:text-right w-auto print:w-auto">
               <div className="inline-block bg-[#f8fafc] border border-[#e2e8f0] rounded-xl px-5 py-2.5">
                 <p className="text-[10px] text-[#64748b] uppercase tracking-wider font-semibold">Invoice</p>
                 <p className="text-[11px] font-bold text-[#10b981] font-mono break-all">{invoice.invoiceNumber}</p>
               </div>
 
               {/* Compact Client, Issued, Due Meta Card */}
-              <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 text-left sm:text-right print:text-right space-y-2.5 w-full sm:w-64 print:w-64 shadow-sm">
+              <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 text-right print:text-right space-y-2.5 w-64 print:w-64 shadow-sm">
                 <div>
                   <p className="text-[9px] text-[#64748b] uppercase tracking-wider font-semibold mb-0.5">Client</p>
                   <p className="font-semibold text-[#0f172a] text-[11px]">{invoice.clientName}</p>
@@ -61,7 +59,7 @@ export function FintechA4Template({ invoice, profile, showGroups, showGroupTotal
           </div>
 
           {/* Status + Amount Card */}
-          <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl py-3 px-4 mb-3 flex flex-col sm:flex-row print:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+          <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl py-3 px-4 mb-3 flex flex-row print:flex-row justify-between items-center gap-2 gap-0">
             <div className="flex items-center gap-3">
               <span className="text-[10px] text-[#15803d] uppercase tracking-wider font-semibold">Amount Due:</span>
               <span className="text-sm font-bold text-[#15803d] font-mono">{formatMoney(subtotal, sym)}</span>
@@ -127,11 +125,11 @@ export function FintechA4Template({ invoice, profile, showGroups, showGroupTotal
           {/* Totals */}
           <div className="flex justify-between items-end w-full">
               {profile?.qr_code_enabled && publicUrl && (
-                <div className="mb-2 hidden sm:block print:block">
+                <div className="mb-2 block print:block">
                   <QRCodeSVG value={publicUrl} size={64} />
                 </div>
               )}
-            <div className="w-full sm:w-64 print:w-64 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
+            <div className="w-64 print:w-64 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
               <div className="flex justify-between py-1 text-xs text-[#64748b] font-mono border-b border-[#e2e8f0]/60"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
               
               {discountAmount > 0 && (
@@ -161,9 +159,9 @@ export function FintechA4Template({ invoice, profile, showGroups, showGroupTotal
           </div>
 
           {/* Bank details & Signature */}
-          <div className="mt-3 pt-6 border-t border-[#e2e8f0] flex flex-col md:flex-row print:flex-row justify-between items-start gap-2 text-sm w-full">
+          <div className="mt-3 pt-6 border-t border-[#e2e8f0] flex flex-row print:flex-row justify-between items-start gap-2 text-sm w-full">
             {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
-              <div className="grid grid-cols-1 sm:grid-cols-3 print:grid-cols-3 gap-2 flex-1">
+              <div className="grid grid-cols-3 print:grid-cols-3 gap-2 flex-1">
                 <div><p className="text-[10px] text-[#64748b] uppercase mb-1">Bank</p><p className="text-[#0f172a]">{invoice.bank_name || profile?.bank_name}</p></div>
                 <div><p className="text-[10px] text-[#64748b] uppercase mb-1">Account</p><p className="font-mono text-[#0f172a]">{invoice.bank_account_number || profile?.bank_account_number}</p></div>
                 <div><p className="text-[10px] text-[#64748b] uppercase mb-1">Holder</p><p className="text-[#0f172a]">{invoice.bank_account_holder || profile?.bank_account_holder}</p></div>
@@ -171,10 +169,10 @@ export function FintechA4Template({ invoice, profile, showGroups, showGroupTotal
               </div>
             ) : <div className="flex-1"></div>}
 
-            <div className="flex flex-row items-end gap-3 justify-start md:justify-end print:justify-end w-auto shrink-0">
+            <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
                     
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
-              <div className="flex flex-col items-start md:items-end min-w-[160px]">
+              <div className="flex flex-col items-end min-w-[160px]">
                 {(invoice.signature_url || profile?.signature_url) && (
                   <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-8 mb-1 object-contain" />
                 )}

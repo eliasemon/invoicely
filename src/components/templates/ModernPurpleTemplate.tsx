@@ -18,10 +18,8 @@ export function ModernPurpleTemplate({ invoice, profile, isPreview, showGroups, 
   const tax = 0; // Using 0 as tax amount for the placeholder
 
   return (
-    <div className="bg-[#fcfcff] min-h-screen text-[#4a4c59] py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Inter, sans-serif' }}>
-      {/* Floating Actions */}
-      {!isPreview && (
-        <div className="fixed top-6 right-6 md:right-12 z-50 flex gap-2 print:hidden">
+ <div className="min-h-screen py-8 bg-[#fcfcff] text-[#4a4c59] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Inter, sans-serif' }}> {/* Floating Actions */}       {!isPreview && (
+        <div className="fixed top-6 right-12 z-50 flex gap-2 print:hidden">
           <button onClick={() => window.print()} className="bg-[#7c3aed] text-white px-6 py-2.5 rounded-full shadow-md text-xs flex items-center gap-2 hover:bg-[#6d28d9] transition-colors">
             <span className="material-symbols-outlined text-[18px]">download</span>
             Download PDF
@@ -30,11 +28,10 @@ export function ModernPurpleTemplate({ invoice, profile, isPreview, showGroups, 
       )}
 
       {/* Invoice Canvas */}
-      <main className="w-full max-w-[210mm] min-h-[297mm] mx-auto bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col relative print:shadow-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        
-        <div className="flex-1 flex flex-col p-10 md:p-12 print:p-10 relative z-10">
+ <main className="w-full max-w-[210mm] min-h-[297mm] mx-auto bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col relative print:shadow-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">         
+        <div className="flex-1 flex flex-col p-10 p-12 print:p-10 relative z-10">
           {/* Header */}
-          <header className="flex flex-col md:flex-row print:flex-row justify-between items-start mb-12">
+          <header className="flex flex-row print:flex-row justify-between items-start mb-12">
             <div className="flex items-center gap-6">
               {profile?.company_logo ? (
                 <div className="border border-dashed border-[#d8b4fe] p-2 rounded-lg">
@@ -54,7 +51,7 @@ export function ModernPurpleTemplate({ invoice, profile, isPreview, showGroups, 
                 </p>
               </div>
             </div>
-            <div className="text-right mt-6 md:mt-0 print:mt-0">
+            <div className="text-right mt-6 mt-0 print:mt-0">
               <h2 className="text-3xl font-bold text-[#8b5cf6] mb-2 tracking-wide uppercase">INVOICE</h2>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-right text-sm">
                 <span className="text-gray-500">Number:</span>
@@ -68,8 +65,8 @@ export function ModernPurpleTemplate({ invoice, profile, isPreview, showGroups, 
           </header>
 
           {/* Addresses */}
-          <section className="flex flex-col sm:flex-row print:flex-row justify-between mb-10 text-sm">
-            <div className="w-full sm:w-[45%] print:w-[45%] mb-6 sm:mb-0 print:mb-0">
+          <section className="flex flex-row print:flex-row justify-between mb-10 text-sm">
+            <div className="w-full w-[45%] print:w-[45%] mb-6 mb-0 print:mb-0">
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">BILL TO</h3>
               <p className="font-semibold text-gray-800 text-base">{invoice.clientName}</p>
               <p className="text-gray-500 whitespace-pre-line mt-1 leading-relaxed">
@@ -79,7 +76,7 @@ export function ModernPurpleTemplate({ invoice, profile, isPreview, showGroups, 
                 <p className="text-gray-500 mt-1">{invoice.clientPhone}</p>
               )}
             </div>
-            <div className="w-full sm:w-[45%] print:w-[45%]">
+            <div className="w-full w-[45%] print:w-[45%]">
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">SHIP TO</h3>
               <p className="font-semibold text-gray-800 text-base">{invoice.clientName}</p>
               <p className="text-gray-500 whitespace-pre-line mt-1 leading-relaxed">
@@ -153,8 +150,8 @@ export function ModernPurpleTemplate({ invoice, profile, isPreview, showGroups, 
           </section>
 
           {/* Payment & Totals */}
-          <section className="flex flex-col sm:flex-row print:flex-row justify-between items-start mt-4 gap-8">
-            <div className="w-full sm:w-1/2 print:w-1/2 space-y-5">
+          <section className="flex flex-row print:flex-row justify-between items-start mt-4 gap-8">
+            <div className="w-1/2 print:w-1/2 space-y-5">
               {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
                 <div>
                   <h4 className="text-sm font-bold text-gray-800 mb-2">Bank transfer</h4>
@@ -196,7 +193,7 @@ export function ModernPurpleTemplate({ invoice, profile, isPreview, showGroups, 
               )}
             </div>
 
-            <div className="w-full sm:w-[45%] print:w-[45%] flex flex-col">
+            <div className="w-full w-[45%] print:w-[45%] flex flex-col">
               <div className="space-y-2 border-b border-gray-200 pb-3">
                 <div className="flex justify-between text-sm">
                   <span className="font-semibold text-gray-700">Subtotal</span>

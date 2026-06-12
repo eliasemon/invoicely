@@ -15,9 +15,7 @@ export function HeritageA4Template({ invoice, profile, showGroups, showGroupTota
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f5f0eb] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Georgia, serif' }}>
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-[#fffdf8] shadow-lg border border-[#d4c5b0] print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        <div className="p-6 md:p-6 print:p-6">
+ <div className="min-h-screen py-8 bg-[#f5f0eb] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Georgia, serif' }}> <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-[#fffdf8] shadow-lg border border-[#d4c5b0] print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">         <div className="p-6 p-6 print:p-6">
           {/* Header with ornamental line */}
           <div className="text-center mb-3">
             <div className="w-24 h-[2px] bg-[#8b7355] mx-auto mb-2"></div>
@@ -34,19 +32,19 @@ export function HeritageA4Template({ invoice, profile, showGroups, showGroupTota
             <div className="w-24 h-[2px] bg-[#8b7355] mx-auto mt-4"></div>
           </div>
 
-          <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-2 sm:gap-3 mb-3">
+          <div className="flex flex-row print:flex-row justify-between items-start gap-3 mb-3">
             <div>
               <p className="text-[11px] text-[#8b7355] uppercase tracking-[0.2em] mb-1.5">Invoice To</p>
               <p className="text-[11px] font-bold text-[#2c1810]">{invoice.clientName}</p>
               <p className="text-[11px] text-[#6b5b4a] mt-1 whitespace-pre-line">{invoice.clientAddress || invoice.clientPhone}</p>
             </div>
-            <div className="text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto">
+            <div className="text-right print:text-right w-auto print:w-auto">
               <p className="text-[11px] text-[#8b7355] uppercase tracking-[0.2em] mb-1.5">Invoice Details</p>
               <p className="text-[11px]" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">No:</span> {invoice.invoiceNumber}</p>
               <p className="text-[11px] mt-1" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">Date:</span> {formatDate(issueDate)}</p>
               <p className="text-[11px] mt-1" style={{ fontFamily: 'Geist, monospace' }}><span className="text-[#8b7355]">Due:</span> {formatDate(dueDate)}</p>
               {profile?.qr_code_enabled && publicUrl && (
-                <div className="mt-4 flex justify-start sm:justify-end print:justify-end">
+                <div className="mt-4 flex justify-end print:justify-end">
                   <QRCodeSVG value={publicUrl} size={54} />
                 </div>
               )}
@@ -106,7 +104,7 @@ export function HeritageA4Template({ invoice, profile, showGroups, showGroupTota
 
           {/* Totals */}
           <div className="flex justify-end mb-3">
-            <div className="w-full sm:w-64 print:w-64">
+            <div className="w-64 print:w-64">
               <div className="flex justify-between py-2 text-sm text-[#6b5b4a]"><span>Subtotal</span><span style={{ fontFamily: 'Geist, monospace' }}>{formatMoney(subtotal, sym)}</span></div>
               
               {discountAmount > 0 && (
@@ -138,7 +136,7 @@ export function HeritageA4Template({ invoice, profile, showGroups, showGroupTota
           {/* Bank Details & Signature Section */}
           {(((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ||
             ((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name))) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-2 mb-3 border-t border-[#d4c5b0] pt-4 text-left w-full">
+            <div className="grid grid-cols-2 print:grid-cols-2 gap-2 mb-3 border-t border-[#d4c5b0] pt-4 text-left w-full">
               {/* Bank Details */}
               {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
                 <div>
@@ -159,10 +157,10 @@ export function HeritageA4Template({ invoice, profile, showGroups, showGroupTota
               ) : <div></div>}
 
               {/* Signature */}
-              <div className="flex flex-row items-end gap-3 justify-start md:justify-end print:justify-end w-auto shrink-0">
+              <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
                     
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
-                <div className="flex flex-col items-start md:items-end print:items-end">
+                <div className="flex flex-col items-end print:items-end">
                   {(invoice.signature_url || profile?.signature_url) && (
                     <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-10 mb-2 object-contain" />
                   )}

@@ -15,25 +15,23 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups, showGr
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f1f5f9] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}>
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-md print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        {/* Dense header bar */}
-        <div className="bg-[#0f172a] text-white px-6 py-4 flex flex-col sm:flex-row print:flex-row justify-between items-center gap-3">
+ <div className="min-h-screen py-8 bg-[#f1f5f9] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}> <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-md print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">         {/* Dense header bar */}
+        <div className="bg-[#0f172a] text-white px-6 py-4 flex flex-row print:flex-row justify-between items-center gap-3">
           <div className="flex items-center gap-2">
             {profile?.company_logo && <img src={profile.company_logo} alt="Logo" className="max-h-16 max-w-[200px] brightness-0 invert object-contain w-auto h-auto" />}
             <span className="text-sm font-bold">{profile?.company_name || 'Your Company'}</span>
           </div>
-          <div className="text-center sm:text-right print:text-right w-full sm:w-auto print:w-auto">
+          <div className="text-right print:text-right w-auto print:w-auto">
             <span className="text-sm font-bold font-mono break-all">{invoice.invoiceNumber}</span>
             {profile?.qr_code_enabled && publicUrl && (
-              <div className="mt-4 flex justify-center sm:justify-end print:justify-end">
+              <div className="mt-4 flex justify-center justify-end print:justify-end">
                 <QRCodeSVG value={publicUrl} size={54} />
               </div>
             )}
           </div>
         </div>
 
-        <div className="p-6 md:p-6 print:p-6">
+        <div className="p-6 p-6 print:p-6">
           {/* Company details */}
           {(profile?.company_address || profile?.email || profile?.phone) && (
             <div className="mb-2 text-xs text-[#64748b] flex flex-wrap gap-x-6 gap-y-1 pb-3 border-b border-[#f1f5f9]">
@@ -44,7 +42,7 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups, showGr
           )}
 
           {/* Dense info strip */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 print:grid-cols-4 gap-3 sm:gap-2 mb-2 bg-[#f8fafc] p-3 rounded-lg border border-[#e2e8f0] text-sm">
+          <div className="grid grid-cols-4 print:grid-cols-4 gap-3 gap-2 mb-2 bg-[#f8fafc] p-3 rounded-lg border border-[#e2e8f0] text-sm">
             <div>
               <p className="text-[10px] text-[#94a3b8] uppercase font-semibold">Client</p>
               <p className="font-semibold text-[#0f172a]">{invoice.clientName}</p>
@@ -122,7 +120,7 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups, showGr
 
           {/* Totals */}
           <div className="flex justify-end">
-            <div className="w-full sm:w-56 print:w-56">
+            <div className="w-56 print:w-56">
               <div className="flex justify-between py-1.5 text-sm text-[#64748b] font-mono border-b border-[#f1f5f9]"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
               
               {discountAmount > 0 && (
@@ -150,9 +148,9 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups, showGr
           </div>
 
           {/* Bank details & Signature */}
-          <div className="mt-3 pt-4 border-t border-[#e2e8f0] flex flex-col md:flex-row print:flex-row justify-between items-start gap-2 text-sm w-full">
+          <div className="mt-3 pt-4 border-t border-[#e2e8f0] flex flex-row print:flex-row justify-between items-start gap-2 text-sm w-full">
             {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
-              <div className="grid grid-cols-2 sm:grid-cols-4 print:grid-cols-4 gap-2 flex-1">
+              <div className="grid grid-cols-2 grid-cols-4 print:grid-cols-4 gap-2 flex-1">
                 <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold">Bank</p><p className="text-[#0f172a]">{invoice.bank_name || profile?.bank_name}</p></div>
                 <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold">Account</p><p className="font-mono text-[#0f172a]">{invoice.bank_account_number || profile?.bank_account_number}</p></div>
                 <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold">Holder</p><p className="text-[#0f172a]">{invoice.bank_account_holder || profile?.bank_account_holder}</p></div>
@@ -160,10 +158,10 @@ export function HighDensityFlatA4Template({ invoice, profile, showGroups, showGr
               </div>
             ) : <div className="flex-1"></div>}
 
-            <div className="flex flex-row items-end gap-3 justify-start md:justify-end print:justify-end w-auto shrink-0">
+            <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
                     
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
-              <div className="flex flex-col items-start md:items-end print:items-end min-w-[160px]">
+              <div className="flex flex-col items-end print:items-end min-w-[160px]">
                 {(invoice.signature_url || profile?.signature_url) && (
                   <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-8 mb-1 object-contain" />
                 )}

@@ -14,12 +14,10 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl , showGr
   const balanceDue = Math.max(0, total - amountPaid);
 
   return (
-    <div className="bg-[#f1f5f9] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}>
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#1e293b] rounded-2xl shadow-xl overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        <div className="h-1 bg-gradient-to-r from-[#06b6d4] via-[#8b5cf6] to-[#06b6d4]"></div>
-        <div className="p-6 md:p-6 print:p-6">
+ <div className="min-h-screen py-8 bg-[#f1f5f9] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}> <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#1e293b] rounded-2xl shadow-xl overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">         <div className="h-1 bg-gradient-to-r from-[#06b6d4] via-[#8b5cf6] to-[#06b6d4]"></div>
+        <div className="p-6 p-6 print:p-6">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-2 sm:gap-3 mb-3">
+          <div className="flex flex-row print:flex-row justify-between items-start gap-3 mb-3">
             <div>
               {profile?.company_logo && (
                 <img alt="Company Logo" className="max-h-16 max-w-[200px] mb-2 object-contain w-auto h-auto" src={profile.company_logo} />
@@ -31,7 +29,7 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl , showGr
                 <p className="text-[11px] text-[#475569] mt-2 whitespace-pre-line">{profile.company_address}</p>
               )}
             </div>
-            <div className="text-left sm:text-right print:text-right w-full sm:w-auto">
+            <div className="text-right print:text-right w-auto">
               <p className="text-[11px] text-[#64748b] uppercase tracking-widest mb-1">Invoice</p>
               <p className="text-[11px] font-bold text-[#0891b2] font-mono break-all">{invoice.invoiceNumber}</p>
               <div className={`inline-block mt-2 px-3 py-1 rounded-full text-[11px] font-semibold ${
@@ -41,7 +39,7 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl , showGr
           </div>
 
           {/* Info Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 print:grid-cols-3 gap-2 mb-3">
+          <div className="grid grid-cols-3 print:grid-cols-3 gap-2 mb-3">
             <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-3">
               <p className="text-[10px] text-[#64748b] uppercase tracking-wider mb-1">Billed To</p>
               <p className="text-[11px] font-semibold text-[#0f172a]">{invoice.clientName}</p>
@@ -103,11 +101,11 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl , showGr
           {/* Totals */}
           <div className="flex justify-between items-end mt-4 w-full">
             {profile?.qr_code_enabled && publicUrl && (
-              <div className="mb-2 hidden sm:block print:block">
+              <div className="mb-2 block print:block">
                 <QRCodeSVG value={publicUrl} size={64} />
               </div>
             )}
-            <div className="w-full sm:w-64 print:w-64 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 ml-auto">
+            <div className="w-64 print:w-64 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 ml-auto">
               <div className="flex justify-between py-1.5 text-sm text-[#475569] font-mono"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
               
               {discountAmount > 0 && (
@@ -136,7 +134,7 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl , showGr
           {/* Bank Details & Signature Section */}
           {(((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ||
             ((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name))) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-2 mt-3 border-t border-[#e2e8f0] pt-4 text-left w-full">
+            <div className="grid grid-cols-2 print:grid-cols-2 gap-2 mt-3 border-t border-[#e2e8f0] pt-4 text-left w-full">
               {/* Bank Details */}
               {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
                 <div>
@@ -157,10 +155,10 @@ export function GroupedFintechA4Template({ invoice, profile , publicUrl , showGr
               ) : <div></div>}
 
               {/* Signature */}
-              <div className="flex flex-row items-end gap-3 justify-start md:justify-end print:justify-end w-auto shrink-0">
+              <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
                     
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
-                <div className="flex flex-col items-start md:items-end">
+                <div className="flex flex-col items-end">
                   {(invoice.signature_url || profile?.signature_url) && (
                     <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-10 mb-2 object-contain" />
                   )}

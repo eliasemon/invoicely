@@ -15,14 +15,12 @@ export function EnterpriseA4Template({ invoice, profile, showGroups, showGroupTo
   const items = getAllItems(invoice);
 
   return (
-    <div className="bg-[#f1f5f9] min-h-screen py-8 px-4 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}>
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-sm border border-[#e2e8f0] print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        {/* Top bar */}
+ <div className="min-h-screen py-8 bg-[#f1f5f9] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]" style={{ fontFamily: 'Geist, sans-serif' }}> <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white shadow-sm border border-[#e2e8f0] print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">         {/* Top bar */}
         <div className="flex">
           <div className="w-2 bg-[#1e40af]"></div>
-          <div className="flex-1 p-6 md:p-6 print:p-6">
+          <div className="flex-1 p-6 p-6 print:p-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start gap-2 sm:gap-3 mb-3 pb-4 border-b border-[#e2e8f0]">
+            <div className="flex flex-row print:flex-row justify-between items-start gap-3 mb-3 pb-4 border-b border-[#e2e8f0]">
               <div>
                 {profile?.company_logo && <img src={profile.company_logo} alt="Logo" className="max-h-16 max-w-[200px] mb-2 object-contain w-auto h-auto" />}
                 <h1 className="text-sm font-bold text-[#1e293b] uppercase tracking-wider">{profile?.company_name || 'Your Company'}</h1>
@@ -33,11 +31,11 @@ export function EnterpriseA4Template({ invoice, profile, showGroups, showGroupTo
                   </p>
                 )}
               </div>
-              <div className="text-left sm:text-right print:text-right w-full sm:w-auto print:w-auto">
+              <div className="text-right print:text-right w-auto print:w-auto">
                 <h2 className="text-xs text-[#94a3b8] uppercase tracking-[0.2em] mb-1">Tax Invoice</h2>
                 <p className="text-[11px] font-bold text-[#1e40af] font-mono break-all">{invoice.invoiceNumber}</p>
                 {profile?.qr_code_enabled && publicUrl && (
-                  <div className="mt-4 flex justify-start sm:justify-end print:justify-end">
+                  <div className="mt-4 flex justify-end print:justify-end">
                     <QRCodeSVG value={publicUrl} size={54} />
                   </div>
                 )}
@@ -45,7 +43,7 @@ export function EnterpriseA4Template({ invoice, profile, showGroups, showGroupTo
             </div>
 
             {/* Info grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 print:grid-cols-4 gap-2 sm:gap-3 mb-3 text-sm">
+            <div className="grid grid-cols-4 print:grid-cols-4 gap-3 mb-3 text-sm">
               <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">Invoice To</p><p className="font-semibold text-[#1e293b]">{invoice.clientName}</p><p className="text-[11px] text-[#64748b] mt-1 whitespace-pre-line">{invoice.clientAddress || invoice.clientPhone}</p></div>
               <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">Issue Date</p><p className="font-mono">{formatDate(issueDate)}</p></div>
               <div><p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">Due Date</p><p className="font-mono">{formatDate(dueDate)}</p></div>
@@ -105,7 +103,7 @@ export function EnterpriseA4Template({ invoice, profile, showGroups, showGroupTo
 
             {/* Totals */}
             <div className="flex justify-end">
-              <div className="w-full sm:w-64 print:w-64">
+              <div className="w-64 print:w-64">
                 <div className="flex justify-between py-2 text-sm text-[#64748b] font-mono border-b border-[#f1f5f9]"><span>Subtotal</span><span>{formatMoney(subtotal, sym)}</span></div>
                 
               {discountAmount > 0 && (
@@ -135,7 +133,7 @@ export function EnterpriseA4Template({ invoice, profile, showGroups, showGroupTo
             {/* Bank Details & Signature Section */}
             {(((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ||
               ((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name))) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-2 mt-3 border-t border-[#e2e8f0] pt-4 text-left w-full">
+              <div className="grid grid-cols-2 print:grid-cols-2 gap-2 mt-3 border-t border-[#e2e8f0] pt-4 text-left w-full">
                 {/* Bank Details */}
                 {((profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name)) ? (
                   <div>
@@ -156,10 +154,10 @@ export function EnterpriseA4Template({ invoice, profile, showGroups, showGroupTo
                 ) : <div></div>}
 
                 {/* Signature */}
-                <div className="flex flex-row items-end gap-3 justify-start md:justify-end print:justify-end w-auto shrink-0">
+                <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
                     
                     {((profile?.signature_enabled ?? true) && (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name)) && (
-                  <div className="flex flex-col items-start md:items-end print:items-end">
+                  <div className="flex flex-col items-end print:items-end">
                     {(invoice.signature_url || profile?.signature_url) && (
                       <img src={invoice.signature_url || profile?.signature_url || undefined} alt="Signature" className="h-10 mb-2 object-contain" />
                     )}

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { availableTemplates } from '@/components/create/TemplateSelector';
 import { InvoiceTemplateRenderer } from '@/components/templates/InvoiceTemplateRenderer';
+import { InvoiceDisplayOptions } from '@/components/templates/InvoiceDisplayOptions';
 
 export default function TemplatesGalleryPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>(availableTemplates[0]?.id || 'modern-template');
@@ -50,7 +51,10 @@ export default function TemplatesGalleryPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       if (window.innerWidth < 768) {
-        setZoom(0.38); // Good fit for mobile screens
+        // Dynamically calculate zoom to fit A4 width within mobile viewport
+        const mobilePadding = 48; // p-md = 24px each side
+        const fitZoom = (window.innerWidth - mobilePadding) / 794;
+        setZoom(Math.max(0.2, Math.min(fitZoom, 1.0)));
       } else {
         setZoom(0.85); // Desktop standard preview size
       }
@@ -284,74 +288,52 @@ export default function TemplatesGalleryPage() {
                 <span className="hidden sm:inline">Fit Page</span>
               </button>
             </div>
-
-            {/* Layout Customizer Toggles */}
-            <div className="flex items-center gap-md">
-              <div className="flex items-center gap-xs">
-                <span className="font-label-sm text-on-surface-variant font-medium text-[11px]">Group Items:</span>
-                <button
-                  onClick={() => {
-                    const next = !showGroups;
-                    setShowGroups(next);
-                    if (!next) setShowGroupTotals(false);
-                  }}
-                  className={`w-9 h-5 flex items-center rounded-full p-0.5 transition-colors focus:outline-none ${
-                    showGroups ? 'bg-primary' : 'bg-outline-variant'
-                  }`}
-                >
-                  <div className={`bg-surface w-4 h-4 rounded-full shadow-sm transform transition-transform ${showGroups ? 'translate-x-4' : 'translate-x-0'}`} />
-                </button>
-              </div>
-              
-              {showGroups && (
-                <div className="flex items-center gap-xs transition-opacity duration-200">
-                  <span className="font-label-sm text-on-surface-variant font-medium text-[11px]">Group Totals:</span>
-                  <button
-                    onClick={() => setShowGroupTotals(!showGroupTotals)}
-                    className={`w-9 h-5 flex items-center rounded-full p-0.5 transition-colors focus:outline-none ${
-                      showGroupTotals ? 'bg-primary' : 'bg-outline-variant'
-                    }`}
-                  >
-                    <div className={`bg-surface w-4 h-4 rounded-full shadow-sm transform transition-transform ${showGroupTotals ? 'translate-x-4' : 'translate-x-0'}`} />
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
           
+          <div className="flex-shrink-0 px-md pt-sm print:hidden bg-surface-container">
+            <InvoiceDisplayOptions 
+              showGroups={showGroups} 
+              setShowGroups={setShowGroups} 
+              showGroupTotals={showGroupTotals} 
+              setShowGroupTotals={setShowGroupTotals} 
+              hasGroups={mockInvoice.groups && mockInvoice.groups.length > 0}
+            />
+          </div>
+
           {/* Scrollable Document Canvas Viewport */}
           <div 
             ref={previewPaneRef}
-            className="flex-1 overflow-auto p-md md:p-xl flex justify-center items-start bg-surface-container select-text"
+            className="flex-1 overflow-auto flex justify-center items-start bg-surface-container select-text"
+            style={{ touchAction: 'manipulation' }}
           >
             {/* Zoom Wrapper */}
             <div 
               style={{
-                width: `${794 * zoom}px`,
+                width: '100%',
                 height: `${invoiceHeight * zoom}px`,
                 position: 'relative',
               }}
-              className="flex-shrink-0 transition-all duration-200 ease-out"
+              className="transition-all duration-200 ease-out"
             >
               {/* Scaled Invoice Document */}
               <div
                 ref={invoiceRef}
                 style={{
-                  width: '794px',
+                  width: previewPaneRef.current ? `${previewPaneRef.current.clientWidth / zoom}px` : '100%',
+                  minWidth: '794px',
                   transform: `scale(${zoom})`,
                   transformOrigin: 'top left',
                   position: 'absolute',
                   left: 0,
                   top: 0,
                 }}
-                className="bg-transparent rounded-sm shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-outline-variant/20 transition-shadow hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+                className="bg-transparent overflow-hidden"
               >
                 <InvoiceTemplateRenderer 
                   templateId={selectedTemplate} 
                   invoice={mockInvoice} 
                   profile={mockProfile}
                   isPreview={true}
-                  hideToggles={true}
                   showGroups={showGroups}
                   showGroupTotals={showGroupTotals}
                   publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/public/invoice/demo-123`}
