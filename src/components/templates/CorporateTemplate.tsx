@@ -253,7 +253,7 @@ export function CorporateTemplate({
                                   <div className="font-bold">{item.name}</div>
                                 </td>
                                 <td className="py-0.5 px-2 border-r border-[#c6c6cd] text-right">
-                                  {item.quantity}
+                                  {item.quantity} {item.unit || ''}
                                 </td>
                                 <td className="py-0.5 px-2 border-r border-[#c6c6cd] text-right">
                                   {formatMoney(item.unitPrice, sym)}
@@ -301,7 +301,7 @@ export function CorporateTemplate({
                               <div className="font-bold">{item.name}</div>
                             </td>
                             <td className="py-0.5 px-2 border-r border-[#c6c6cd] text-right">
-                              {item.quantity}
+                              {item.quantity} {item.unit || ''}
                             </td>
                             <td className="py-0.5 px-2 border-r border-[#c6c6cd] text-right">
                               {formatMoney(item.unitPrice, sym)}

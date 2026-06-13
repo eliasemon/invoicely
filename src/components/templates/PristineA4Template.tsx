@@ -184,7 +184,7 @@ export function PristineA4Template({
                               {item.name}
                             </td>
                             <td className="py-0.5 text-right text-[11px] text-[#64748b]">
-                              {item.quantity}
+                              {item.quantity} {item.unit || ''}
                             </td>
                             <td className="py-0.5 text-right text-[11px] text-[#64748b]">
                               {formatMoney(item.unitPrice, sym)}
@@ -226,7 +226,7 @@ export function PristineA4Template({
                           {item.name}
                         </td>
                         <td className="py-0.5 text-right text-[11px] text-[#64748b]">
-                          {item.quantity}
+                          {item.quantity} {item.unit || ''}
                         </td>
                         <td className="py-0.5 text-right text-[11px] text-[#64748b]">
                           {formatMoney(item.unitPrice, sym)}

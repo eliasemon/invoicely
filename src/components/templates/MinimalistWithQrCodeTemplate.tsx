@@ -181,7 +181,7 @@ export function MinimalistWithQrCodeTemplate({
                             style={{ fontFamily: "Geist, monospace" }}
                           >
                             <span className="hidden print:hidden">Qty: </span>
-                            {item.quantity}
+                            {item.quantity} {item.unit || ''}
                           </div>
                           <div
                             className="col-span-1 col-span-2 print:col-span-2 text-right print:text-right text-sm text-[#45464d]"
@@ -235,7 +235,7 @@ export function MinimalistWithQrCodeTemplate({
                       style={{ fontFamily: "Geist, monospace" }}
                     >
                       <span className="hidden print:hidden">Qty: </span>
-                      {item.quantity}
+                      {item.quantity} {item.unit || ''}
                     </div>
                     <div
                       className="col-span-1 col-span-2 print:col-span-2 text-right print:text-right text-sm text-[#45464d]"

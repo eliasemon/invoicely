@@ -157,7 +157,7 @@ export function GeometricA4Template({
                                 {item.name}
                               </p>
                               <p className="text-[10px] text-[#94a3b8] font-mono">
-                                {item.quantity} ×{" "}
+                                {item.quantity} {item.unit || ''} ×{" "}
                                 {formatMoney(item.unitPrice, sym)}
                               </p>
                             </div>
@@ -205,7 +205,7 @@ export function GeometricA4Template({
                           {item.name}
                         </p>
                         <p className="text-[10px] text-[#94a3b8] font-mono">
-                          {item.quantity} × {formatMoney(item.unitPrice, sym)}
+                          {item.quantity} {item.unit || ''} × {formatMoney(item.unitPrice, sym)}
                         </p>
                       </div>
                     </div>

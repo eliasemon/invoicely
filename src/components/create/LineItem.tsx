@@ -9,6 +9,7 @@ export interface LineItemData {
   id: string;
   name: string;
   quantity: number;
+  unit?: string;
   unitPrice: number;
 }
 
@@ -70,13 +71,13 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
 
   const handleSelectSuggestion = (suggestion: CatalogItem) => {
     updateItem(item.id, 'name', suggestion.name);
-    
+
     // Only auto-populate the price if the catalog item has a price for the current currency
     const priceForCurrency = suggestion.unit_price?.[currency];
     if (priceForCurrency !== undefined && priceForCurrency !== null) {
       updateItem(item.id, 'unitPrice', priceForCurrency);
     }
-    
+
     setShowSuggestions(false);
   };
 
@@ -96,9 +97,9 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
     <div className="p-sm border-b border-surface-container flex flex-col gap-xs hover:bg-surface-container-low transition-colors">
       <div className="flex justify-between items-start">
         <div className="relative w-3/4" ref={wrapperRef}>
-          <input 
-            className="font-body-md text-body-md text-on-surface font-medium bg-transparent border-none p-0 focus:ring-0 w-full truncate placeholder:text-outline" 
-            type="text" 
+          <input
+            className="font-body-md text-body-md text-on-surface font-medium bg-transparent border-none p-0 focus:ring-0 w-full truncate placeholder:text-outline"
+            type="text"
             placeholder="Item name"
             maxLength={150}
             value={item.name}
@@ -112,14 +113,14 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
               }
             }}
           />
-          
+
           {showSuggestions && (
             <div className="absolute z-50 mt-1 w-full bg-surface border border-outline-variant rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {isSearching ? (
                 <div className="p-sm text-center text-on-surface-variant font-label-sm">Loading...</div>
               ) : (
                 suggestions.map((suggestion, idx) => (
-                  <div 
+                  <div
                     key={idx}
                     className="p-sm hover:bg-surface-container cursor-pointer flex justify-between items-center"
                     onClick={() => handleSelectSuggestion(suggestion)}
@@ -134,7 +135,7 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
             </div>
           )}
         </div>
-        <button 
+        <button
           onClick={() => deleteItem(item.id)}
           className="text-outline hover:text-error transition-colors"
         >
@@ -142,26 +143,82 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
         </button>
       </div>
       <div className="flex justify-between items-center mt-xs">
-        <div className="flex items-center gap-sm">
+        <div className="flex items-center gap-sm flex-wrap">
           <div className="flex items-center border border-outline-variant rounded-lg bg-surface">
-            <button 
+            <button
               onClick={() => updateItem(item.id, 'quantity', Math.max(0, item.quantity - 1))}
               className="px-2 py-1 text-on-surface-variant hover:text-primary"
             >-</button>
-            <input 
-              className="w-12 text-center bg-transparent border-none p-0 font-body-md text-body-md text-on-surface focus:ring-0 h-[32px]" 
-              type="number" 
+            <input
+              className="w-12 text-center bg-transparent border-none p-0 font-body-md text-body-md text-on-surface focus:ring-0 h-[32px]"
+              type="number"
               value={item.quantity}
               onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
             />
-            <button 
+            <button
               onClick={() => updateItem(item.id, 'quantity', item.quantity + 1)}
               className="px-2 py-1 text-on-surface-variant hover:text-primary"
             >+</button>
           </div>
+          <div className="relative">
+            <input
+              className="w-16 bg-transparent border-b border-outline-variant p-0 font-body-md text-body-md text-on-surface focus:ring-0 focus:border-primary placeholder:text-outline text-center"
+              type="text"
+              list={`unit-options-${item.id}`}
+              placeholder="Unit"
+              value={item.unit || ''}
+              onChange={(e) => updateItem(item.id, 'unit', e.target.value)}
+            />
+            <datalist id={`unit-options-${item.id}`}>
+              <option value="kg">Kilogram (kg)</option>
+              <option value="g">Gram (g)</option>
+              <option value="mg">Milligram (mg)</option>
+              <option value="ton">Ton (t)</option>
+
+              <option value="l">Liter (L)</option>
+              <option value="ml">Milliliter (mL)</option>
+              <option value="gal">Gallon (gal)</option>
+
+              <option value="cm">Centimeter (cm)</option>
+              <option value="m">Meter (m)</option>
+              <option value="km">Kilometer (km)</option>
+              <option value="in">Inch (in)</option>
+              <option value="ft">Foot (ft)</option>
+              <option value="yd">Yard (yd)</option>
+
+              <option value="sqft">Square Foot (ft²)</option>
+              <option value="sqm">Square Meter (m²)</option>
+
+              <option value="pc">Piece (pc)</option>
+              <option value="bx">Box (bx)</option>
+              <option value="pk">Pack (pk)</option>
+              <option value="pkt">Packet (pkt)</option>
+              <option value="ctn">Carton (ctn)</option>
+              <option value="dz">Dozen (dz)</option>
+              <option value="pr">Pair (pr)</option>
+              <option value="set">Set (set)</option>
+              <option value="bdl">Bundle (bdl)</option>
+              <option value="rl">Roll (rl)</option>
+              <option value="bag">Bag (bag)</option>
+              <option value="btl">Bottle (btl)</option>
+              <option value="can">Can (can)</option>
+              <option value="jar">Jar (jar)</option>
+              <option value="tray">Tray (tray)</option>
+
+              <option value="hr">Hour (hr)</option>
+              <option value="day">Day (day)</option>
+              <option value="wk">Week (wk)</option>
+              <option value="mo">Month (mo)</option>
+              <option value="yr">Year (yr)</option>
+
+              <option value="svc">Service (svc)</option>
+              <option value="job">Job (job)</option>
+              <option value="unit">Unit (unit)</option>
+            </datalist>
+          </div>
           <div className="flex items-center gap-1 font-body-md text-body-md text-on-surface-variant">
             <span>x {currencySymbol}</span>
-            <input 
+            <input
               className="w-20 bg-transparent border-b border-outline-variant p-0 font-body-md text-body-md text-on-surface focus:ring-0 focus:border-primary"
               type="number"
               step="0.01"

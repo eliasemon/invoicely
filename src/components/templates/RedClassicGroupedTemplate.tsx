@@ -162,7 +162,7 @@ export function RedClassicGroupedTemplate({
                               {item.name}
                             </td>
                             <td className="border border-gray-300 py-1 px-1 text-center text-gray-800">
-                              {item.quantity}
+                              {item.quantity} {item.unit || ''}
                             </td>
                             <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
                               {formatMoney(item.unitPrice, sym)}

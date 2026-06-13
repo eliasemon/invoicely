@@ -194,7 +194,7 @@ export function ModernPurpleTemplate({
                               {formatMoney(item.unitPrice, sym)}
                             </div>
                             <div className="col-span-1 text-sm text-gray-600 text-right">
-                              {item.quantity}
+                              {item.quantity} {item.unit || ''}
                             </div>
                             <div className="col-span-1 text-sm text-gray-600 text-right">
                               0%
@@ -243,7 +243,7 @@ export function ModernPurpleTemplate({
                           {formatMoney(item.unitPrice, sym)}
                         </div>
                         <div className="col-span-1 text-sm text-gray-600 text-right">
-                          {item.quantity}
+                          {item.quantity} {item.unit || ''}
                         </div>
                         <div className="col-span-1 text-sm text-gray-600 text-right">
                           0%

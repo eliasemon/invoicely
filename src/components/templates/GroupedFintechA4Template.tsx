@@ -167,7 +167,7 @@ export function GroupedFintechA4Template({
                             {item.name}
                           </td>
                           <td className="py-0.5 px-2 text-right text-[#475569]">
-                            {item.quantity}
+                            {item.quantity} {item.unit || ''}
                           </td>
                           <td className="py-0.5 px-2 text-right text-[#475569]">
                             {formatMoney(item.unitPrice, sym)}

@@ -164,7 +164,7 @@ export function HeritageA4Template({
                               {item.name}
                             </td>
                             <td className="py-0.5 text-right text-[11px] text-[#6b5b4a]">
-                              {item.quantity}
+                              {item.quantity} {item.unit || ''}
                             </td>
                             <td className="py-0.5 text-right text-[11px] text-[#6b5b4a]">
                               {formatMoney(item.unitPrice, sym)}
@@ -206,7 +206,7 @@ export function HeritageA4Template({
                           {item.name}
                         </td>
                         <td className="py-0.5 text-right text-[11px] text-[#6b5b4a]">
-                          {item.quantity}
+                          {item.quantity} {item.unit || ''}
                         </td>
                         <td className="py-0.5 text-right text-[11px] text-[#6b5b4a]">
                           {formatMoney(item.unitPrice, sym)}

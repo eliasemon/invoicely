@@ -88,8 +88,8 @@ export function getTotal(invoice: Invoice): number {
   return Math.max(0, subtotal - discount) + shipping;
 }
 
-export function getAllItems(invoice: Invoice): { name: string; quantity: number; unitPrice: number; groupName?: string }[] {
-  const items: { name: string; quantity: number; unitPrice: number; groupName?: string }[] = [];
+export function getAllItems(invoice: Invoice): { name: string; quantity: number; unit?: string; unitPrice: number; groupName?: string }[] {
+  const items: { name: string; quantity: number; unit?: string; unitPrice: number; groupName?: string }[] = [];
   invoice.groups?.forEach(group => {
     group.items.forEach(item => {
       items.push({ ...item, groupName: group.name });

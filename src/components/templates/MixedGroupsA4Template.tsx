@@ -159,7 +159,7 @@ export function MixedGroupsA4Template({
                           {item.name}
                         </p>
                         <p className="text-[11px] text-[#94a3b8] font-mono mt-0.5">
-                          {item.quantity} × {formatMoney(item.unitPrice, sym)}
+                          {item.quantity} {item.unit || ''} × {formatMoney(item.unitPrice, sym)}
                         </p>
                       </div>
                       <p className="font-mono font-semibold text-[#1e293b]">

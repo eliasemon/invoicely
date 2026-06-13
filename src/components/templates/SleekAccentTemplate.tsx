@@ -177,7 +177,7 @@ export function SleekAccentTemplate({
                               {item.name}
                             </div>
                             <div className="col-span-2 text-sm text-center">
-                              {item.quantity}
+                              {item.quantity} {item.unit || ''}
                             </div>
                             <div className="col-span-2 text-sm text-center">
                               {formatMoney(item.unitPrice, sym)}
@@ -221,7 +221,7 @@ export function SleekAccentTemplate({
                           {item.name}
                         </div>
                         <div className="col-span-2 text-sm text-center">
-                          {item.quantity}
+                          {item.quantity} {item.unit || ''}
                         </div>
                         <div className="col-span-2 text-sm text-center">
                           {formatMoney(item.unitPrice, sym)}

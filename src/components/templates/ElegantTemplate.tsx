@@ -179,7 +179,7 @@ export function ElegantTemplate({
                           className="col-span-2 text-right text-sm text-[#565e74]"
                           style={{ fontFamily: "Geist, monospace" }}
                         >
-                          {item.quantity.toFixed(2)}
+                          {item.quantity} {item.unit || ''}
                         </div>
                         <div
                           className="col-span-2 text-right text-sm text-[#565e74]"
@@ -232,7 +232,7 @@ export function ElegantTemplate({
                       className="col-span-2 text-right text-sm text-[#565e74]"
                       style={{ fontFamily: "Geist, monospace" }}
                     >
-                      {item.quantity.toFixed(2)}
+                      {item.quantity} {item.unit || ''}
                     </div>
                     <div
                       className="col-span-2 text-right text-sm text-[#565e74]"

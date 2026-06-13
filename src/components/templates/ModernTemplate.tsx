@@ -217,7 +217,7 @@ export function ModernTemplate({
                         className="text-[10px] text-[#45464d] mt-0.5"
                         style={{ fontFamily: "Geist, monospace" }}
                       >
-                        Qty: {item.quantity} ×{" "}
+                        Qty: {item.quantity} {item.unit || ''} ×{" "}
                         {formatMoney(item.unitPrice, sym)}
                       </p>
                     </div>

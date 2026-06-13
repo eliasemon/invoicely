@@ -170,7 +170,7 @@ export function EnterpriseA4Template({
                                 {item.name}
                               </td>
                               <td className="py-0.5 px-2 text-right text-[#64748b]">
-                                {item.quantity}
+                                {item.quantity} {item.unit || ''}
                               </td>
                               <td className="py-0.5 px-2 text-right text-[#64748b]">
                                 {formatMoney(item.unitPrice, sym)}
@@ -221,7 +221,7 @@ export function EnterpriseA4Template({
                             {item.name}
                           </td>
                           <td className="py-0.5 px-2 text-right text-[#64748b]">
-                            {item.quantity}
+                            {item.quantity} {item.unit || ''}
                           </td>
                           <td className="py-0.5 px-2 text-right text-[#64748b]">
                             {formatMoney(item.unitPrice, sym)}
