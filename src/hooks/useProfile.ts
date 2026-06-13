@@ -51,6 +51,9 @@ export interface UserProfile {
   // Brand Voice
   brand_voice_enabled: boolean;
   brand_voice: string | null;
+
+  // Settings
+  invoice_edit_enabled: boolean;
 }
 
 export function useProfile() {

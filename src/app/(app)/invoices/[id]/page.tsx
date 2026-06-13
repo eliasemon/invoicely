@@ -9,6 +9,7 @@ import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import Link from 'next/link';
 import { DeleteInvoiceButton } from '@/components/invoices/DeleteInvoiceButton';
 import { MobileRecordPaymentButton } from '@/components/invoices/MobileRecordPaymentButton';
+import { RecordPaymentForm } from '@/components/invoices/RecordPaymentForm';
 
 export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,11 +22,13 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
 
   let defaultCurrency = 'USD';
   let defaultCurrencySymbol: string | undefined = undefined;
+  let canEdit = invoice.status === 'DRAFT';
   try {
     const profile = await getProfile();
     if (profile) {
       defaultCurrency = profile.default_currency || 'USD';
       defaultCurrencySymbol = profile.currency_symbol || undefined;
+      canEdit = canEdit || (profile.invoice_edit_enabled ?? true);
     }
   } catch (e) {
     // Ignore error
@@ -35,21 +38,6 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   const finalCurrencySymbol = invoice.currency_symbol || defaultCurrencySymbol;
 
   const remainingAmount = Number(invoice.total_amount) - Number(invoice.amount_paid || 0);
-
-  const handlePayment = async (formData: FormData) => {
-    'use server';
-    const amountStr = formData.get('amount') as string;
-    const noteStr = formData.get('note') as string;
-    let amountToPay = Number(amountStr);
-    
-    if (isNaN(amountToPay) || amountToPay <= 0) return;
-    if (amountToPay > remainingAmount) {
-      amountToPay = remainingAmount;
-    }
-
-    await recordPayment(invoice.id, amountToPay, noteStr);
-    revalidatePath(`/invoices/${id}`);
-  };
 
   const groups: GroupData[] = (invoice.line_items_snapshot as any) || [];
   const subtotal = groups.reduce((acc, g) => 
@@ -74,8 +62,17 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            {invoice.status === 'DRAFT' && (
-              <DeleteInvoiceButton invoiceId={invoice.id} iconOnly={true} className="p-2 rounded-full" />
+            {canEdit && (
+              <>
+                <Link 
+                  href={`/create?id=${invoice.id}`} 
+                  className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors active:scale-95 flex items-center justify-center"
+                  title="Edit Invoice"
+                >
+                  <MaterialIcon icon="edit" />
+                </Link>
+                <DeleteInvoiceButton invoiceId={invoice.id} iconOnly={true} className="p-2 rounded-full" />
+              </>
             )}
             <button className="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors active:scale-95 flex items-center justify-center">
               <MaterialIcon icon="more_vert" />
@@ -201,46 +198,12 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
             <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-md uppercase">Record Payment</h3>
             
             {invoice.status !== 'PAID' ? (
-              <form action={handlePayment}>
-                <div className="mb-md">
-                  <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">Amount to Pay</label>
-                  <div className="relative flex items-center border border-outline-variant rounded-lg bg-surface-bright focus-within:border-primary transition-colors px-3 py-2">
-                    <span className="text-on-surface-variant font-body-md mr-2">{finalCurrencySymbol || finalCurrency}</span>
-                    <input 
-                      name="amount"
-                      type="number" 
-                      step="0.01"
-                      min="0.01"
-                      max={remainingAmount}
-                      defaultValue={remainingAmount}
-                      className="w-full bg-transparent border-none focus:outline-none focus:ring-0 p-0 font-body-md text-primary" 
-                    />
-                  </div>
-                  <p className="font-label-sm text-label-sm text-on-surface-variant mt-1">
-                    Remaining balance: <CurrencyDisplay amount={remainingAmount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
-                  </p>
-                  
-                  <details className="mt-2 group">
-                    <summary className="flex items-center text-primary font-label-sm w-fit gap-1 hover:underline focus:outline-none cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                      <MaterialIcon icon="expand_more" className="text-[16px] group-open:hidden" />
-                      <MaterialIcon icon="expand_less" className="text-[16px] hidden group-open:block" />
-                      <span className="group-open:hidden">Add Note (Optional)</span>
-                      <span className="hidden group-open:inline">Hide Note</span>
-                    </summary>
-                    <textarea
-                      name="note"
-                      placeholder="Add comments or notes..."
-                      className="mt-2 w-full p-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-sm resize-none"
-                      rows={2}
-                    />
-                  </details>
-                </div>
-                
-                <button type="submit" className="w-full bg-primary hover:bg-on-primary-fixed text-on-primary font-label-sm text-label-sm py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 active:scale-[0.98]">
-                  <MaterialIcon icon="payments" className="text-[18px]" />
-                  Confirm Payment
-                </button>
-              </form>
+              <RecordPaymentForm 
+                invoiceId={invoice.id}
+                remainingAmount={remainingAmount}
+                finalCurrency={finalCurrency}
+                finalCurrencySymbol={finalCurrencySymbol}
+              />
             ) : (
               <div className="flex flex-col items-center justify-center py-sm text-center">
                 <div className="w-12 h-12 bg-success-container text-on-success-container rounded-full flex items-center justify-center mb-sm">
@@ -252,26 +215,47 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
             )}
           </section>
 
-          {/* Payment History */}
+          {/* Invoice Activity */}
           {invoice.logs && invoice.logs.length > 0 && (
             <section className="bg-surface-container-lowest rounded-xl shadow-level1 border border-surface-variant p-md">
-              <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-md uppercase">Payment History</h3>
+              <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-md uppercase">Invoice Activity</h3>
               <div className="flex flex-col gap-sm">
                 {[...invoice.logs].reverse().map((log: any, idx: number) => (
                   <div key={idx} className="flex justify-between items-start border-b border-surface-container-high last:border-0 pb-sm last:pb-0">
-                    <div>
-                      <p className="font-body-md text-primary font-medium">
-                        <CurrencyDisplay amount={log.amount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
-                      </p>
-                      <p className="font-label-sm text-on-surface-variant">
-                        {dayjs(log.date).format('MMM D, YYYY h:mm A')}
-                      </p>
-                      {log.note && (
-                        <p className="font-body-sm text-on-surface-variant mt-1 italic">
-                          "{log.note}"
+                    {log.type === 'EDIT' ? (
+                      <div>
+                        <p className="font-body-md text-primary font-medium flex items-center gap-2">
+                          <MaterialIcon icon="edit" className="text-[16px]" />
+                          Invoice Edited
                         </p>
-                      )}
-                    </div>
+                        <p className="font-label-sm text-on-surface-variant mt-1">
+                          {dayjs(log.date).format('MMM D, YYYY h:mm A')}
+                        </p>
+                        {log.note && (
+                          <p className="font-body-sm text-on-surface-variant mt-1 italic">
+                            "{log.note}"
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="font-body-md text-primary font-medium flex items-center gap-2">
+                          <MaterialIcon icon="payments" className="text-[16px]" />
+                          Payment Recorded
+                        </p>
+                        <p className="font-body-md text-primary font-medium mt-1">
+                          <CurrencyDisplay amount={log.amount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
+                        </p>
+                        <p className="font-label-sm text-on-surface-variant">
+                          {dayjs(log.date).format('MMM D, YYYY h:mm A')}
+                        </p>
+                        {log.note && (
+                          <p className="font-body-sm text-on-surface-variant mt-1 italic">
+                            "{log.note}"
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

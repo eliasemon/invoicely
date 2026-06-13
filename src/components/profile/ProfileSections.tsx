@@ -446,3 +446,30 @@ export function BrandVoiceSection({ profile, onChange }: SectionProps) {
     </div>
   );
 }
+
+export function InvoiceSettingsSection({ profile, onChange }: SectionProps) {
+  const enabled = profile.invoice_edit_enabled ?? true;
+
+  return (
+    <div className="scroll-mt-36 bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300" id="invoice-settings-section">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <MaterialIcon icon="edit_document" className="text-secondary text-[24px]" />
+          <div>
+            <h2 className="font-headline-md text-headline-md">Enable Invoice Editing</h2>
+            <p className="font-label-sm text-label-sm text-on-surface-variant mt-1">Allow editing and deleting finalized invoices. Uncheck to lock finalized invoices.</p>
+          </div>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer ml-4 shrink-0">
+          <input 
+            checked={enabled} 
+            onChange={(e) => onChange({ invoice_edit_enabled: e.target.checked })} 
+            className="sr-only peer" 
+            type="checkbox"
+          />
+          <div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+        </label>
+      </div>
+    </div>
+  );
+}

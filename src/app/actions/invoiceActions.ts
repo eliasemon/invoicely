@@ -92,9 +92,29 @@ export async function createInvoice(data: {
     .eq('id', userId)
     .single();
 
+  let existingInvoice = null;
+  if (data.invoiceId) {
+    const { data: inv } = await supabaseAdmin
+      .from('invoices')
+      .select('*')
+      .eq('id', data.invoiceId)
+      .eq('profile_id', userId)
+      .single();
+    existingInvoice = inv;
+    
+    if (inv && inv.status !== 'DRAFT') {
+      if (profile?.invoice_edit_enabled === false) {
+        throw new Error('Invoice editing is disabled');
+      }
+    }
+  }
+
   const now = new Date();
   const dueDateValue = new Date(now);
   dueDateValue.setDate(dueDateValue.getDate() + 30);
+  
+  const issuedAt = existingInvoice?.issued_at || now.toISOString();
+  const dueDate = existingInvoice?.due_date || dueDateValue.toISOString();
   
   const resolvedClientId = await resolveClientId(userId, data);
 
@@ -110,8 +130,8 @@ export async function createInvoice(data: {
       discount_type: data.discountType || null,
       discount_value: data.discountValue || null,
       shipping_cost: data.shippingCost || null,
-      issued_at: now.toISOString(),
-      due_date: dueDateValue.toISOString(),
+      issued_at: issuedAt,
+      due_date: dueDate,
       
       // Snapshot Profile details if enabled
       currency: profile?.default_currency || 'USD',
@@ -135,7 +155,16 @@ export async function createInvoice(data: {
       brand_voice_enabled: profile?.brand_voice_enabled ?? true,
       brand_voice: profile?.brand_voice_enabled ? profile.brand_voice : null,
       updated_at: now.toISOString()
-  };
+  } as any;
+
+  if (existingInvoice && existingInvoice.status !== 'DRAFT') {
+    const editLog = {
+      type: 'EDIT',
+      date: now.toISOString(),
+      note: 'Invoice updated'
+    };
+    payload.logs = [...(existingInvoice.logs || []), editLog];
+  }
 
   let invoice;
   let error;
@@ -464,8 +493,17 @@ export async function deleteInvoice(id: string) {
     .single();
 
   if (!invoice) throw new Error('Invoice not found');
-  if (invoice.status !== 'DRAFT') {
-    throw new Error('Only draft invoices can be deleted');
+
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('invoice_edit_enabled')
+    .eq('id', userId)
+    .single();
+
+  const editEnabled = profile?.invoice_edit_enabled ?? true;
+
+  if (invoice.status !== 'DRAFT' && !editEnabled) {
+    throw new Error('Only draft invoices can be deleted unless invoice editing is enabled');
   }
 
   const { error } = await supabaseAdmin

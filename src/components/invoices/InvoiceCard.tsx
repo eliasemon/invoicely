@@ -5,6 +5,7 @@ import { StatusBadge, StatusType } from '@/components/shared/StatusBadge';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { DeleteInvoiceButton } from '@/components/invoices/DeleteInvoiceButton';
+import { ConfirmPaymentModal } from '@/components/invoices/ConfirmPaymentModal';
 
 interface InvoiceCardProps {
   invoiceId: string;
@@ -28,6 +29,7 @@ export function InvoiceCard({ invoiceId, id, clientName, amount, status, date, p
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [paymentNote, setPaymentNote] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   
   const remainingAmount = amount - amountPaid;
   const [paymentAmount, setPaymentAmount] = useState(remainingAmount > 0 ? remainingAmount : amount);
@@ -40,6 +42,7 @@ export function InvoiceCard({ invoiceId, id, clientName, amount, status, date, p
       setShowPaymentForm(false);
       setShowNotes(false);
       setPaymentNote('');
+      setShowConfirmModal(false);
       router.refresh();
     } catch (e) {
       console.error(e);
@@ -138,10 +141,14 @@ export function InvoiceCard({ invoiceId, id, clientName, amount, status, date, p
                   </div>
                   <button 
                     disabled={isSubmitting}
-                    onClick={handleConfirmPayment}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowConfirmModal(true);
+                    }}
                     className="px-4 py-2 bg-primary text-on-primary rounded-lg font-label-sm shadow-sm active:opacity-90 disabled:opacity-70"
                   >
-                    {isSubmitting ? 'Saving...' : 'Confirm'}
+                    Confirm
                   </button>
                 </div>
                 
@@ -167,6 +174,18 @@ export function InvoiceCard({ invoiceId, id, clientName, amount, status, date, p
             )}
           </div>
         </div>
+      )}
+
+      {showConfirmModal && (
+        <ConfirmPaymentModal
+          isOpen={showConfirmModal}
+          onClose={() => setShowConfirmModal(false)}
+          onConfirm={handleConfirmPayment}
+          amount={paymentAmount}
+          currency={resolvedCurrency}
+          currencySymbol={resolvedCurrencySymbol}
+          isSubmitting={isSubmitting}
+        />
       )}
     </div>
     </Link>

@@ -8,6 +8,7 @@ import { useCreateInvoice } from '@/core/contexts/CreateInvoiceContext';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, Suspense, useState } from 'react';
 import { getInvoice } from '@/app/actions/invoiceActions';
+import { useProfile } from '@/hooks/useProfile';
 
 function CreateInvoiceForm() {
   const { 
@@ -26,13 +27,15 @@ function CreateInvoiceForm() {
 
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const { profile } = useProfile();
 
   useEffect(() => {
     const id = searchParams.get('id');
     if (id && id !== draftInvoiceId) {
       setIsLoading(true);
       getInvoice(id).then(invoice => {
-        if (invoice && invoice.status === 'DRAFT') {
+        const canEdit = invoice && (invoice.status === 'DRAFT' || (profile?.invoice_edit_enabled ?? true));
+        if (canEdit) {
           setDraftInvoiceId(invoice.id);
           if (invoice.client_id) setClientId(invoice.client_id);
           setClientName(invoice.client_name || '');
@@ -43,6 +46,8 @@ function CreateInvoiceForm() {
           if (invoice.discount_type) setDiscountType(invoice.discount_type as 'amount' | 'percentage');
           if (invoice.discount_value) setDiscountValue(invoice.discount_value);
           if (invoice.shipping_cost) setShippingCost(invoice.shipping_cost);
+        } else if (invoice && invoice.status !== 'DRAFT') {
+           console.warn('Invoice editing is disabled for non-draft invoices');
         }
       }).catch(err => {
         console.error('Failed to load draft invoice', err);
@@ -50,7 +55,7 @@ function CreateInvoiceForm() {
         setIsLoading(false);
       });
     }
-  }, [searchParams]);
+  }, [searchParams, profile]);
 
   if (isLoading) {
     return (

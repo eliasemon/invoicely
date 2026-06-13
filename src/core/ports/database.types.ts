@@ -117,6 +117,9 @@ export interface UserProfile {
   brand_voice_enabled: boolean;
   brand_voice: string | null;
   
+  // Settings
+  invoice_edit_enabled: boolean;
+  
   created_at: Date;
   updated_at: Date;
 }
