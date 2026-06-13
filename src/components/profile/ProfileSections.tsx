@@ -1,6 +1,8 @@
 'use client';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { UserProfile } from '@/hooks/useProfile';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 interface SectionProps {
   profile: Partial<UserProfile>;
@@ -129,16 +131,30 @@ export function ContactDetailsSection({ profile, onChange }: SectionProps) {
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 phone-input-wrapper">
             <label className="font-label-sm text-label-sm text-on-surface-variant uppercase">Phone Number</label>
-            <input 
-              className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
-              type="tel" 
-              maxLength={30}
-              value={profile.phone || ''}
-              onChange={(e) => onChange({ phone: e.target.value })}
-              placeholder="+1 (555) 123-4567"
+            <PhoneInput
+              international
+              defaultCountry="US"
+              value={profile.phone ? (profile.phone.startsWith('+') ? '+' + profile.phone.replace(/\D/g, '') : '+' + profile.phone.replace(/\D/g, '')) : undefined}
+              onChange={(val) => onChange({ phone: val ? val.toString() : '' })}
+              className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 font-body-md text-on-surface focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all duration-200 hover:border-outline phone-input-container"
             />
+            <style jsx global>{`
+              .phone-input-wrapper .phone-input-container .PhoneInputInput {
+                border: none;
+                outline: none;
+                background: transparent;
+                font-family: inherit;
+                font-size: inherit;
+                color: inherit;
+                width: 100%;
+                height: 100%;
+              }
+              .phone-input-wrapper .phone-input-container .PhoneInputCountry {
+                margin-right: 12px;
+              }
+            `}</style>
           </div>
           <div className="flex flex-col gap-1">
             <label className="font-label-sm text-label-sm text-on-surface-variant uppercase">Website</label>
