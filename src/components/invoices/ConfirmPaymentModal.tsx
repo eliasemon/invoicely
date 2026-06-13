@@ -22,8 +22,8 @@ export function ConfirmPaymentModal({ isOpen, onClose, onConfirm, amount, curren
         onClick={!isSubmitting ? onClose : undefined} 
         aria-hidden="true" 
       />
-      <div className="relative bg-surface rounded-xl shadow-level3 w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-        <div className="p-md">
+      <div className="relative bg-surface rounded-3xl shadow-2xl w-[95vw] sm:w-[400px] md:w-[450px] overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+        <div className="p-6">
           <div className="w-12 h-12 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mb-sm">
             <MaterialIcon icon="payments" className="text-[24px]" />
           </div>
