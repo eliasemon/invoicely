@@ -269,10 +269,10 @@ export default function CustomizeInvoicePage() {
               />
             </div>
 
-            {/* Scrollable Document Canvas Viewport */}
+            {/* Scrollable Document Canvas Viewport (Hidden during print) */}
             <div 
               ref={previewViewportRef}
-              className="flex-1 overflow-auto bg-surface-container select-text"
+              className="flex-1 overflow-auto bg-surface-container select-text print:hidden"
               style={{ touchAction: 'manipulation' }}
             >
               {/* Zoom Wrapper - Reserves space for the scaled container */}
@@ -296,7 +296,7 @@ export default function CustomizeInvoicePage() {
                     left: 0,
                     top: 0,
                   }}
-                  className="transition-shadow hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden bg-transparent print:transform-none print:static print:w-[210mm] print:shadow-none print:border-none"
+                  className="transition-shadow hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden bg-transparent"
                 >
                   <InvoiceTemplateRenderer 
                     templateId={selectedTemplate} 
@@ -309,6 +309,19 @@ export default function CustomizeInvoicePage() {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Dedicated Print Container */}
+            <div className="hidden print:block w-[210mm] mx-auto bg-white border-none shadow-none m-0 p-0">
+              <InvoiceTemplateRenderer 
+                templateId={selectedTemplate} 
+                invoice={mockInvoice} 
+                profile={profile}
+                isPreview={true}
+                showGroups={showGroups}
+                showGroupTotals={showGroupTotals}
+                publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/public/invoice/mock-12345`}
+              />
             </div>
           </div>
         </div>

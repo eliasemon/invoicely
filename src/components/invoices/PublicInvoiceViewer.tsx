@@ -102,10 +102,10 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
         />
       </div>
 
-      {/* Scrollable Document Canvas Viewport */}
+      {/* Scrollable Document Canvas Viewport (Hidden during print) */}
       <div 
         ref={previewViewportRef}
-        className="w-full overflow-auto bg-transparent select-text"
+        className="w-full overflow-auto bg-transparent select-text print:hidden"
         style={{ touchAction: 'manipulation' }}
       >
         {/* Zoom Wrapper - Reserves space for the scaled container */}
@@ -129,7 +129,7 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
               left: 0,
               top: 0,
             }}
-            className="transition-shadow overflow-hidden bg-transparent print:transform-none print:static print:w-[210mm] print:shadow-none print:border-none"
+            className="transition-shadow overflow-hidden bg-transparent"
           >
             <InvoiceTemplateRenderer 
               templateId={templateId} 
@@ -142,6 +142,19 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
             />
           </div>
         </div>
+      </div>
+
+      {/* Dedicated Print Container */}
+      <div className="hidden print:block w-[210mm] mx-auto bg-white border-none shadow-none m-0 p-0">
+        <InvoiceTemplateRenderer 
+          templateId={templateId} 
+          invoice={invoice} 
+          profile={profile} 
+          publicUrl={publicUrl}
+          showGroups={showGroups}
+          showGroupTotals={showGroupTotals}
+          isPreview={false}
+        />
       </div>
     </div>
   );

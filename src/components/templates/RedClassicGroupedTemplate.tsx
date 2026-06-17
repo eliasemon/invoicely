@@ -71,6 +71,13 @@ export function RedClassicGroupedTemplate({
                   {profile.company_address}
                 </p>
               )}
+              {(profile?.email || profile?.phone) && (
+                <p className="text-xs text-gray-600 mt-1 font-medium">
+                  {profile.email}
+                  {profile.email && profile.phone ? " • " : ""}
+                  {profile.phone}
+                </p>
+              )}
             </div>
           </div>
           <div className="text-right flex flex-col items-end">
@@ -284,6 +291,19 @@ export function RedClassicGroupedTemplate({
             <p className="font-bold mb-0.5">Terms & Conditions:</p>
             <p className="text-gray-800 whitespace-pre-line">
               {invoice.terms_and_conditions || profile?.terms_and_conditions}
+            </p>
+          </div>
+        )}
+
+        {/* Bank Details */}
+        {(profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) && (
+          <div className="mb-4 text-[11px]">
+            <p className="font-bold mb-0.5">Bank Details:</p>
+            <p className="text-gray-800">
+              <span className="font-semibold">{invoice.bank_name || profile?.bank_name}</span>
+              <br />
+              {invoice.bank_account_holder || profile?.bank_account_holder} • {invoice.bank_account_number || profile?.bank_account_number}
+              {invoice.bank_swift || profile?.bank_swift ? ` • SWIFT: ${invoice.bank_swift || profile?.bank_swift}` : ""}
             </p>
           </div>
         )}
