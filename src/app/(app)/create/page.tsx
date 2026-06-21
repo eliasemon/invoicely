@@ -5,6 +5,7 @@ import { AddActions } from '@/components/create/AddActions';
 import { InvoiceDates } from '@/components/create/InvoiceDates';
 import { DiscountShippingInputs } from '@/components/create/DiscountShippingInputs';
 import { InvoiceTotalFooter } from '@/components/create/InvoiceTotalFooter';
+import { ValidationModal, ValidationError } from '@/components/create/ValidationModal';
 import { useCreateInvoice } from '@/core/contexts/CreateInvoiceContext';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, Suspense, useState } from 'react';
@@ -31,6 +32,7 @@ function CreateInvoiceForm() {
 
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const { profile } = useProfile();
 
   useEffect(() => {
@@ -144,12 +146,13 @@ function CreateInvoiceForm() {
   const isValid = isClientNameValid && hasValidGroupsAndItems && isDateValid;
 
   const handleValidationFailed = () => {
-    let message = 'Please fix the following to proceed:\n';
-    if (!isClientNameValid) message += '- Customer name is required\n';
-    if (groups.length === 0) message += '- At least one group is required\n';
-    else if (!groups.some(g => g.items.length > 0)) message += '- At least one item is required\n';
-    if (!isDateValid) message += '- Due date cannot be before the issue date\n';
-    alert(message);
+    let errors: ValidationError[] = [];
+    if (!isClientNameValid) errors.push({ message: 'Customer name is required', elementId: 'customerName' });
+    if (groups.length === 0) errors.push({ message: 'At least one group is required', elementId: 'groupsSection' });
+    else if (!groups.some(g => g.items.length > 0)) errors.push({ message: 'At least one item is required', elementId: 'groupsSection' });
+    if (!isDateValid) errors.push({ message: 'Due date cannot be before the issue date', elementId: 'dueDate' });
+    
+    setValidationErrors(errors);
   };
 
   return (
@@ -173,7 +176,7 @@ function CreateInvoiceForm() {
 
       <InvoiceDates />
 
-      <section className="space-y-md">
+      <section id="groupsSection" className="space-y-md">
         {groups.map((group) => (
           <LineItemGroup 
             key={group.id}
@@ -201,6 +204,23 @@ function CreateInvoiceForm() {
         currencySymbol={currencySymbol} 
         isValid={isValid}
         onValidationFailed={handleValidationFailed}
+      />
+
+      <ValidationModal 
+        isOpen={validationErrors.length > 0} 
+        errors={validationErrors} 
+        onClose={(elementId) => {
+          setValidationErrors([]);
+          if (elementId) {
+            setTimeout(() => {
+              const el = document.getElementById(elementId);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.focus();
+              }
+            }, 100);
+          }
+        }} 
       />
     </div>
   );

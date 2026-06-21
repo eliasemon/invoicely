@@ -30,8 +30,9 @@ export function InvoiceDates() {
         </div>
         
         <div>
-          <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">Due Date</label>
+          <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1" htmlFor="dueDate">Due Date</label>
           <input 
+            id="dueDate"
             type="date" 
             value={dueDate ? dueDate.split('T')[0] : ''} 
             onChange={(e) => {
