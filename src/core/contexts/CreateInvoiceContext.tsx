@@ -30,6 +30,10 @@ interface CreateInvoiceContextType {
   currencySymbol: string;
   amountPaid: number;
   setAmountPaid: (val: number) => void;
+  issuedAt: string;
+  setIssuedAt: (val: string) => void;
+  dueDate: string;
+  setDueDate: (val: string) => void;
 }
 
 const CreateInvoiceContext = createContext<CreateInvoiceContextType | undefined>(undefined);
@@ -51,6 +55,8 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
   const [discountValue, setDiscountValue] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
   const [amountPaid, setAmountPaid] = useState(0);
+  const [issuedAt, setIssuedAt] = useState('');
+  const [dueDate, setDueDate] = useState('');
 
   const currency = profile?.default_currency || initialCurrency || 'USD';
   const currencySymbol = profile?.currency_symbol || initialCurrencySymbol || (() => {
@@ -91,7 +97,9 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
           groups,
           discountType,
           discountValue,
-          shippingCost
+          shippingCost,
+          issuedAt: issuedAt || undefined,
+          dueDate: dueDate || undefined
         });
         
         if (!draftIdRef.current && invoice?.id) {
@@ -103,7 +111,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost]);
+  }, [clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost, issuedAt, dueDate]);
 
   return (
     <CreateInvoiceContext.Provider value={{
@@ -118,7 +126,9 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
       discountValue, setDiscountValue,
       shippingCost, setShippingCost,
       currency, currencySymbol,
-      amountPaid, setAmountPaid
+      amountPaid, setAmountPaid,
+      issuedAt, setIssuedAt,
+      dueDate, setDueDate
     }}>
       {children}
     </CreateInvoiceContext.Provider>

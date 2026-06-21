@@ -41,6 +41,8 @@ export async function createInvoice(data: {
   discountType?: 'amount' | 'percentage';
   discountValue?: number;
   shippingCost?: number;
+  issuedAt?: string;
+  dueDate?: string;
 }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
@@ -113,8 +115,8 @@ export async function createInvoice(data: {
   const dueDateValue = new Date(now);
   dueDateValue.setDate(dueDateValue.getDate() + 30);
   
-  const issuedAt = existingInvoice?.issued_at || now.toISOString();
-  const dueDate = existingInvoice?.due_date || dueDateValue.toISOString();
+  const issuedAt = data.issuedAt || existingInvoice?.issued_at || now.toISOString();
+  const dueDate = data.dueDate || existingInvoice?.due_date || dueDateValue.toISOString();
   
   const resolvedClientId = await resolveClientId(userId, data);
 
@@ -339,6 +341,8 @@ export async function saveDraftInvoice(data: {
   discountType?: 'amount' | 'percentage';
   discountValue?: number;
   shippingCost?: number;
+  issuedAt?: string;
+  dueDate?: string;
 }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
@@ -394,7 +398,7 @@ export async function saveDraftInvoice(data: {
     }
   }
 
-  const payload = {
+  const payload: any = {
       client_id: resolvedClientId,
       client_name: data.clientName,
       client_phone: data.clientPhone,
@@ -427,6 +431,9 @@ export async function saveDraftInvoice(data: {
       terms_and_conditions: profile?.terms_and_conditions || null,
       updated_at: new Date().toISOString()
   };
+
+  if (data.issuedAt) payload.issued_at = data.issuedAt;
+  if (data.dueDate) payload.due_date = data.dueDate;
 
   let invoice;
   let error;

@@ -13,7 +13,7 @@ import { InvoiceDisplayOptions } from '@/components/templates/InvoiceDisplayOpti
 
 export default function CustomizeInvoicePage() {
   const router = useRouter();
-  const { draftInvoiceId, clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, setSelectedTemplate, discountType, discountValue, shippingCost, amountPaid } = useCreateInvoice();
+  const { draftInvoiceId, clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, setSelectedTemplate, discountType, discountValue, shippingCost, amountPaid, issuedAt, dueDate } = useCreateInvoice();
   const { profile } = useProfile();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -98,6 +98,8 @@ export default function CustomizeInvoicePage() {
     discount_value: discountValue,
     shipping_cost: shippingCost,
     amountPaid: amountPaid,
+    issued_at: issuedAt || undefined,
+    due_date: dueDate || undefined,
   };
 
   const handleFinalize = async () => {
@@ -114,6 +116,8 @@ export default function CustomizeInvoicePage() {
         discountType,
         discountValue,
         shippingCost,
+        issuedAt: issuedAt || undefined,
+        dueDate: dueDate || undefined,
       });
       
       router.push(`/invoices/${invoice.id}`);
@@ -137,6 +141,8 @@ export default function CustomizeInvoicePage() {
         discountType,
         discountValue,
         shippingCost,
+        issuedAt: issuedAt || undefined,
+        dueDate: dueDate || undefined,
       });
       
       router.push(`/invoices/${invoice.id}`);
