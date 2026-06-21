@@ -10,6 +10,7 @@ import {
   getDiscountAmount,
   getShippingCost,
   getTotal,
+  getAmountPaid,
 } from "./templateUtils";
 
 export function ModernTemplate({
@@ -27,7 +28,7 @@ export function ModernTemplate({
   const shippingCost = getShippingCost(invoice);
   const total = getTotal(invoice);
   const tax = 0;
-  const amountPaid = invoice.amountPaid || 0;
+  const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
 
   return (

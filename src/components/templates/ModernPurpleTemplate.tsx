@@ -10,6 +10,7 @@ import {
   getDiscountAmount,
   getShippingCost,
   getTotal,
+  getAmountPaid,
   getAllItems,
 } from "./templateUtils";
 import { MaterialIcon } from "@/components/shared/MaterialIcon";
@@ -29,7 +30,7 @@ export function ModernPurpleTemplate({
   const discountAmount = getDiscountAmount(invoice, subtotal);
   const shippingCost = getShippingCost(invoice);
   const total = getTotal(invoice);
-  const amountPaid = invoice.amountPaid || 0;
+  const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
 

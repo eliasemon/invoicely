@@ -88,6 +88,16 @@ export function getTotal(invoice: Invoice): number {
   return Math.max(0, subtotal - discount) + shipping;
 }
 
+export function getAmountPaid(invoice: any): number {
+  return Number(invoice.amount_paid) || Number(invoice.amountPaid) || 0;
+}
+
+export function getBalanceDue(invoice: Invoice): number {
+  const total = getTotal(invoice);
+  const paid = getAmountPaid(invoice);
+  return Math.max(0, total - paid);
+}
+
 export function getAllItems(invoice: Invoice): { name: string; quantity: number; unit?: string; unitPrice: number; groupName?: string }[] {
   const items: { name: string; quantity: number; unit?: string; unitPrice: number; groupName?: string }[] = [];
   invoice.groups?.forEach(group => {

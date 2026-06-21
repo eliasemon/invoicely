@@ -13,7 +13,7 @@ import { InvoiceDisplayOptions } from '@/components/templates/InvoiceDisplayOpti
 
 export default function CustomizeInvoicePage() {
   const router = useRouter();
-  const { draftInvoiceId, clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, setSelectedTemplate, discountType, discountValue, shippingCost } = useCreateInvoice();
+  const { draftInvoiceId, clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, setSelectedTemplate, discountType, discountValue, shippingCost, amountPaid } = useCreateInvoice();
   const { profile } = useProfile();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -97,6 +97,7 @@ export default function CustomizeInvoicePage() {
     discount_type: discountType,
     discount_value: discountValue,
     shipping_cost: shippingCost,
+    amountPaid: amountPaid,
   };
 
   const handleFinalize = async () => {

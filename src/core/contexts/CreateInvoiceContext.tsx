@@ -28,6 +28,8 @@ interface CreateInvoiceContextType {
   setShippingCost: (cost: number) => void;
   currency: string;
   currencySymbol: string;
+  amountPaid: number;
+  setAmountPaid: (val: number) => void;
 }
 
 const CreateInvoiceContext = createContext<CreateInvoiceContextType | undefined>(undefined);
@@ -48,6 +50,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
   const [discountType, setDiscountType] = useState<'amount' | 'percentage'>('amount');
   const [discountValue, setDiscountValue] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
+  const [amountPaid, setAmountPaid] = useState(0);
 
   const currency = profile?.default_currency || initialCurrency || 'USD';
   const currencySymbol = profile?.currency_symbol || initialCurrencySymbol || (() => {
@@ -114,7 +117,8 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
       discountType, setDiscountType,
       discountValue, setDiscountValue,
       shippingCost, setShippingCost,
-      currency, currencySymbol
+      currency, currencySymbol,
+      amountPaid, setAmountPaid
     }}>
       {children}
     </CreateInvoiceContext.Provider>

@@ -22,7 +22,8 @@ function CreateInvoiceForm() {
     setSelectedTemplate,
     discountType, setDiscountType,
     discountValue, setDiscountValue,
-    shippingCost, setShippingCost
+    shippingCost, setShippingCost,
+    setAmountPaid
   } = useCreateInvoice();
 
   const searchParams = useSearchParams();
@@ -46,6 +47,7 @@ function CreateInvoiceForm() {
           if (invoice.discount_type) setDiscountType(invoice.discount_type as 'amount' | 'percentage');
           if (invoice.discount_value) setDiscountValue(invoice.discount_value);
           if (invoice.shipping_cost) setShippingCost(invoice.shipping_cost);
+          setAmountPaid(Number(invoice.amount_paid) || 0);
         } else if (invoice && invoice.status !== 'DRAFT') {
            console.warn('Invoice editing is disabled for non-draft invoices');
         }

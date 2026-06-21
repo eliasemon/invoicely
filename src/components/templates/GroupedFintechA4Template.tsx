@@ -10,6 +10,7 @@ import {
   getDiscountAmount,
   getShippingCost,
   getTotal,
+  getAmountPaid,
 } from "./templateUtils";
 
 export function GroupedFintechA4Template({
@@ -25,7 +26,7 @@ export function GroupedFintechA4Template({
   const discountAmount = getDiscountAmount(invoice, subtotal);
   const shippingCost = getShippingCost(invoice);
   const total = getTotal(invoice);
-  const amountPaid = invoice.amountPaid || 0;
+  const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
 
   return (

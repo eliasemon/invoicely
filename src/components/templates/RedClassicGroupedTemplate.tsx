@@ -9,6 +9,8 @@ import {
   getDiscountAmount,
   getShippingCost,
   getTotal,
+  getAmountPaid,
+  getBalanceDue,
   numberToWords,
 } from "./templateUtils";
 
@@ -24,6 +26,8 @@ export function RedClassicGroupedTemplate({
   const discountAmount = getDiscountAmount(invoice, subtotal);
   const shippingCost = getShippingCost(invoice);
   const total = getTotal(invoice);
+  const amountPaid = getAmountPaid(invoice);
+  const balanceDue = getBalanceDue(invoice);
 
   // Use custom subject or fallback
   const subject = invoice.notes
@@ -255,6 +259,34 @@ export function RedClassicGroupedTemplate({
                     {formatMoney(total, "")}
                   </td>
                 </tr>
+
+                {/* Paid Amount and Balance Due */}
+                {amountPaid > 0 && (
+                  <>
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="border border-gray-300 py-1 px-2 text-right font-semibold text-gray-700"
+                      >
+                        Paid Amount
+                      </td>
+                      <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
+                        {formatMoney(amountPaid, "")}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="border border-gray-300 py-1.5 px-2 text-right font-bold text-[#8b0000] text-[12px]"
+                      >
+                        Balance Due
+                      </td>
+                      <td className="border border-[#8b0000] py-1.5 px-1 text-right font-bold text-[#8b0000] text-[12px]">
+                        {formatMoney(balanceDue, "")}
+                      </td>
+                    </tr>
+                  </>
+                )}
               </tbody>
             </table>
           </div>

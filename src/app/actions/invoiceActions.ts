@@ -118,12 +118,21 @@ export async function createInvoice(data: {
   
   const resolvedClientId = await resolveClientId(userId, data);
 
+  const currentAmountPaid = existingInvoice ? Number(existingInvoice.amount_paid || 0) : 0;
+
+  let newStatus = 'UNPAID';
+  if (currentAmountPaid >= totalAmount && totalAmount > 0) {
+    newStatus = 'PAID';
+  } else if (currentAmountPaid > 0) {
+    newStatus = 'PARTIAL';
+  }
+
   const payload = {
       client_id: resolvedClientId,
       client_name: data.clientName,
       client_phone: data.clientPhone,
       client_address: data.clientAddress || null,
-      status: 'UNPAID',
+      status: newStatus,
       template: data.template,
       total_amount: totalAmount,
       line_items_snapshot: data.groups,
@@ -132,6 +141,7 @@ export async function createInvoice(data: {
       shipping_cost: data.shippingCost || null,
       issued_at: issuedAt,
       due_date: dueDate,
+      amount_paid: currentAmountPaid,
       
       // Snapshot Profile details if enabled
       currency: profile?.default_currency || 'USD',
@@ -359,19 +369,44 @@ export async function saveDraftInvoice(data: {
     
   const resolvedClientId = await resolveClientId(userId, data);
 
+  let existingInvoice = null;
+  if (data.invoiceId) {
+    const { data: inv } = await supabaseAdmin
+      .from('invoices')
+      .select('status, amount_paid')
+      .eq('id', data.invoiceId)
+      .eq('profile_id', userId)
+      .single();
+    existingInvoice = inv;
+  }
+
+  const currentAmountPaid = existingInvoice ? Number(existingInvoice.amount_paid || 0) : 0;
+  const currentStatus = existingInvoice ? existingInvoice.status : 'DRAFT';
+
+  let newStatus = currentStatus;
+  if (currentStatus !== 'DRAFT') {
+    if (currentAmountPaid >= totalAmount && totalAmount > 0) {
+      newStatus = 'PAID';
+    } else if (currentAmountPaid > 0) {
+      newStatus = 'PARTIAL';
+    } else {
+      newStatus = 'UNPAID';
+    }
+  }
+
   const payload = {
       client_id: resolvedClientId,
       client_name: data.clientName,
       client_phone: data.clientPhone,
       client_address: data.clientAddress || null,
-      status: 'DRAFT',
+      status: newStatus,
       template: data.template,
       total_amount: totalAmount,
       line_items_snapshot: data.groups,
       discount_type: data.discountType || null,
       discount_value: data.discountValue || null,
       shipping_cost: data.shippingCost || null,
-      amount_paid: 0,
+      amount_paid: currentAmountPaid,
       
       currency: profile?.default_currency || 'USD',
       currency_symbol: profile?.currency_symbol || (() => {
