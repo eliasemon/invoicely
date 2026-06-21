@@ -2,6 +2,7 @@
 import { CustomerDetails } from '@/components/create/CustomerDetails';
 import { LineItemGroup } from '@/components/create/LineItemGroup';
 import { AddActions } from '@/components/create/AddActions';
+import { InvoiceDates } from '@/components/create/InvoiceDates';
 import { DiscountShippingInputs } from '@/components/create/DiscountShippingInputs';
 import { InvoiceTotalFooter } from '@/components/create/InvoiceTotalFooter';
 import { useCreateInvoice } from '@/core/contexts/CreateInvoiceContext';
@@ -23,7 +24,9 @@ function CreateInvoiceForm() {
     discountType, setDiscountType,
     discountValue, setDiscountValue,
     shippingCost, setShippingCost,
-    setAmountPaid
+    amountPaid, setAmountPaid,
+    issuedAt, setIssuedAt,
+    dueDate, setDueDate
   } = useCreateInvoice();
 
   const searchParams = useSearchParams();
@@ -48,6 +51,8 @@ function CreateInvoiceForm() {
           if (invoice.discount_value) setDiscountValue(invoice.discount_value);
           if (invoice.shipping_cost) setShippingCost(invoice.shipping_cost);
           setAmountPaid(Number(invoice.amount_paid) || 0);
+          if (invoice.issued_at) setIssuedAt(invoice.issued_at);
+          if (invoice.due_date) setDueDate(invoice.due_date);
         } else if (invoice && invoice.status !== 'DRAFT') {
            console.warn('Invoice editing is disabled for non-draft invoices');
         }
@@ -135,13 +140,15 @@ function CreateInvoiceForm() {
 
   const isClientNameValid = clientName.trim().length > 0;
   const hasValidGroupsAndItems = groups.length > 0 && groups.some(g => g.items.length > 0);
-  const isValid = isClientNameValid && hasValidGroupsAndItems;
+  const isDateValid = !issuedAt || !dueDate || new Date(dueDate) >= new Date(issuedAt);
+  const isValid = isClientNameValid && hasValidGroupsAndItems && isDateValid;
 
   const handleValidationFailed = () => {
     let message = 'Please fix the following to proceed:\n';
     if (!isClientNameValid) message += '- Customer name is required\n';
     if (groups.length === 0) message += '- At least one group is required\n';
     else if (!groups.some(g => g.items.length > 0)) message += '- At least one item is required\n';
+    if (!isDateValid) message += '- Due date cannot be before the issue date\n';
     alert(message);
   };
 
@@ -163,6 +170,8 @@ function CreateInvoiceForm() {
         clientAddress={clientAddress}
         setClientAddress={setClientAddress}
       />
+
+      <InvoiceDates />
 
       <section className="space-y-md">
         {groups.map((group) => (
