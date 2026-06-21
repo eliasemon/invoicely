@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from "@/core/contexts/AuthContext";
 import { DatabaseProvider } from "@/core/contexts/DatabaseContext";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -71,6 +72,7 @@ export default function RootLayout({
             {children}
           </DatabaseProvider>
         </AuthProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
