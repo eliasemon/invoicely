@@ -40,7 +40,6 @@ export interface Invoice {
   qr_code_enabled?: boolean;
   
   // Template
-  template?: string;
   notes?: string | null;
   terms_and_conditions_enabled?: boolean;
   terms_and_conditions?: string | null;

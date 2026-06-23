@@ -36,7 +36,6 @@ export async function createInvoice(data: {
   clientName: string;
   clientPhone: string;
   clientAddress?: string;
-  template: string;
   groups: GroupData[];
   discountType?: 'amount' | 'percentage';
   discountValue?: number;
@@ -150,7 +149,6 @@ export async function createInvoice(data: {
       client_phone: data.clientPhone,
       client_address: data.clientAddress || null,
       status: newStatus,
-      template: data.template,
       total_amount: totalAmount,
       line_items_snapshot: data.groups,
       discount_type: data.discountType || null,
@@ -358,7 +356,6 @@ export async function saveDraftInvoice(data: {
   clientName: string;
   clientPhone: string;
   clientAddress?: string;
-  template: string;
   groups: GroupData[];
   discountType?: 'amount' | 'percentage';
   discountValue?: number;
@@ -426,7 +423,6 @@ export async function saveDraftInvoice(data: {
       client_phone: data.clientPhone,
       client_address: data.clientAddress || null,
       status: newStatus,
-      template: data.template,
       total_amount: totalAmount,
       line_items_snapshot: data.groups,
       discount_type: data.discountType || null,

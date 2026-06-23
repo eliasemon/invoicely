@@ -96,7 +96,6 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
           clientName,
           clientPhone: mobileNumber,
           clientAddress,
-          template: selectedTemplate,
           groups,
           discountType,
           discountValue,
