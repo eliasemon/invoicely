@@ -4,7 +4,7 @@ import { MaterialIcon } from '@/components/shared/MaterialIcon';
 
 export function ProfileNav() {
   const [activeTab, setActiveTab] = useState('business-section');
-  const sections = ['business-section', 'regional-section', 'contact-section', 'signature-section', 'bank-details-section'];
+  const sections = ['business-section', 'regional-section', 'contact-section', 'signature-section', 'bank-details-section', 'security-section'];
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -48,6 +48,7 @@ export function ProfileNav() {
     { id: 'contact-section', label: 'Contact', icon: 'contact_mail' },
     { id: 'signature-section', label: 'Signature', icon: 'draw' },
     { id: 'bank-details-section', label: 'Payments', icon: 'payments' },
+    { id: 'security-section', label: 'Security', icon: 'security' },
   ];
 
   return (

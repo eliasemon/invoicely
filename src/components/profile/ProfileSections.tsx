@@ -489,3 +489,93 @@ export function InvoiceSettingsSection({ profile, onChange }: SectionProps) {
     </div>
   );
 }
+
+import { useAuth } from '@/hooks/useAuth';
+
+export function SecuritySection() {
+  const { updatePassword } = useAuth();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setMessage({ type: 'error', text: 'Passwords do not match.' });
+      return;
+    }
+    if (password.length < 6) {
+      setMessage({ type: 'error', text: 'Password must be at least 6 characters.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setMessage(null);
+    try {
+      await updatePassword(password);
+      setMessage({ type: 'success', text: 'Password updated successfully!' });
+      setPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message || 'Failed to update password.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="scroll-mt-36 bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300" id="security-section">
+      <div className="flex items-center gap-3 mb-6 border-b border-surface-container-high pb-5">
+        <MaterialIcon icon="security" className="text-secondary text-[24px]" />
+        <div>
+          <h2 className="font-headline-md text-headline-md">Security & Password</h2>
+          <p className="font-label-sm text-label-sm text-on-surface-variant mt-1">
+            Update your password. Essential if you signed up with Google and want to use email/password sign-in.
+          </p>
+        </div>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-4 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1">
+            <label className="font-label-sm text-label-sm text-on-surface-variant uppercase">New Password</label>
+            <input 
+              className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              minLength={6}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="font-label-sm text-label-sm text-on-surface-variant uppercase">Confirm Password</label>
+            <input 
+              className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-outline" 
+              type="password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              minLength={6}
+            />
+          </div>
+        </div>
+
+        {message && (
+          <div className={`p-3 rounded-lg font-body-sm ${message.type === 'success' ? 'bg-primary/10 text-primary' : 'bg-error-container text-error'}`}>
+            {message.text}
+          </div>
+        )}
+
+        <button 
+          type="submit"
+          disabled={isSubmitting || !password || !confirmPassword}
+          className="bg-primary text-on-primary font-label-sm px-6 py-3 rounded-xl hover:bg-primary-container transition-all active:scale-[0.98] disabled:opacity-50 mt-2"
+        >
+          {isSubmitting ? 'Updating...' : 'Set Password'}
+        </button>
+      </form>
+    </div>
+  );
+}

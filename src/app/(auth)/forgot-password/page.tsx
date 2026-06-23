@@ -35,7 +35,7 @@ function ForgotPasswordForm() {
 
       {isSuccess ? (
         <div className="text-center space-y-md">
-          <div className="text-primary font-body-md p-4 bg-primary-container rounded-md">
+          <div className="text-primary font-body-md p-4 bg-primary/10 rounded-md">
             Check your email for a link to reset your password. If it doesn't appear within a few minutes, check your spam folder.
           </div>
           <Link href="/login" className="inline-block w-full h-12 flex items-center justify-center bg-surface border border-outline-variant text-on-surface rounded-lg font-body-md text-body-md font-medium hover:bg-surface-variant transition-colors shadow-sm mt-md">
