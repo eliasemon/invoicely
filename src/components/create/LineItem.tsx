@@ -18,6 +18,8 @@ interface CatalogItem {
   unit_price: Record<string, number>;
 }
 
+const PREDEFINED_UNITS = ['pcs', 'kg', 'g', 'lb', 'L', 'mL', 'm', 'cm', 'ft', 'in', 'hr', 'day', 'mo', 'box', 'pack', 'set', 'job', 'svc', 'unit'];
+
 interface LineItemProps {
   item: LineItemData;
   updateItem: (id: string, field: keyof LineItemData, value: string | number) => void;
@@ -27,8 +29,10 @@ interface LineItemProps {
 export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProps>) {
   const [suggestions, setSuggestions] = useState<CatalogItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showUnitSuggestions, setShowUnitSuggestions] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const unitWrapperRef = useRef<HTMLDivElement>(null);
   const { currency, currencySymbol } = useCreateInvoice();
 
   const total = item.quantity * item.unitPrice;
@@ -38,6 +42,9 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
     function handleClickOutside(event: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
+      }
+      if (unitWrapperRef.current && !unitWrapperRef.current.contains(event.target as Node)) {
+        setShowUnitSuggestions(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -160,61 +167,40 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
               className="px-2 py-1 text-on-surface-variant hover:text-primary"
             >+</button>
           </div>
-          <div className="relative">
+          <div className="relative flex items-center" ref={unitWrapperRef}>
             <input
-              className="w-16 bg-transparent border-b border-outline-variant p-0 font-body-md text-body-md text-on-surface focus:ring-0 focus:border-primary placeholder:text-outline text-center"
+              className="w-20 bg-transparent border-b border-outline-variant py-1 pl-1 pr-6 font-body-md text-body-md text-on-surface focus:ring-0 focus:border-primary"
               type="text"
-              list={`unit-options-${item.id}`}
               placeholder="Unit"
               value={item.unit || ''}
-              onChange={(e) => updateItem(item.id, 'unit', e.target.value)}
+              onChange={(e) => {
+                updateItem(item.id, 'unit', e.target.value);
+                setShowUnitSuggestions(true);
+              }}
+              onFocus={() => setShowUnitSuggestions(true)}
             />
-            <datalist id={`unit-options-${item.id}`}>
-              <option value="kg">Kilogram (kg)</option>
-              <option value="g">Gram (g)</option>
-              <option value="mg">Milligram (mg)</option>
-              <option value="ton">Ton (t)</option>
-
-              <option value="l">Liter (L)</option>
-              <option value="ml">Milliliter (mL)</option>
-              <option value="gal">Gallon (gal)</option>
-
-              <option value="cm">Centimeter (cm)</option>
-              <option value="m">Meter (m)</option>
-              <option value="km">Kilometer (km)</option>
-              <option value="in">Inch (in)</option>
-              <option value="ft">Foot (ft)</option>
-              <option value="yd">Yard (yd)</option>
-
-              <option value="sqft">Square Foot (ft²)</option>
-              <option value="sqm">Square Meter (m²)</option>
-
-              <option value="pc">Piece (pc)</option>
-              <option value="bx">Box (bx)</option>
-              <option value="pk">Pack (pk)</option>
-              <option value="pkt">Packet (pkt)</option>
-              <option value="ctn">Carton (ctn)</option>
-              <option value="dz">Dozen (dz)</option>
-              <option value="pr">Pair (pr)</option>
-              <option value="set">Set (set)</option>
-              <option value="bdl">Bundle (bdl)</option>
-              <option value="rl">Roll (rl)</option>
-              <option value="bag">Bag (bag)</option>
-              <option value="btl">Bottle (btl)</option>
-              <option value="can">Can (can)</option>
-              <option value="jar">Jar (jar)</option>
-              <option value="tray">Tray (tray)</option>
-
-              <option value="hr">Hour (hr)</option>
-              <option value="day">Day (day)</option>
-              <option value="wk">Week (wk)</option>
-              <option value="mo">Month (mo)</option>
-              <option value="yr">Year (yr)</option>
-
-              <option value="svc">Service (svc)</option>
-              <option value="job">Job (job)</option>
-              <option value="unit">Unit (unit)</option>
-            </datalist>
+            <MaterialIcon icon="arrow_drop_down" className="absolute right-0 text-on-surface-variant pointer-events-none text-[20px]" />
+            
+            {showUnitSuggestions && (
+              <div className="absolute top-full right-0 z-50 mt-1 w-24 bg-surface border border-outline-variant rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                {PREDEFINED_UNITS.filter(u => u.toLowerCase().includes((item.unit || '').toLowerCase())).length > 0 ? (
+                  PREDEFINED_UNITS.filter(u => u.toLowerCase().includes((item.unit || '').toLowerCase())).map((u) => (
+                    <div
+                      key={u}
+                      className="p-xs px-sm hover:bg-surface-container cursor-pointer font-body-md text-on-surface"
+                      onClick={() => {
+                        updateItem(item.id, 'unit', u);
+                        setShowUnitSuggestions(false);
+                      }}
+                    >
+                      {u}
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-xs px-sm text-on-surface-variant font-label-sm">Custom</div>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-1 font-body-md text-body-md text-on-surface-variant">
             <span>x {currencySymbol}</span>

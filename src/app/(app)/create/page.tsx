@@ -1,4 +1,5 @@
 'use client';
+import { MobileInvoicePreview } from '@/components/create/MobileInvoicePreview';
 import { CustomerDetails } from '@/components/create/CustomerDetails';
 import { LineItemGroup } from '@/components/create/LineItemGroup';
 import { AddActions } from '@/components/create/AddActions';
@@ -11,6 +12,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, Suspense, useState } from 'react';
 import { getInvoice, createInvoice, saveDraftInvoice } from '@/app/actions/invoiceActions';
 import { useProfile } from '@/hooks/useProfile';
+import { MaterialIcon } from '@/components/shared/MaterialIcon';
 
 function CreateInvoiceForm() {
   const { 
@@ -37,6 +39,7 @@ function CreateInvoiceForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const { profile } = useProfile();
+  const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
     const id = searchParams.get('id');
@@ -87,7 +90,7 @@ function CreateInvoiceForm() {
       if (g.id === groupId) {
         return {
           ...g,
-          items: [...g.items, { id: Date.now().toString(), name: '', quantity: 1, unitPrice: 0 }]
+          items: [...g.items, { id: Date.now().toString(), name: '', quantity: 1, unit: 'pcs', unitPrice: 0 }]
         };
       }
       return g;
@@ -225,8 +228,10 @@ function CreateInvoiceForm() {
         <p className="font-body-md text-body-md text-on-surface-variant">New Invoice</p>
       </section>
 
-      <CustomerDetails 
-        clientId={clientId}
+      {/* Step 1: Customer Details & Dates */}
+      <div className={`${currentStep === 1 ? 'block' : 'hidden md:block'} space-y-lg`}>
+        <CustomerDetails 
+          clientId={clientId}
         setClientId={setClientId}
         clientName={clientName} 
         setClientName={setClientName} 
@@ -236,10 +241,13 @@ function CreateInvoiceForm() {
         setClientAddress={setClientAddress}
       />
 
-      <InvoiceDates />
+        <InvoiceDates />
+      </div>
 
-      <section id="groupsSection" className="space-y-md">
-        {groups.map((group) => (
+      {/* Step 2: Groups & Items */}
+      <div className={`${currentStep === 2 ? 'block' : 'hidden md:block'} space-y-lg`}>
+        <section id="groupsSection" className="space-y-md">
+          {groups.map((group) => (
           <LineItemGroup 
             key={group.id}
             group={group}
@@ -251,13 +259,37 @@ function CreateInvoiceForm() {
           />
         ))}
 
-        <AddActions onAddGroup={onAddGroup} onAddItem={onAddItem} />
-        
+          <AddActions onAddGroup={onAddGroup} onAddItem={onAddItem} />
+        </section>
+      </div>
+      
+      {/* Step 3: Shipping & Discounts */}
+      <div className={`${currentStep === 3 ? 'block' : 'hidden md:block'} space-y-lg`}>
         <DiscountShippingInputs />
-      </section>
+      </div>
 
-      <InvoiceTotalFooter 
-        totalAmount={totalAmount} 
+      {/* Step 4: Preview (Mobile only) & Footer */}
+      <div className={`${currentStep === 4 ? 'block' : 'hidden md:block'} space-y-lg`}>
+        <div className="block md:hidden">
+          <div className="sticky top-4 z-50 flex justify-start mb-4 -mx-2 px-2 pointer-events-none">
+            <button 
+              type="button"
+              onClick={() => setCurrentStep(3)}
+              className="flex items-center gap-2 bg-surface text-on-surface border border-outline-variant/30 px-4 py-2.5 rounded-full shadow-lg font-label-md transition-all active:scale-95 pointer-events-auto hover:bg-surface-container hover:shadow-xl"
+            >
+              <MaterialIcon icon="arrow_back" className="text-[20px]" /> Back to Edit
+            </button>
+          </div>
+          <MobileInvoicePreview 
+            groups={groups} 
+            subtotal={subtotal} 
+            discountAmount={discountAmount} 
+            totalAmount={totalAmount} 
+          />
+        </div>
+
+        <InvoiceTotalFooter 
+          totalAmount={totalAmount} 
         subtotal={subtotal}
         discountType={discountType}
         discountValue={discountValue}
@@ -268,8 +300,43 @@ function CreateInvoiceForm() {
         isSubmitting={isSubmitting}
         onValidationFailed={handleValidationFailed}
         onFinalize={handleFinalize}
-        onSaveDraft={handleSaveDraft}
-      />
+          onSaveDraft={handleSaveDraft}
+        />
+      </div>
+
+      {/* Mobile Step Navigation */}
+      {currentStep < 4 && (
+        <div className="fixed bottom-16 left-0 right-0 p-4 bg-surface-container-lowest border-t border-outline-variant flex justify-between items-center z-40 md:hidden shadow-[0_-4px_12px_rgba(26,43,60,0.05)]">
+          <button 
+            type="button" 
+            onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
+            className={`px-6 py-2 rounded-full font-label-md transition-colors ${currentStep === 1 ? 'invisible' : 'text-primary hover:bg-surface-container-low'}`}
+          >
+            Back
+          </button>
+          
+          <div className="font-label-sm text-on-surface-variant">Step {currentStep} of 4</div>
+          
+          <button 
+            type="button" 
+            onClick={() => {
+              if (currentStep === 1 && (!isClientNameValid || !isDateValid)) {
+                handleValidationFailed();
+                return;
+              }
+              if (currentStep === 2 && !hasValidGroupsAndItems) {
+                handleValidationFailed();
+                return;
+              }
+              setCurrentStep(prev => Math.min(4, prev + 1));
+              setValidationErrors([]);
+            }}
+            className="px-6 py-2 rounded-full font-label-md bg-primary text-on-primary hover:bg-primary/90 transition-colors shadow-sm"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       <ValidationModal 
         isOpen={validationErrors.length > 0} 

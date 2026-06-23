@@ -39,10 +39,10 @@ export function InvoiceTotalFooter({
   const hasBreakdown = discountAmount > 0 || shippingCost > 0;
 
   return (
-    <div className="fixed bottom-16 md:bottom-0 w-full bg-surface-container-lowest border-t border-outline-variant shadow-[0_-4px_12px_rgba(26,43,60,0.05)] p-margin-mobile z-40 md:static md:mt-xl md:shadow-none md:border-none md:bg-transparent">
+    <div className="fixed bottom-16 left-0 md:bottom-0 w-full bg-surface-container-lowest border-t border-outline-variant shadow-[0_-4px_12px_rgba(26,43,60,0.05)] p-margin-mobile z-40 md:static md:mt-xl md:shadow-none md:border-none md:bg-transparent">
       
       {hasBreakdown && (
-        <div className="max-w-3xl mx-auto mb-sm px-sm md:px-0">
+        <div className="hidden md:block max-w-3xl mx-auto mb-sm px-sm md:px-0">
           <div className="flex justify-between items-center text-on-surface-variant font-body-sm mb-xs">
             <span>Subtotal</span>
             <CurrencyDisplay amount={subtotal} currency={currency} currencySymbol={currencySymbol} />
@@ -63,9 +63,9 @@ export function InvoiceTotalFooter({
         </div>
       )}
 
-      <div className="max-w-3xl mx-auto flex justify-between items-center gap-md">
-        <div>
-          <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Amount ({currency})</p>
+      <div className="max-w-3xl mx-auto flex flex-col items-center md:flex-row md:justify-between md:items-center gap-4 md:gap-md">
+        <div className="flex flex-col items-center md:block w-full md:w-auto text-center md:text-left">
+          <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1 md:mb-0">Total Amount ({currency})</p>
           <CurrencyDisplay 
             amount={totalAmount} 
             currency={currency} 
@@ -74,7 +74,7 @@ export function InvoiceTotalFooter({
             className="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary font-bold block" 
           />
         </div>
-        <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
+        <div className="flex justify-center gap-2 w-full md:w-auto">
           <button 
             onClick={() => {
               if (!isValid && onValidationFailed) {
