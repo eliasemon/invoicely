@@ -2,11 +2,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { InvoiceTemplateRenderer } from '@/components/templates/InvoiceTemplateRenderer';
 import { InvoiceDisplayOptions } from '@/components/templates/InvoiceDisplayOptions';
+import { TemplateSelector } from '@/components/templates/TemplateSelector';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 
 export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }: any) {
   const [showGroups, setShowGroups] = useState(false);
   const [showGroupTotals, setShowGroupTotals] = useState(false);
+  const [currentTemplate, setCurrentTemplate] = useState(templateId || 'sleek-accent');
   
   const [previewZoom, setPreviewZoom] = useState(0.5);
   const [previewInvoiceHeight, setPreviewInvoiceHeight] = useState(1123);
@@ -93,13 +95,21 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
       </div>
 
       <div className="w-full max-w-3xl px-4 md:px-0 mx-auto">
-        <InvoiceDisplayOptions 
-          showGroups={showGroups}
-          setShowGroups={setShowGroups}
-          showGroupTotals={showGroupTotals}
-          setShowGroupTotals={setShowGroupTotals}
-          hasGroups={hasGroups}
-        />
+        <div className="print:hidden">
+          <TemplateSelector 
+            selectedTemplate={currentTemplate} 
+            onSelect={setCurrentTemplate} 
+          />
+        </div>
+        <div className="mt-4">
+          <InvoiceDisplayOptions 
+            showGroups={showGroups}
+            setShowGroups={setShowGroups}
+            showGroupTotals={showGroupTotals}
+            setShowGroupTotals={setShowGroupTotals}
+            hasGroups={hasGroups}
+          />
+        </div>
       </div>
 
       {/* Scrollable Document Canvas Viewport (Hidden during print) */}
@@ -132,7 +142,7 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
             className="transition-shadow overflow-hidden bg-transparent"
           >
             <InvoiceTemplateRenderer 
-              templateId={templateId} 
+              templateId={currentTemplate} 
               invoice={invoice} 
               profile={profile} 
               publicUrl={publicUrl}
@@ -147,7 +157,7 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
       {/* Dedicated Print Container */}
       <div className="hidden print:block w-[210mm] mx-auto bg-white border-none shadow-none m-0 p-0">
         <InvoiceTemplateRenderer 
-          templateId={templateId} 
+          templateId={currentTemplate} 
           invoice={invoice} 
           profile={profile} 
           publicUrl={publicUrl}

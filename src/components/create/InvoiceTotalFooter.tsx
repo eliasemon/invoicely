@@ -11,7 +11,10 @@ interface InvoiceTotalFooterProps {
   currency?: string;
   currencySymbol?: string;
   isValid?: boolean;
+  isSubmitting?: boolean;
   onValidationFailed?: () => void;
+  onFinalize?: () => void;
+  onSaveDraft?: () => void;
 }
 
 export function InvoiceTotalFooter({ 
@@ -23,7 +26,10 @@ export function InvoiceTotalFooter({
   currency = 'USD', 
   currencySymbol,
   isValid = true,
-  onValidationFailed
+  isSubmitting = false,
+  onValidationFailed,
+  onFinalize,
+  onSaveDraft
 }: Readonly<InvoiceTotalFooterProps>) {
   
   const discountAmount = discountType === 'percentage' 
@@ -68,18 +74,34 @@ export function InvoiceTotalFooter({
             className="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary font-bold block" 
           />
         </div>
-        <Link 
-          href={isValid ? "/create/customize" : "#"}
-          onClick={(e) => {
-            if (!isValid) {
-              e.preventDefault();
-              if (onValidationFailed) onValidationFailed();
-            }
-          }}
-          className={`h-[48px] px-xl rounded-lg font-body-md text-body-md font-medium transition-colors shadow-sm flex items-center gap-xs whitespace-nowrap ${isValid ? 'bg-primary text-on-primary hover:bg-primary-container' : 'bg-surface-variant text-on-surface-variant opacity-50 cursor-not-allowed'}`}
-        >
-          Next <MaterialIcon icon="arrow_forward" className="text-[20px]" />
-        </Link>
+        <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
+          <button 
+            onClick={() => {
+              if (!isValid && onValidationFailed) {
+                onValidationFailed();
+                return;
+              }
+              if (onSaveDraft) onSaveDraft();
+            }}
+            disabled={isSubmitting}
+            className={`flex-1 md:flex-none h-[48px] px-lg rounded-lg font-body-md text-body-md font-medium transition-colors shadow-sm flex items-center justify-center gap-xs whitespace-nowrap bg-surface-container-lowest border border-outline-variant text-primary hover:bg-surface-container-low disabled:opacity-70 disabled:cursor-not-allowed`}
+          >
+            <MaterialIcon icon="save" className="text-[20px]" /> Save Draft
+          </button>
+          <button 
+            onClick={() => {
+              if (!isValid && onValidationFailed) {
+                onValidationFailed();
+                return;
+              }
+              if (onFinalize) onFinalize();
+            }}
+            disabled={isSubmitting}
+            className={`flex-1 md:flex-none h-[48px] px-lg rounded-lg font-body-md text-body-md font-medium transition-colors shadow-sm flex items-center justify-center gap-xs whitespace-nowrap ${isValid ? 'bg-primary text-on-primary hover:bg-primary-container disabled:opacity-70 disabled:cursor-not-allowed' : 'bg-surface-variant text-on-surface-variant opacity-50 cursor-not-allowed'}`}
+          >
+            {isSubmitting ? 'Saving...' : 'Finalize & Generate'} {!isSubmitting && <MaterialIcon icon="arrow_forward" className="text-[20px]" />}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { availableTemplates } from '@/components/create/TemplateSelector';
+import { availableTemplates } from '@/components/templates/TemplateSelector';
 import { InvoiceTemplateRenderer } from '@/components/templates/InvoiceTemplateRenderer';
 import { InvoiceDisplayOptions } from '@/components/templates/InvoiceDisplayOptions';
 

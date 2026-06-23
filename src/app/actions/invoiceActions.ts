@@ -115,8 +115,23 @@ export async function createInvoice(data: {
   const dueDateValue = new Date(now);
   dueDateValue.setDate(dueDateValue.getDate() + 30);
   
-  const issuedAt = data.issuedAt || existingInvoice?.issued_at || now.toISOString();
-  const dueDate = data.dueDate || existingInvoice?.due_date || dueDateValue.toISOString();
+  let issuedAt = data.issuedAt;
+  if (!issuedAt) {
+    if (existingInvoice && existingInvoice.status !== 'DRAFT') {
+      issuedAt = existingInvoice.issued_at;
+    } else {
+      issuedAt = now.toISOString();
+    }
+  }
+
+  let dueDate = data.dueDate;
+  if (!dueDate) {
+    if (existingInvoice && existingInvoice.status !== 'DRAFT') {
+      dueDate = existingInvoice.due_date;
+    } else {
+      dueDate = dueDateValue.toISOString();
+    }
+  }
   
   const resolvedClientId = await resolveClientId(userId, data);
 
@@ -252,6 +267,10 @@ export async function getInvoice(id: string) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
 
+  // Validate UUID to prevent Supabase error 22P02
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) return null;
+
   const { data, error } = await supabaseAdmin
     .from('invoices')
     .select('*')
@@ -260,7 +279,7 @@ export async function getInvoice(id: string) {
     .single();
 
   if (error) {
-    console.error('Error fetching invoice:', error);
+    console.error('Error fetching invoice:', error.message || error);
     return null;
   }
 
@@ -268,6 +287,9 @@ export async function getInvoice(id: string) {
 }
 
 export async function getPublicInvoice(id: string) {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) return null;
+
   const { data: invoice, error: invoiceError } = await supabaseAdmin
     .from('invoices')
     .select('*')
@@ -275,7 +297,7 @@ export async function getPublicInvoice(id: string) {
     .single();
 
   if (invoiceError || !invoice) {
-    console.error('Error fetching public invoice:', invoiceError);
+    console.error('Error fetching public invoice:', invoiceError?.message || invoiceError);
     return null;
   }
 
@@ -432,8 +454,21 @@ export async function saveDraftInvoice(data: {
       updated_at: new Date().toISOString()
   };
 
-  if (data.issuedAt) payload.issued_at = data.issuedAt;
-  if (data.dueDate) payload.due_date = data.dueDate;
+  if (data.issuedAt) {
+    payload.issued_at = data.issuedAt;
+  } else if (!existingInvoice || existingInvoice.status === 'DRAFT') {
+    // Optionally update to now on every draft auto-save, or just let DB handle default for inserts.
+    // We'll update to now to keep draft fresh.
+    payload.issued_at = new Date().toISOString();
+  }
+  
+  if (data.dueDate) {
+    payload.due_date = data.dueDate;
+  } else if (!existingInvoice || existingInvoice.status === 'DRAFT') {
+    const defaultDueDate = new Date();
+    defaultDueDate.setDate(defaultDueDate.getDate() + 30);
+    payload.due_date = defaultDueDate.toISOString();
+  }
 
   let invoice;
   let error;
@@ -473,6 +508,9 @@ export async function saveDraftInvoice(data: {
 export async function recordPayment(id: string, amount: number, note?: string) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
+
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) throw new Error('Invalid invoice ID');
 
   // Fetch current invoice to calculate new status
   const { data: invoice, error: fetchError } = await supabaseAdmin
@@ -526,6 +564,9 @@ export async function recordPayment(id: string, amount: number, note?: string) {
 export async function deleteInvoice(id: string) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
+
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) throw new Error('Invalid invoice ID');
 
   const { data: invoice } = await supabaseAdmin
     .from('invoices')

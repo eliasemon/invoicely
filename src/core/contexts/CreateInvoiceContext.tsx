@@ -8,6 +8,8 @@ import { saveDraftInvoice } from '@/app/actions/invoiceActions';
 interface CreateInvoiceContextType {
   draftInvoiceId: string | null;
   setDraftInvoiceId: (id: string | null) => void;
+  invoiceStatus: string;
+  setInvoiceStatus: (status: string) => void;
   clientId: string | undefined;
   setClientId: (id: string | undefined) => void;
   clientName: string;
@@ -41,6 +43,7 @@ const CreateInvoiceContext = createContext<CreateInvoiceContextType | undefined>
 export function CreateInvoiceProvider({ children, initialCurrency, initialCurrencySymbol }: { children: ReactNode, initialCurrency?: string, initialCurrencySymbol?: string }) {
   const { profile } = useProfile();
   const [draftInvoiceId, setDraftInvoiceId] = useState<string | null>(null);
+  const [invoiceStatus, setInvoiceStatus] = useState<string>('DRAFT');
   const [clientId, setClientId] = useState<string | undefined>(undefined);
   const [clientName, setClientName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
@@ -116,6 +119,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
   return (
     <CreateInvoiceContext.Provider value={{
       draftInvoiceId, setDraftInvoiceId,
+      invoiceStatus, setInvoiceStatus,
       clientId, setClientId,
       clientName, setClientName,
       mobileNumber, setMobileNumber,

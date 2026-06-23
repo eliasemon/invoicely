@@ -7,21 +7,22 @@ import { DiscountShippingInputs } from '@/components/create/DiscountShippingInpu
 import { InvoiceTotalFooter } from '@/components/create/InvoiceTotalFooter';
 import { ValidationModal, ValidationError } from '@/components/create/ValidationModal';
 import { useCreateInvoice } from '@/core/contexts/CreateInvoiceContext';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, Suspense, useState } from 'react';
-import { getInvoice } from '@/app/actions/invoiceActions';
+import { getInvoice, createInvoice, saveDraftInvoice } from '@/app/actions/invoiceActions';
 import { useProfile } from '@/hooks/useProfile';
 
 function CreateInvoiceForm() {
   const { 
     draftInvoiceId, setDraftInvoiceId,
+    invoiceStatus, setInvoiceStatus,
     clientId, setClientId,
     clientName, setClientName,
     mobileNumber, setMobileNumber,
     groups, setGroups,
     currency, currencySymbol,
     clientAddress, setClientAddress,
-    setSelectedTemplate,
+    selectedTemplate, setSelectedTemplate,
     discountType, setDiscountType,
     discountValue, setDiscountValue,
     shippingCost, setShippingCost,
@@ -31,7 +32,9 @@ function CreateInvoiceForm() {
   } = useCreateInvoice();
 
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const { profile } = useProfile();
 
@@ -43,6 +46,7 @@ function CreateInvoiceForm() {
         const canEdit = invoice && (invoice.status === 'DRAFT' || (profile?.invoice_edit_enabled ?? true));
         if (canEdit) {
           setDraftInvoiceId(invoice.id);
+          setInvoiceStatus(invoice.status);
           if (invoice.client_id) setClientId(invoice.client_id);
           setClientName(invoice.client_name || '');
           setMobileNumber(invoice.client_phone || '');
@@ -53,8 +57,8 @@ function CreateInvoiceForm() {
           if (invoice.discount_value) setDiscountValue(invoice.discount_value);
           if (invoice.shipping_cost) setShippingCost(invoice.shipping_cost);
           setAmountPaid(Number(invoice.amount_paid) || 0);
-          if (invoice.issued_at) setIssuedAt(invoice.issued_at);
-          if (invoice.due_date) setDueDate(invoice.due_date);
+          if (invoice.issued_at && invoice.status !== 'DRAFT') setIssuedAt(invoice.issued_at);
+          if (invoice.due_date && invoice.status !== 'DRAFT') setDueDate(invoice.due_date);
         } else if (invoice && invoice.status !== 'DRAFT') {
            console.warn('Invoice editing is disabled for non-draft invoices');
         }
@@ -155,6 +159,64 @@ function CreateInvoiceForm() {
     setValidationErrors(errors);
   };
 
+  const handleFinalize = async () => {
+    if (!isValid) {
+      handleValidationFailed();
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const invoice = await createInvoice({
+        invoiceId: draftInvoiceId || undefined,
+        clientId,
+        clientName,
+        clientPhone: mobileNumber,
+        clientAddress,
+        template: selectedTemplate || 'modern-template',
+        groups,
+        discountType,
+        discountValue,
+        shippingCost,
+        issuedAt: issuedAt || undefined,
+        dueDate: dueDate || undefined,
+      });
+      
+      router.push(`/invoices/${invoice.id}`);
+    } catch (error) {
+      console.error('Error creating invoice:', error);
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    if (!isValid) {
+      handleValidationFailed();
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const invoice = await saveDraftInvoice({
+        invoiceId: draftInvoiceId || undefined,
+        clientId,
+        clientName,
+        clientPhone: mobileNumber,
+        clientAddress,
+        template: selectedTemplate || 'modern-template',
+        groups,
+        discountType,
+        discountValue,
+        shippingCost,
+        issuedAt: issuedAt || undefined,
+        dueDate: dueDate || undefined,
+      });
+      
+      router.push(`/invoices/${invoice.id}`);
+    } catch (error) {
+      console.error('Error saving draft:', error);
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto space-y-lg pt-sm md:pt-0 pb-[100px]">
       {/* Header Section */}
@@ -203,7 +265,10 @@ function CreateInvoiceForm() {
         currency={currency} 
         currencySymbol={currencySymbol} 
         isValid={isValid}
+        isSubmitting={isSubmitting}
         onValidationFailed={handleValidationFailed}
+        onFinalize={handleFinalize}
+        onSaveDraft={handleSaveDraft}
       />
 
       <ValidationModal 
