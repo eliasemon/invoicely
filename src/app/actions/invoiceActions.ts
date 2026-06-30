@@ -531,10 +531,11 @@ export async function recordPayment(id: string, amount: number, note?: string) {
   }
 
   const paymentLog = {
+    id: crypto.randomUUID(),
+    type: 'PAYMENT',
     amount,
     note: note || '',
-    date: new Date().toISOString(),
-    invoice_snapshot: invoice
+    date: new Date().toISOString()
   };
 
   const currentLogs = invoice.logs || [];
@@ -594,5 +595,75 @@ export async function deleteInvoice(id: string) {
   if (error) {
     console.error('Error deleting invoice:', error);
     throw new Error('Failed to delete invoice');
+  }
+}
+
+export async function deletePayment(invoiceId: string, paymentLogId: string) {
+  const userId = await getUserId();
+  if (!userId) throw new Error('Not authenticated');
+
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(invoiceId)) throw new Error('Invalid invoice ID');
+
+  const { data: invoice, error: fetchError } = await supabaseAdmin
+    .from('invoices')
+    .select('*')
+    .eq('id', invoiceId)
+    .eq('profile_id', userId)
+    .single();
+
+  if (fetchError || !invoice) {
+    throw new Error('Invoice not found');
+  }
+
+  const logs = invoice.logs || [];
+  const paymentLog = logs.find((l: any) => l.id === paymentLogId && l.type === 'PAYMENT');
+  
+  if (!paymentLog) {
+    throw new Error('Payment log not found');
+  }
+
+  // Ensure this payment hasn't already been contra'd
+  const hasContra = logs.some((l: any) => l.type === 'CONTRA' && l.original_payment_id === paymentLogId);
+  if (hasContra) {
+    throw new Error('Payment already deleted');
+  }
+
+  const amountToSubtract = Number(paymentLog.amount);
+  const currentPaid = Number(invoice.amount_paid || 0);
+  const newAmountPaid = Math.max(0, currentPaid - amountToSubtract);
+  
+  let newStatus = 'PARTIAL';
+  if (newAmountPaid >= Number(invoice.total_amount) && Number(invoice.total_amount) > 0) {
+    newStatus = 'PAID';
+  } else if (newAmountPaid <= 0) {
+    newStatus = 'UNPAID';
+  }
+
+  const contraLog = {
+    id: crypto.randomUUID(),
+    type: 'CONTRA',
+    original_payment_id: paymentLogId,
+    amount: -amountToSubtract,
+    note: 'Payment reversed',
+    date: new Date().toISOString()
+  };
+
+  const newLogs = [...logs, contraLog];
+
+  const { error } = await supabaseAdmin
+    .from('invoices')
+    .update({ 
+      amount_paid: newAmountPaid, 
+      status: newStatus,
+      logs: newLogs,
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', invoiceId)
+    .eq('profile_id', userId);
+
+  if (error) {
+    console.error('Error deleting payment:', error);
+    throw new Error('Failed to delete payment');
   }
 }

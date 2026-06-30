@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { DeleteInvoiceButton } from '@/components/invoices/DeleteInvoiceButton';
 import { MobileRecordPaymentButton } from '@/components/invoices/MobileRecordPaymentButton';
 import { RecordPaymentForm } from '@/components/invoices/RecordPaymentForm';
+import { DeletePaymentButton } from '@/components/invoices/DeletePaymentButton';
 
 export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -220,9 +221,15 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
             <section className="bg-surface-container-lowest rounded-xl shadow-level1 border border-surface-variant p-md">
               <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-md uppercase">Invoice Activity</h3>
               <div className="flex flex-col gap-sm">
-                {[...invoice.logs].reverse().map((log: any, idx: number) => (
+                {[...invoice.logs].reverse().map((log: any, idx: number) => {
+                  const isPayment = log.type === 'PAYMENT' || (!log.type && log.amount !== undefined); // fallback for old logs without type
+                  const isContra = log.type === 'CONTRA';
+                  const isEdit = log.type === 'EDIT';
+                  const hasContra = invoice.logs.some((l: any) => l.type === 'CONTRA' && l.original_payment_id === log.id);
+
+                  return (
                   <div key={idx} className="flex justify-between items-start border-b border-surface-container-high last:border-0 pb-sm last:pb-0">
-                    {log.type === 'EDIT' ? (
+                    {isEdit ? (
                       <div>
                         <p className="font-body-md text-primary font-medium flex items-center gap-2">
                           <MaterialIcon icon="edit" className="text-[16px]" />
@@ -237,14 +244,14 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                           </p>
                         )}
                       </div>
-                    ) : (
-                      <div>
-                        <p className="font-body-md text-primary font-medium flex items-center gap-2">
-                          <MaterialIcon icon="payments" className="text-[16px]" />
-                          Payment Recorded
+                    ) : isContra ? (
+                      <div className="flex-1">
+                        <p className="font-body-md text-error font-medium flex items-center gap-2">
+                          <MaterialIcon icon="assignment_return" className="text-[16px]" />
+                          Payment Reversed
                         </p>
-                        <p className="font-body-md text-primary font-medium mt-1">
-                          <CurrencyDisplay amount={log.amount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
+                        <p className="font-body-md text-error font-medium mt-1">
+                          {log.amount < 0 ? '-' : ''}<CurrencyDisplay amount={Math.abs(log.amount)} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
                         </p>
                         <p className="font-label-sm text-on-surface-variant">
                           {dayjs(log.date).format('MMM D, YYYY h:mm A')}
@@ -255,9 +262,34 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                           </p>
                         )}
                       </div>
-                    )}
+                    ) : isPayment ? (
+                      <>
+                        <div className="flex-1">
+                          <p className={`font-body-md ${hasContra ? 'text-on-surface-variant line-through' : 'text-primary'} font-medium flex items-center gap-2`}>
+                            <MaterialIcon icon="payments" className="text-[16px]" />
+                            Payment Recorded
+                          </p>
+                          <p className={`font-body-md ${hasContra ? 'text-on-surface-variant line-through' : 'text-primary'} font-medium mt-1`}>
+                            <CurrencyDisplay amount={log.amount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
+                          </p>
+                          <p className="font-label-sm text-on-surface-variant">
+                            {dayjs(log.date).format('MMM D, YYYY h:mm A')}
+                          </p>
+                          {log.note && (
+                            <p className="font-body-sm text-on-surface-variant mt-1 italic">
+                              "{log.note}"
+                            </p>
+                          )}
+                        </div>
+                        {!hasContra && log.id && (
+                          <div>
+                            <DeletePaymentButton invoiceId={invoice.id} paymentLogId={log.id} />
+                          </div>
+                        )}
+                      </>
+                    ) : null}
                   </div>
-                ))}
+                )})}
               </div>
             </section>
           )}
