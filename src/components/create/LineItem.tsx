@@ -23,7 +23,7 @@ const PREDEFINED_UNITS = ['pcs', 'kg', 'g', 'lb', 'L', 'mL', 'm', 'cm', 'ft', 'i
 
 interface LineItemProps {
   item: LineItemData;
-  updateItem: (id: string, field: keyof LineItemData, value: string | number) => void;
+  updateItem: (id: string, field: keyof LineItemData, value: string | number | boolean) => void;
   deleteItem: (id: string) => void;
 }
 

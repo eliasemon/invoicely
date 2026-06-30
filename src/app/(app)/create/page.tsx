@@ -97,7 +97,7 @@ function CreateInvoiceForm() {
     }));
   };
 
-  const updateItemInGroup = (groupId: string, itemId: string, field: string, value: string | number) => {
+  const updateItemInGroup = (groupId: string, itemId: string, field: string, value: string | number | boolean) => {
     setGroups(groups.map(g => {
       if (g.id === groupId) {
         return {

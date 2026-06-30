@@ -15,7 +15,7 @@ interface LineItemGroupProps {
   group: GroupData;
   updateGroupName: (id: string, name: string) => void;
   addItemToGroup: (groupId: string) => void;
-  updateItemInGroup: (groupId: string, itemId: string, field: keyof LineItemData, value: string | number) => void;
+  updateItemInGroup: (groupId: string, itemId: string, field: keyof LineItemData, value: string | number | boolean) => void;
   deleteItemFromGroup: (groupId: string, itemId: string) => void;
   deleteGroup?: (groupId: string) => void;
 }
