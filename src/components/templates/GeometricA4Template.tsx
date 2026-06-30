@@ -158,13 +158,13 @@ export function GeometricA4Template({
                                 {item.name}
                               </p>
                               <p className="text-[10px] text-[#94a3b8] font-mono">
-                                {item.quantity} {item.unit || ''} ×{" "}
+                                {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()} ×{" "}
                                 {formatMoney(item.unitPrice, sym)}
                               </p>
                             </div>
                           </div>
                           <p className="font-mono font-semibold text-[11px] text-[#1e293b]">
-                            {formatMoney(item.quantity * item.unitPrice, sym)}
+                            {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                           </p>
                         </div>
                       ))}
@@ -181,7 +181,7 @@ export function GeometricA4Template({
                             {formatMoney(
                               group.items.reduce(
                                 (sum, item) =>
-                                  sum + item.quantity * item.unitPrice,
+                                  sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                 0,
                               ),
                               sym,
@@ -206,12 +206,12 @@ export function GeometricA4Template({
                           {item.name}
                         </p>
                         <p className="text-[10px] text-[#94a3b8] font-mono">
-                          {item.quantity} {item.unit || ''} × {formatMoney(item.unitPrice, sym)}
+                          {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()} × {formatMoney(item.unitPrice, sym)}
                         </p>
                       </div>
                     </div>
                     <p className="font-mono font-semibold text-[11px] text-[#1e293b]">
-                      {formatMoney(item.quantity * item.unitPrice, sym)}
+                      {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                     </p>
                   </div>
                 ))}

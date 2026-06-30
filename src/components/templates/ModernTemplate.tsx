@@ -218,7 +218,7 @@ export function ModernTemplate({
                         className="text-[10px] text-[#45464d] mt-0.5"
                         style={{ fontFamily: "Geist, monospace" }}
                       >
-                        Qty: {item.quantity} {item.unit || ''} ×{" "}
+                        Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()} ×{" "}
                         {formatMoney(item.unitPrice, sym)}
                       </p>
                     </div>
@@ -226,7 +226,7 @@ export function ModernTemplate({
                       className="text-[11px] whitespace-nowrap"
                       style={{ fontFamily: "Geist, monospace" }}
                     >
-                      {formatMoney(item.quantity * item.unitPrice, sym)}
+                      {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                     </p>
                   </div>
                 ))}
@@ -242,7 +242,7 @@ export function ModernTemplate({
                     >
                       {formatMoney(
                         group.items.reduce(
-                          (sum, item) => sum + item.quantity * item.unitPrice,
+                          (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                           0,
                         ),
                         sym,

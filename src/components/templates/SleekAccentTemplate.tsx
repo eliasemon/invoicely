@@ -178,7 +178,7 @@ export function SleekAccentTemplate({
                               {item.name}
                             </div>
                             <div className="col-span-2 text-sm text-center">
-                              {item.quantity} {item.unit || ''}
+                              {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                             </div>
                             <div className="col-span-2 text-sm text-center">
                               {formatMoney(item.unitPrice, sym)}
@@ -190,7 +190,7 @@ export function SleekAccentTemplate({
                               {sym}0
                             </div>
                             <div className="col-span-2 text-sm font-medium text-center">
-                              {formatMoney(item.quantity * item.unitPrice, sym)}
+                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                             </div>
                           </div>
                         ))}
@@ -203,7 +203,7 @@ export function SleekAccentTemplate({
                               {formatMoney(
                                 group.items.reduce(
                                   (sum, item) =>
-                                    sum + item.quantity * item.unitPrice,
+                                    sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                   0,
                                 ),
                                 sym,
@@ -222,7 +222,7 @@ export function SleekAccentTemplate({
                           {item.name}
                         </div>
                         <div className="col-span-2 text-sm text-center">
-                          {item.quantity} {item.unit || ''}
+                          {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                         </div>
                         <div className="col-span-2 text-sm text-center">
                           {formatMoney(item.unitPrice, sym)}
@@ -234,7 +234,7 @@ export function SleekAccentTemplate({
                           {sym}0
                         </div>
                         <div className="col-span-2 text-sm font-medium text-center">
-                          {formatMoney(item.quantity * item.unitPrice, sym)}
+                          {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                         </div>
                       </div>
                     ))}

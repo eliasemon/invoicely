@@ -80,7 +80,7 @@ export function MobileInvoicePreview({ groups, subtotal, discountAmount, totalAm
           {groups.length > 0 ? (
             <div className="bg-surface-container-lowest rounded-2xl p-4 border border-outline-variant/50 divide-y divide-outline-variant/30">
               {groups.map(group => {
-                const groupTotal = group.items.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0);
+                const groupTotal = group.items.reduce((acc, item) => acc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0);
                 return (
                   <div key={group.id} className="py-3 first:pt-0 last:pb-0">
                     <div className="flex justify-between items-center mb-2">
@@ -93,10 +93,10 @@ export function MobileInvoicePreview({ groups, subtotal, discountAmount, totalAm
                           <div>
                             <p className="font-body-sm text-on-surface">{item.name || 'Unnamed Item'}</p>
                             <p className="font-label-sm text-on-surface-variant mt-0.5">
-                              {item.quantity} {item.unit || 'pcs'} × <CurrencyDisplay amount={item.unitPrice} currency={currency} currencySymbol={currencySymbol} />
+                              {item.isFlatRate ? '' : `${item.quantity} ${item.unit || 'pcs'} × `}<CurrencyDisplay amount={item.unitPrice} currency={currency} currencySymbol={currencySymbol} />
                             </p>
                           </div>
-                          <CurrencyDisplay amount={item.quantity * item.unitPrice} currency={currency} currencySymbol={currencySymbol} className="font-body-sm text-on-surface-variant font-medium" />
+                          <CurrencyDisplay amount={(item.isFlatRate ? 1 : item.quantity) * item.unitPrice} currency={currency} currencySymbol={currencySymbol} className="font-body-sm text-on-surface-variant font-medium" />
                         </div>
                       ))}
                     </div>

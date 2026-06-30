@@ -57,7 +57,7 @@ export async function createInvoice(data: {
 
   // 2. Calculate Total
   const subtotal = data.groups.reduce((acc, g) => 
-    acc + g.items.reduce((itemAcc, item) => itemAcc + (item.quantity * item.unitPrice), 0), 
+    acc + g.items.reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0), 
   0);
 
   const discountAmount = data.discountType === 'percentage' 
@@ -375,7 +375,7 @@ export async function saveDraftInvoice(data: {
   const invoiceNumber = `INV-${new Date().getFullYear()}-${String(nextNum).padStart(3, '0')}`;
 
   const subtotal = data.groups.reduce((acc, g) => 
-    acc + g.items.reduce((itemAcc, item) => itemAcc + (item.quantity * item.unitPrice), 0), 
+    acc + g.items.reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0), 
   0);
 
   const discountAmount = data.discountType === 'percentage' 

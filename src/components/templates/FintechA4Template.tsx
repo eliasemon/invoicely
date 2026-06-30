@@ -188,14 +188,14 @@ export function FintechA4Template({
                                 {item.name}
                               </td>
                               <td className="py-1 px-2 text-right text-[#475569]">
-                                {item.quantity} {item.unit || ''}
+                                {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                               </td>
                               <td className="py-1 px-2 text-right text-[#475569]">
                                 {formatMoney(item.unitPrice, sym)}
                               </td>
                               <td className="py-1 px-2 text-right text-[#16a34a] font-semibold">
                                 {formatMoney(
-                                  item.quantity * item.unitPrice,
+                                  (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                   sym,
                                 )}
                               </td>
@@ -214,7 +214,7 @@ export function FintechA4Template({
                                 {formatMoney(
                                   group.items.reduce(
                                     (sum, item) =>
-                                      sum + item.quantity * item.unitPrice,
+                                      sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                     0,
                                   ),
                                   sym,
@@ -236,13 +236,13 @@ export function FintechA4Template({
                             {item.name}
                           </td>
                           <td className="py-1 px-2 text-right text-[#475569]">
-                            {item.quantity} {item.unit || ''}
+                            {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                           </td>
                           <td className="py-1 px-2 text-right text-[#475569]">
                             {formatMoney(item.unitPrice, sym)}
                           </td>
                           <td className="py-1 px-2 text-right text-[#16a34a] font-semibold">
-                            {formatMoney(item.quantity * item.unitPrice, sym)}
+                            {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                           </td>
                         </tr>
                       ))}

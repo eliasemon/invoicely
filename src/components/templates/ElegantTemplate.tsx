@@ -180,7 +180,7 @@ export function ElegantTemplate({
                           className="col-span-2 text-right text-sm text-[#565e74]"
                           style={{ fontFamily: "Geist, monospace" }}
                         >
-                          {item.quantity} {item.unit || ''}
+                          {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                         </div>
                         <div
                           className="col-span-2 text-right text-sm text-[#565e74]"
@@ -192,7 +192,7 @@ export function ElegantTemplate({
                           className="col-span-2 text-right text-sm"
                           style={{ fontFamily: "Geist, monospace" }}
                         >
-                          {formatMoney(item.quantity * item.unitPrice, sym)}
+                          {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                         </div>
                       </div>
                     ))}
@@ -210,7 +210,7 @@ export function ElegantTemplate({
                             {formatMoney(
                               group.items.reduce(
                                 (sum, item) =>
-                                  sum + item.quantity * item.unitPrice,
+                                  sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                 0,
                               ),
                               sym,
@@ -233,7 +233,7 @@ export function ElegantTemplate({
                       className="col-span-2 text-right text-sm text-[#565e74]"
                       style={{ fontFamily: "Geist, monospace" }}
                     >
-                      {item.quantity} {item.unit || ''}
+                      {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                     </div>
                     <div
                       className="col-span-2 text-right text-sm text-[#565e74]"
@@ -245,7 +245,7 @@ export function ElegantTemplate({
                       className="col-span-2 text-right text-sm"
                       style={{ fontFamily: "Geist, monospace" }}
                     >
-                      {formatMoney(item.quantity * item.unitPrice, sym)}
+                      {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                     </div>
                   </div>
                 ))}

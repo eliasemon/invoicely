@@ -141,7 +141,7 @@ export function RedClassicGroupedTemplate({
               <tbody>
                 {invoice.groups?.map((group, gIdx) => {
                   const groupSubtotal = group.items.reduce(
-                    (sum, item) => sum + item.quantity * item.unitPrice,
+                    (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                     0,
                   );
                   return (
@@ -173,13 +173,13 @@ export function RedClassicGroupedTemplate({
                               {item.name}
                             </td>
                             <td className="border border-gray-300 py-1 px-1 text-center text-gray-800">
-                              {item.quantity} {item.unit || ''}
+                              {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                             </td>
                             <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
                               {formatMoney(item.unitPrice, sym)}
                             </td>
                             <td className="border border-gray-300 py-1 px-1 text-right text-gray-900">
-                              {formatMoney(item.quantity * item.unitPrice, sym)}
+                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                             </td>
                           </tr>
                         );

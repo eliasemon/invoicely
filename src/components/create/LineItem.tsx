@@ -11,6 +11,7 @@ export interface LineItemData {
   quantity: number;
   unit?: string;
   unitPrice: number;
+  isFlatRate?: boolean;
 }
 
 interface CatalogItem {
@@ -31,11 +32,12 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showUnitSuggestions, setShowUnitSuggestions] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const unitWrapperRef = useRef<HTMLDivElement>(null);
   const { currency, currencySymbol } = useCreateInvoice();
 
-  const total = item.quantity * item.unitPrice;
+  const total = (item.isFlatRate ? 1 : item.quantity) * item.unitPrice;
 
   // Handle click outside to close suggestions
   useEffect(() => {
@@ -142,68 +144,83 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
             </div>
           )}
         </div>
-        <button
-          onClick={() => deleteItem(item.id)}
-          className="text-outline hover:text-error transition-colors"
-        >
-          <MaterialIcon icon="delete" className="text-[20px]" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => updateItem(item.id, 'isFlatRate', !item.isFlatRate)}
+            className={`transition-colors flex items-center justify-center p-1 rounded-full ${item.isFlatRate ? 'text-primary bg-primary-container/20' : 'text-outline hover:text-primary hover:bg-surface-container-high'}`}
+            title={item.isFlatRate ? "Switch to quantity" : "Switch to flat rate"}
+          >
+            <MaterialIcon icon={item.isFlatRate ? 'tag' : 'exposure_plus_1'} className="text-[20px]" />
+          </button>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="text-outline hover:text-error transition-colors flex items-center justify-center p-1 rounded-full hover:bg-surface-container-high"
+            title="Delete item"
+          >
+            <MaterialIcon icon="delete" className="text-[20px]" />
+          </button>
+        </div>
       </div>
       <div className="flex justify-between items-center mt-xs">
         <div className="flex items-center gap-sm flex-wrap">
-          <div className="flex items-center border border-outline-variant rounded-lg bg-surface">
-            <button
-              onClick={() => updateItem(item.id, 'quantity', Math.max(0, item.quantity - 1))}
-              className="px-2 py-1 text-on-surface-variant hover:text-primary"
-            >-</button>
-            <input
-              className="w-12 text-center bg-transparent border-none p-0 font-body-md text-body-md text-on-surface focus:ring-0 h-[32px]"
-              type="number"
-              value={item.quantity}
-              onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
-            />
-            <button
-              onClick={() => updateItem(item.id, 'quantity', item.quantity + 1)}
-              className="px-2 py-1 text-on-surface-variant hover:text-primary"
-            >+</button>
-          </div>
-          <div className="relative flex items-center" ref={unitWrapperRef}>
-            <input
-              className="w-20 bg-transparent border-b border-outline-variant py-1 pl-1 pr-6 font-body-md text-body-md text-on-surface focus:ring-0 focus:border-primary"
-              type="text"
-              placeholder="Unit"
-              value={item.unit || ''}
-              onChange={(e) => {
-                updateItem(item.id, 'unit', e.target.value);
-                setShowUnitSuggestions(true);
-              }}
-              onFocus={() => setShowUnitSuggestions(true)}
-            />
-            <MaterialIcon icon="arrow_drop_down" className="absolute right-0 text-on-surface-variant pointer-events-none text-[20px]" />
-            
-            {showUnitSuggestions && (
-              <div className="absolute top-full right-0 z-50 mt-1 w-24 bg-surface border border-outline-variant rounded-lg shadow-lg max-h-40 overflow-y-auto">
-                {PREDEFINED_UNITS.filter(u => u.toLowerCase().includes((item.unit || '').toLowerCase())).length > 0 ? (
-                  PREDEFINED_UNITS.filter(u => u.toLowerCase().includes((item.unit || '').toLowerCase())).map((u) => (
-                    <div
-                      key={u}
-                      className="p-xs px-sm hover:bg-surface-container cursor-pointer font-body-md text-on-surface"
-                      onClick={() => {
-                        updateItem(item.id, 'unit', u);
-                        setShowUnitSuggestions(false);
-                      }}
-                    >
-                      {u}
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-xs px-sm text-on-surface-variant font-label-sm">Custom</div>
+          {!item.isFlatRate && (
+            <>
+              <div className="flex items-center border border-outline-variant rounded-lg bg-surface">
+                <button
+                  onClick={() => updateItem(item.id, 'quantity', Math.max(0, item.quantity - 1))}
+                  className="px-2 py-1 text-on-surface-variant hover:text-primary"
+                >-</button>
+                <input
+                  className="w-12 text-center bg-transparent border-none p-0 font-body-md text-body-md text-on-surface focus:ring-0 h-[32px]"
+                  type="number"
+                  value={item.quantity}
+                  onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
+                />
+                <button
+                  onClick={() => updateItem(item.id, 'quantity', item.quantity + 1)}
+                  className="px-2 py-1 text-on-surface-variant hover:text-primary"
+                >+</button>
+              </div>
+              <div className="relative flex items-center" ref={unitWrapperRef}>
+                <input
+                  className="w-20 bg-transparent border-b border-outline-variant py-1 pl-1 pr-6 font-body-md text-body-md text-on-surface focus:ring-0 focus:border-primary"
+                  type="text"
+                  placeholder="Unit"
+                  value={item.unit || ''}
+                  onChange={(e) => {
+                    updateItem(item.id, 'unit', e.target.value);
+                    setShowUnitSuggestions(true);
+                  }}
+                  onFocus={() => setShowUnitSuggestions(true)}
+                />
+                <MaterialIcon icon="arrow_drop_down" className="absolute right-0 text-on-surface-variant pointer-events-none text-[20px]" />
+                
+                {showUnitSuggestions && (
+                  <div className="absolute top-full right-0 z-50 mt-1 w-24 bg-surface border border-outline-variant rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                    {PREDEFINED_UNITS.filter(u => u.toLowerCase().includes((item.unit || '').toLowerCase())).length > 0 ? (
+                      PREDEFINED_UNITS.filter(u => u.toLowerCase().includes((item.unit || '').toLowerCase())).map((u) => (
+                        <div
+                          key={u}
+                          className="p-xs px-sm hover:bg-surface-container cursor-pointer font-body-md text-on-surface"
+                          onClick={() => {
+                            updateItem(item.id, 'unit', u);
+                            setShowUnitSuggestions(false);
+                          }}
+                        >
+                          {u}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-xs px-sm text-on-surface-variant font-label-sm">Custom</div>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
+            </>
+          )}
           <div className="flex items-center gap-1 font-body-md text-body-md text-on-surface-variant">
-            <span>x {currencySymbol}</span>
+            {!item.isFlatRate && <span>x {currencySymbol}</span>}
+            {item.isFlatRate && <span>{currencySymbol}</span>}
             <input
               className="w-20 bg-transparent border-b border-outline-variant p-0 font-body-md text-body-md text-on-surface focus:ring-0 focus:border-primary"
               type="number"
@@ -215,6 +232,47 @@ export function LineItem({ item, updateItem, deleteItem }: Readonly<LineItemProp
         </div>
         <CurrencyDisplay amount={total} currency={currency} currencySymbol={currencySymbol} className="font-body-md text-body-md text-on-surface font-medium" />
       </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div 
+            className="absolute inset-0" 
+            onClick={() => setShowDeleteModal(false)} 
+            aria-hidden="true" 
+          />
+          <div className="relative bg-surface rounded-3xl shadow-2xl w-[95vw] sm:w-[400px] md:w-[450px] overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="w-12 h-12 bg-error-container text-on-error-container rounded-full flex items-center justify-center mb-sm">
+                <MaterialIcon icon="delete_forever" className="text-[24px]" />
+              </div>
+              <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">Delete Item</h3>
+              <p className="font-body-md text-on-surface-variant mb-4">
+                Are you sure you want to delete this item? This action cannot be undone.
+              </p>
+              
+              <div className="flex gap-sm justify-end mt-lg">
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteModal(false)}
+                  className="px-4 py-2 font-label-md text-primary hover:bg-surface-container-low rounded-full transition-colors active:scale-95"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    deleteItem(item.id);
+                    setShowDeleteModal(false);
+                  }}
+                  className="px-4 py-2 font-label-md bg-error text-on-error hover:bg-error/90 rounded-full transition-colors active:scale-95"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

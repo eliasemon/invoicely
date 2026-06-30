@@ -168,13 +168,13 @@ export function GroupedFintechA4Template({
                             {item.name}
                           </td>
                           <td className="py-0.5 px-2 text-right text-[#475569]">
-                            {item.quantity} {item.unit || ''}
+                            {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                           </td>
                           <td className="py-0.5 px-2 text-right text-[#475569]">
                             {formatMoney(item.unitPrice, sym)}
                           </td>
                           <td className="py-0.5 px-2 text-right text-[#0f172a] font-semibold">
-                            {formatMoney(item.quantity * item.unitPrice, sym)}
+                            {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                           </td>
                         </tr>
                       ))}
@@ -191,7 +191,7 @@ export function GroupedFintechA4Template({
                             {formatMoney(
                               group.items.reduce(
                                 (sum, item) =>
-                                  sum + item.quantity * item.unitPrice,
+                                  sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                 0,
                               ),
                               sym,

@@ -182,7 +182,7 @@ export function MinimalistWithQrCodeTemplate({
                             style={{ fontFamily: "Geist, monospace" }}
                           >
                             <span className="hidden print:hidden">Qty: </span>
-                            {item.quantity} {item.unit || ''}
+                            {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                           </div>
                           <div
                             className="col-span-1 col-span-2 print:col-span-2 text-right print:text-right text-sm text-[#45464d]"
@@ -195,7 +195,7 @@ export function MinimalistWithQrCodeTemplate({
                             className="col-span-1 col-span-2 print:col-span-2 text-right text-sm"
                             style={{ fontFamily: "Geist, monospace" }}
                           >
-                            {formatMoney(item.quantity * item.unitPrice, sym)}
+                            {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                           </div>
                         </div>
                       ))}
@@ -212,7 +212,7 @@ export function MinimalistWithQrCodeTemplate({
                             {formatMoney(
                               group.items.reduce(
                                 (sum, item) =>
-                                  sum + item.quantity * item.unitPrice,
+                                  sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                 0,
                               ),
                               sym,
@@ -236,7 +236,7 @@ export function MinimalistWithQrCodeTemplate({
                       style={{ fontFamily: "Geist, monospace" }}
                     >
                       <span className="hidden print:hidden">Qty: </span>
-                      {item.quantity} {item.unit || ''}
+                      {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                     </div>
                     <div
                       className="col-span-1 col-span-2 print:col-span-2 text-right print:text-right text-sm text-[#45464d]"
@@ -249,7 +249,7 @@ export function MinimalistWithQrCodeTemplate({
                       className="col-span-1 col-span-2 print:col-span-2 text-right text-sm"
                       style={{ fontFamily: "Geist, monospace" }}
                     >
-                      {formatMoney(item.quantity * item.unitPrice, sym)}
+                      {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                     </div>
                   </div>
                 ))}

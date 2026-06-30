@@ -4,6 +4,7 @@ export interface InvoiceItem {
   quantity: number;
   unit?: string;
   unitPrice: number;
+  isFlatRate?: boolean;
 }
 
 export interface InvoiceGroup {

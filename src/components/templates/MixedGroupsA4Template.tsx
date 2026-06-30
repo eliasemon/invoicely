@@ -160,11 +160,11 @@ export function MixedGroupsA4Template({
                           {item.name}
                         </p>
                         <p className="text-[11px] text-[#94a3b8] font-mono mt-0.5">
-                          {item.quantity} {item.unit || ''} × {formatMoney(item.unitPrice, sym)}
+                          {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()} × {formatMoney(item.unitPrice, sym)}
                         </p>
                       </div>
                       <p className="font-mono font-semibold text-[#1e293b]">
-                        {formatMoney(item.quantity * item.unitPrice, sym)}
+                        {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                       </p>
                     </div>
                   ))}
@@ -180,7 +180,7 @@ export function MixedGroupsA4Template({
                       >
                         {formatMoney(
                           group.items.reduce(
-                            (sum, item) => sum + item.quantity * item.unitPrice,
+                            (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                             0,
                           ),
                           sym,

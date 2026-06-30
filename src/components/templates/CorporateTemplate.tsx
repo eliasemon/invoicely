@@ -254,14 +254,14 @@ export function CorporateTemplate({
                                   <div className="font-bold">{item.name}</div>
                                 </td>
                                 <td className="py-0.5 px-2 border-r border-[#c6c6cd] text-right">
-                                  {item.quantity} {item.unit || ''}
+                                  {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                                 </td>
                                 <td className="py-0.5 px-2 border-r border-[#c6c6cd] text-right">
                                   {formatMoney(item.unitPrice, sym)}
                                 </td>
                                 <td className="py-0.5 px-2 text-right font-semibold">
                                   {formatMoney(
-                                    item.quantity * item.unitPrice,
+                                    (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                     sym,
                                   )}
                                 </td>
@@ -280,7 +280,7 @@ export function CorporateTemplate({
                                   {formatMoney(
                                     group.items.reduce(
                                       (sum, item) =>
-                                        sum + item.quantity * item.unitPrice,
+                                        sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                       0,
                                     ),
                                     sym,
@@ -302,13 +302,13 @@ export function CorporateTemplate({
                               <div className="font-bold">{item.name}</div>
                             </td>
                             <td className="py-0.5 px-2 border-r border-[#c6c6cd] text-right">
-                              {item.quantity} {item.unit || ''}
+                              {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                             </td>
                             <td className="py-0.5 px-2 border-r border-[#c6c6cd] text-right">
                               {formatMoney(item.unitPrice, sym)}
                             </td>
                             <td className="py-0.5 px-2 text-right font-semibold">
-                              {formatMoney(item.quantity * item.unitPrice, sym)}
+                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                             </td>
                           </tr>
                         ))}

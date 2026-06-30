@@ -195,7 +195,7 @@ export function ModernPurpleTemplate({
                               {formatMoney(item.unitPrice, sym)}
                             </div>
                             <div className="col-span-1 text-sm text-gray-600 text-right">
-                              {item.quantity} {item.unit || ''}
+                              {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                             </div>
                             <div className="col-span-1 text-sm text-gray-600 text-right">
                               0%
@@ -204,7 +204,7 @@ export function ModernPurpleTemplate({
                               0%
                             </div>
                             <div className="col-span-2 text-sm font-medium text-gray-800 text-right">
-                              {formatMoney(item.quantity * item.unitPrice, sym)}
+                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                             </div>
                           </div>
                         ))}
@@ -217,7 +217,7 @@ export function ModernPurpleTemplate({
                               {formatMoney(
                                 group.items.reduce(
                                   (sum, item) =>
-                                    sum + item.quantity * item.unitPrice,
+                                    sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                   0,
                                 ),
                                 sym,
@@ -244,7 +244,7 @@ export function ModernPurpleTemplate({
                           {formatMoney(item.unitPrice, sym)}
                         </div>
                         <div className="col-span-1 text-sm text-gray-600 text-right">
-                          {item.quantity} {item.unit || ''}
+                          {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                         </div>
                         <div className="col-span-1 text-sm text-gray-600 text-right">
                           0%
@@ -253,7 +253,7 @@ export function ModernPurpleTemplate({
                           0%
                         </div>
                         <div className="col-span-2 text-sm font-medium text-gray-800 text-right">
-                          {formatMoney(item.quantity * item.unitPrice, sym)}
+                          {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                         </div>
                       </div>
                     ))}

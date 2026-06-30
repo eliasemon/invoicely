@@ -90,7 +90,7 @@ function CreateInvoiceForm() {
       if (g.id === groupId) {
         return {
           ...g,
-          items: [...g.items, { id: Date.now().toString(), name: '', quantity: 1, unit: 'pcs', unitPrice: 0 }]
+          items: [...g.items, { id: Date.now().toString(), name: '', quantity: 1, unit: 'pcs', unitPrice: 0, isFlatRate: false }]
         };
       }
       return g;
@@ -138,7 +138,7 @@ function CreateInvoiceForm() {
   };
 
   const subtotal = groups.reduce((acc, g) => 
-    acc + g.items.reduce((itemAcc, item) => itemAcc + (item.quantity * item.unitPrice), 0), 
+    acc + g.items.reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0), 
   0);
 
   const discountAmount = discountType === 'percentage' 

@@ -32,7 +32,7 @@ export function LineItemGroup({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { currency, currencySymbol } = useCreateInvoice();
 
-  const groupTotal = group.items.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0);
+  const groupTotal = group.items.reduce((acc, item) => acc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0);
 
   const handleDeleteTrigger = (e: MouseEvent) => {
     e.stopPropagation();
