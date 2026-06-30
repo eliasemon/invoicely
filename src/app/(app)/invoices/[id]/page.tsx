@@ -42,8 +42,17 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
 
   const groups: GroupData[] = (invoice.line_items_snapshot as any) || [];
   const subtotal = groups.reduce((acc, g) => 
-    acc + g.items.reduce((itemAcc, item) => itemAcc + (item.quantity * item.unitPrice), 0), 
+    acc + g.items.reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0), 
   0);
+
+  const totalAmount = Number(invoice.total_amount);
+  const discountType = invoice.discount_type as 'amount' | 'percentage' | null;
+  const discountValue = Number(invoice.discount_value || 0);
+  const discountAmount = discountType === 'percentage' 
+    ? subtotal * (discountValue / 100) 
+    : discountValue;
+  const shippingCost = Number(invoice.shipping_cost || 0);
+  const hasBreakdown = discountAmount > 0 || shippingCost > 0;
 
   return (
     <div className="font-body-md antialiased min-h-screen pb-xl">
@@ -130,19 +139,26 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                 {groups.map((group, gIdx) => (
                   <div key={gIdx} className="mb-4 last:mb-0">
                     <h4 className="font-body-md font-bold text-primary mb-2">{group.name}</h4>
-                    {group.items.map((item, iIdx) => (
-                      <div key={iIdx} className="flex justify-between py-sm border-b border-surface-container-high last:border-0 hover:bg-surface-bright transition-colors">
-                        <div>
-                          <p className="font-body-md text-body-md text-primary font-medium">{item.name}</p>
-                          <p className="font-label-sm text-label-sm text-on-surface-variant">
-                            {item.quantity} x <CurrencyDisplay amount={item.unitPrice} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
+                    {group.items.map((item, iIdx) => {
+                      const itemTotal = (item.isFlatRate ? 1 : item.quantity) * item.unitPrice;
+                      return (
+                        <div key={iIdx} className="flex justify-between py-sm border-b border-surface-container-high last:border-0 hover:bg-surface-bright transition-colors">
+                          <div>
+                            <p className="font-body-md text-body-md text-primary font-medium">{item.name}</p>
+                            <p className="font-label-sm text-label-sm text-on-surface-variant">
+                              {item.isFlatRate ? (
+                                <span>Flat Rate</span>
+                              ) : (
+                                <span>{item.quantity} x <CurrencyDisplay amount={item.unitPrice} currency={finalCurrency} currencySymbol={finalCurrencySymbol} /></span>
+                              )}
+                            </p>
+                          </div>
+                          <p className="font-body-md text-body-md text-primary">
+                            <CurrencyDisplay amount={itemTotal} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
                           </p>
                         </div>
-                        <p className="font-body-md text-body-md text-primary">
-                          <CurrencyDisplay amount={item.quantity * item.unitPrice} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ))}
               </div>
@@ -167,10 +183,34 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
             
             <h3 className="font-label-caps text-label-caps text-inverse-primary mb-md uppercase relative z-10">Financial Overview</h3>
             
+            {hasBreakdown && (
+              <div className="mb-sm relative z-10 space-y-1">
+                <div className="flex justify-between items-end">
+                  <p className="font-body-sm text-inverse-primary/70">Subtotal</p>
+                  <p className="font-body-sm text-on-primary/80">
+                    <CurrencyDisplay amount={subtotal} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
+                  </p>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between items-end">
+                    <p className="font-body-sm text-inverse-primary/70">Discount {discountType === 'percentage' ? `(${discountValue}%)` : ''}</p>
+                    <p className="font-body-sm text-on-primary/80">-<CurrencyDisplay amount={discountAmount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} /></p>
+                  </div>
+                )}
+                {shippingCost > 0 && (
+                  <div className="flex justify-between items-end">
+                    <p className="font-body-sm text-inverse-primary/70">Shipping</p>
+                    <p className="font-body-sm text-on-primary/80">+<CurrencyDisplay amount={shippingCost} currency={finalCurrency} currencySymbol={finalCurrencySymbol} /></p>
+                  </div>
+                )}
+                <div className="h-px bg-primary-container/50 my-1"></div>
+              </div>
+            )}
+
             <div className="flex justify-between items-end mb-sm relative z-10">
               <p className="font-body-md text-body-md text-inverse-primary">Total Amount</p>
               <p className="font-body-lg text-body-lg text-on-primary">
-                <CurrencyDisplay amount={subtotal} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
+                <CurrencyDisplay amount={totalAmount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
               </p>
             </div>
             

@@ -49,7 +49,7 @@ export function formatMoney(amount: number, symbol: string = '$'): string {
 
 export function getIssueDate(invoice: Invoice): Date {
   if (invoice.issued_at) return new Date(invoice.issued_at);
-  return new Date(invoice.createdAt);
+  return new Date(invoice.created_at || invoice.createdAt || new Date());
 }
 
 export function getDueDate(invoice: Invoice, fallbackDays: number = 30): Date {
@@ -61,12 +61,13 @@ export function getDueDate(invoice: Invoice, fallbackDays: number = 30): Date {
 }
 
 export function getSubtotal(invoice: Invoice): number {
-  if (invoice.groups && invoice.groups.length > 0) {
-    return invoice.groups.reduce((acc, g) => 
+  const groups = invoice.line_items_snapshot || invoice.groups;
+  if (groups && groups.length > 0) {
+    return groups.reduce((acc, g) => 
       acc + g.items.reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0), 
     0);
   }
-  return invoice.amount || 0;
+  return invoice.total_amount || invoice.amount || 0;
 }
 
 export function getDiscountAmount(invoice: Invoice, subtotal: number): number {
@@ -88,7 +89,7 @@ export function getTotal(invoice: Invoice): number {
   return Math.max(0, subtotal - discount) + shipping;
 }
 
-export function getAmountPaid(invoice: any): number {
+export function getAmountPaid(invoice: Invoice): number {
   return Number(invoice.amount_paid) || Number(invoice.amountPaid) || 0;
 }
 
@@ -100,7 +101,8 @@ export function getBalanceDue(invoice: Invoice): number {
 
 export function getAllItems(invoice: Invoice): { name: string; quantity: number; unit?: string; unitPrice: number; groupName?: string; isFlatRate?: boolean }[] {
   const items: { name: string; quantity: number; unit?: string; unitPrice: number; groupName?: string; isFlatRate?: boolean }[] = [];
-  invoice.groups?.forEach(group => {
+  const groups = invoice.line_items_snapshot || invoice.groups;
+  groups?.forEach(group => {
     group.items.forEach(item => {
       items.push({ ...item, groupName: group.name });
     });

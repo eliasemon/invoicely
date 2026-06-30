@@ -16,16 +16,26 @@ interface RecordPaymentFormProps {
 
 export function RecordPaymentForm({ invoiceId, remainingAmount, finalCurrency, finalCurrencySymbol }: RecordPaymentFormProps) {
   const router = useRouter();
-  const [paymentAmount, setPaymentAmount] = useState(remainingAmount);
+  const [paymentAmountStr, setPaymentAmountStr] = useState(String(remainingAmount));
   const [paymentNote, setPaymentNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const paymentAmount = parseFloat(paymentAmountStr) || 0;
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    // Allow empty, digits, and one decimal point
+    if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+      setPaymentAmountStr(val);
+    }
+  };
 
   const handleConfirmPayment = async () => {
     if (!paymentAmount || paymentAmount <= 0) return;
     setIsSubmitting(true);
     try {
-      let amountToPay = Number(paymentAmount);
+      let amountToPay = paymentAmount;
       if (amountToPay > remainingAmount) {
         amountToPay = remainingAmount;
       }
@@ -48,12 +58,18 @@ export function RecordPaymentForm({ invoiceId, remainingAmount, finalCurrency, f
           <span className="text-on-surface-variant font-body-md mr-2">{finalCurrencySymbol || finalCurrency}</span>
           <input 
             name="amount"
-            type="number" 
-            step="0.01"
-            min="0.01"
-            max={remainingAmount}
-            value={paymentAmount}
-            onChange={(e) => setPaymentAmount(Number(e.target.value))}
+            type="text" 
+            inputMode="decimal"
+            value={paymentAmountStr}
+            onChange={handleAmountChange}
+            onBlur={() => {
+              // Clamp to remaining amount on blur
+              if (paymentAmount > remainingAmount) {
+                setPaymentAmountStr(String(remainingAmount));
+              } else if (paymentAmountStr === '' || paymentAmount < 0) {
+                setPaymentAmountStr('0');
+              }
+            }}
             className="w-full bg-transparent border-none focus:outline-none focus:ring-0 p-0 font-body-md text-primary" 
           />
         </div>

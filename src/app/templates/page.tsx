@@ -107,14 +107,47 @@ export default function TemplatesGalleryPage() {
 
   const mockInvoice = {
     id: 'preview',
-    userId: mockProfile.id,
-    clientId: 'client-123',
+    profile_id: mockProfile.id,
+    client_id: 'client-123',
+    invoice_number: 'INV-2026-042',
+    client_name: 'Acme Corporation',
+    client_phone: '+1 (555) 123-4567',
+    client_address: '123 Business Rd.\nSuite 100\nMetropolis, NY 10001',
+    total_amount: 1450,
+    amount_paid: 0,
+    status: 'DRAFT' as const,
+    line_items_snapshot: [
+      {
+        id: 'group-1',
+        name: 'Web Development Services',
+        items: [
+          { id: 'item-1', name: 'Frontend React Development', quantity: 40, unitPrice: 65 },
+          { id: 'item-2', name: 'Backend Node.js API', quantity: 20, unitPrice: 75 },
+          { id: 'item-3', name: 'UI/UX Design', quantity: 15, unitPrice: 50 },
+        ]
+      }
+    ],
+    logs: [] as any[],
+    created_at: new Date(),
+    updated_at: new Date(),
+    currency: 'USD',
+    currency_symbol: '$',
+    signature_url: null,
+    signatory_name: mockProfile.signatory_name,
+    bank_name: mockProfile.bank_name,
+    bank_account_holder: mockProfile.bank_account_holder,
+    bank_account_number: mockProfile.bank_account_number,
+    bank_swift: mockProfile.bank_swift,
+    discount_type: 'percentage' as const,
+    discount_value: 0,
+    shipping_cost: 0,
+    // CamelCase aliases for template compatibility
     invoiceNumber: 'INV-2026-042',
     clientName: 'Acme Corporation',
     clientPhone: '+1 (555) 123-4567',
     clientAddress: '123 Business Rd.\nSuite 100\nMetropolis, NY 10001',
     amount: 1450,
-    status: 'DRAFT' as const,
+    amountPaid: 0,
     groups: [
       {
         id: 'group-1',
@@ -128,17 +161,6 @@ export default function TemplatesGalleryPage() {
     ],
     createdAt: new Date(),
     updatedAt: new Date(),
-    currency: 'USD',
-    currency_symbol: '$',
-    signature_url: null,
-    signatory_name: mockProfile.signatory_name,
-    bank_name: mockProfile.bank_name,
-    bank_account_holder: mockProfile.bank_account_holder,
-    bank_account_number: mockProfile.bank_account_number,
-    bank_swift: mockProfile.bank_swift,
-    discount_type: 'percentage' as const,
-    discount_value: 0,
-    shipping_cost: 0,
   };
 
   const selectedTemplateName = availableTemplates.find(t => t.id === selectedTemplate)?.name || selectedTemplate;

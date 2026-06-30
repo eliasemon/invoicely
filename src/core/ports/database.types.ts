@@ -13,18 +13,28 @@ export interface InvoiceGroup {
   items: InvoiceItem[];
 }
 
+export interface InvoiceLogEntry {
+  id: string;
+  type: 'PAYMENT' | 'CONTRA' | 'EDIT';
+  amount?: number;
+  original_payment_id?: string;
+  note?: string;
+  date: string;
+}
+
 export interface Invoice {
   id: string;
-  userId: string;
-  clientId?: string | null;
-  invoiceNumber: string;
-  clientName: string;
-  clientPhone: string;
-  clientAddress?: string | null;
-  amount: number;
+  profile_id: string;
+  client_id?: string | null;
+  invoice_number: string;
+  client_name: string;
+  client_phone: string;
+  client_address?: string | null;
+  total_amount: number;
+  amount_paid: number;
   status: 'DRAFT' | 'PENDING' | 'PAID' | 'UNPAID' | 'PARTIAL';
-  amountPaid?: number;
-  groups: InvoiceGroup[];
+  line_items_snapshot: InvoiceGroup[];
+  logs: InvoiceLogEntry[];
   discount_type?: 'amount' | 'percentage' | null;
   discount_value?: number | null;
   shipping_cost?: number | null;
@@ -41,6 +51,7 @@ export interface Invoice {
   qr_code_enabled?: boolean;
   
   // Template
+  template?: string | null;
   notes?: string | null;
   terms_and_conditions_enabled?: boolean;
   terms_and_conditions?: string | null;
@@ -53,8 +64,19 @@ export interface Invoice {
   issued_at?: Date | string | null;
   due_date?: Date | string | null;
 
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date | string;
+  updated_at: Date | string;
+
+  // CamelCase aliases — set by the public invoice mapping layer for template compatibility
+  invoiceNumber?: string;
+  clientName?: string;
+  clientPhone?: string;
+  clientAddress?: string | null;
+  amount?: number;
+  amountPaid?: number;
+  groups?: InvoiceGroup[];
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 export interface Client {
