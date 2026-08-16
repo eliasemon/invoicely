@@ -33,6 +33,7 @@ export interface TemplateProps {
   showGroups?: boolean;
   showGroupTotals?: boolean;
   publicUrl?: string;
+  isChallan?: boolean;
 }
 
 export function formatDate(date: Date | string): string {

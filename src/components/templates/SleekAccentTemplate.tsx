@@ -21,6 +21,7 @@ export function SleekAccentTemplate({
   showGroups,
   showGroupTotals,
   publicUrl,
+  isChallan,
 }: TemplateProps) {
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
@@ -87,10 +88,10 @@ export function SleekAccentTemplate({
                 className="text-2xl font-bold text-[#0b1b3d] tracking-wide mb-4"
                 style={{ fontFamily: "Work Sans, sans-serif" }}
               >
-                INVOICE #
+                {isChallan ? 'CHALLAN' : 'INVOICE'} #
               </h2>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-right text-sm">
-                <span className="text-gray-500 font-medium">INVOICE # :</span>
+                <span className="text-gray-500 font-medium">{isChallan ? 'CHALLAN' : 'INVOICE'} # :</span>
                 <span className="font-semibold">
                   {invoice.invoiceNumber ||
                     invoice.id?.substring(0, 8).toUpperCase()}
@@ -139,25 +140,29 @@ export function SleekAccentTemplate({
           {/* Line Items Table */}
           <section className="mb-8">
             <div className="w-full border border-gray-200">
-              <div className="grid grid-cols-12 bg-[#0b1b3d] text-white py-3 px-4 rounded-t-sm">
-                <div className="col-span-4 text-xs font-semibold tracking-wider text-center">
+              <div className={`grid ${isChallan ? 'grid-cols-12' : 'grid-cols-12'} bg-[#0b1b3d] text-white py-3 px-4 rounded-t-sm`}>
+                <div className={`${isChallan ? 'col-span-8' : 'col-span-4'} text-xs font-semibold tracking-wider text-center`}>
                   DESCRIPTION
                 </div>
-                <div className="col-span-2 text-xs font-semibold tracking-wider text-center">
+                <div className={`${isChallan ? 'col-span-4' : 'col-span-2'} text-xs font-semibold tracking-wider text-center`}>
                   QTY
                 </div>
-                <div className="col-span-2 text-xs font-semibold tracking-wider text-center">
-                  PRICE
-                </div>
-                <div className="col-span-1 text-xs font-semibold tracking-wider text-center">
-                  TAX
-                </div>
-                <div className="col-span-1 text-xs font-semibold tracking-wider text-center text-nowrap text-ellipsis overflow-hidden">
-                  DISC.
-                </div>
-                <div className="col-span-2 text-xs font-semibold tracking-wider text-center">
-                  AMOUNT
-                </div>
+                {!isChallan && (
+                  <>
+                    <div className="col-span-2 text-xs font-semibold tracking-wider text-center">
+                      PRICE
+                    </div>
+                    <div className="col-span-1 text-xs font-semibold tracking-wider text-center">
+                      TAX
+                    </div>
+                    <div className="col-span-1 text-xs font-semibold tracking-wider text-center text-nowrap text-ellipsis overflow-hidden">
+                      DISC.
+                    </div>
+                    <div className="col-span-2 text-xs font-semibold tracking-wider text-center">
+                      AMOUNT
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="divide-y divide-gray-200">
@@ -174,27 +179,31 @@ export function SleekAccentTemplate({
                             key={iIdx}
                             className={`grid grid-cols-12 py-3 px-4 ${iIdx % 2 !== 0 ? "bg-orange-50/30" : "bg-white"} items-center`}
                           >
-                            <div className="col-span-4 text-sm font-medium text-center">
+                            <div className={`${isChallan ? 'col-span-8' : 'col-span-4'} text-sm font-medium text-center`}>
                               {item.name}
                             </div>
-                            <div className="col-span-2 text-sm text-center">
+                            <div className={`${isChallan ? 'col-span-4' : 'col-span-2'} text-sm text-center`}>
                               {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                             </div>
-                            <div className="col-span-2 text-sm text-center">
-                              {formatMoney(item.unitPrice, sym)}
-                            </div>
-                            <div className="col-span-1 text-sm text-center">
-                              {formatMoney(tax, sym)}
-                            </div>
-                            <div className="col-span-1 text-sm text-center">
-                              {sym}0
-                            </div>
-                            <div className="col-span-2 text-sm font-medium text-center">
-                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                            </div>
+                            {!isChallan && (
+                              <>
+                                <div className="col-span-2 text-sm text-center">
+                                  {formatMoney(item.unitPrice, sym)}
+                                </div>
+                                <div className="col-span-1 text-sm text-center">
+                                  {formatMoney(tax, sym)}
+                                </div>
+                                <div className="col-span-1 text-sm text-center">
+                                  {sym}0
+                                </div>
+                                <div className="col-span-2 text-sm font-medium text-center">
+                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                </div>
+                              </>
+                            )}
                           </div>
                         ))}
-                        {showGroupTotals && (
+                        {showGroupTotals && !isChallan && (
                           <div className="bg-gray-50 flex justify-start px-4 py-2 border-t border-gray-200">
                             <span className="text-xs text-gray-500 font-bold mr-4 uppercase">
                               Group Subtotal
@@ -218,24 +227,28 @@ export function SleekAccentTemplate({
                         key={idx}
                         className={`grid grid-cols-12 py-3 px-4 ${idx % 2 !== 0 ? "bg-orange-50/30" : "bg-white"} items-center`}
                       >
-                        <div className="col-span-4 text-sm font-medium text-center">
+                        <div className={`${isChallan ? 'col-span-8' : 'col-span-4'} text-sm font-medium text-center`}>
                           {item.name}
                         </div>
-                        <div className="col-span-2 text-sm text-center">
+                        <div className={`${isChallan ? 'col-span-4' : 'col-span-2'} text-sm text-center`}>
                           {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                         </div>
-                        <div className="col-span-2 text-sm text-center">
-                          {formatMoney(item.unitPrice, sym)}
-                        </div>
-                        <div className="col-span-1 text-sm text-center">
-                          {formatMoney(tax, sym)}
-                        </div>
-                        <div className="col-span-1 text-sm text-center">
-                          {sym}0
-                        </div>
-                        <div className="col-span-2 text-sm font-medium text-center">
-                          {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                        </div>
+                        {!isChallan && (
+                          <>
+                            <div className="col-span-2 text-sm text-center">
+                              {formatMoney(item.unitPrice, sym)}
+                            </div>
+                            <div className="col-span-1 text-sm text-center">
+                              {formatMoney(tax, sym)}
+                            </div>
+                            <div className="col-span-1 text-sm text-center">
+                              {sym}0
+                            </div>
+                            <div className="col-span-2 text-sm font-medium text-center">
+                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                            </div>
+                          </>
+                        )}
                       </div>
                     ))}
               </div>
@@ -245,43 +258,47 @@ export function SleekAccentTemplate({
           {/* Payment & Totals */}
           <section className="flex flex-row print:flex-row justify-between items-start mt-auto gap-8">
             <div className="w-1/2 print:w-1/2">
-              <h4 className="text-xs font-bold text-[#0b1b3d] uppercase mb-2">
-                PAYMENT METHOD
-              </h4>
-              {(profile?.bank_enabled ?? true) &&
-              (invoice.bank_name || profile?.bank_name) ? (
-                <div className="text-xs text-gray-500 space-y-1">
-                  <p>{invoice.bank_name || profile?.bank_name}</p>
-                  {(invoice.bank_account_holder ||
-                    profile?.bank_account_holder) && (
-                    <p>
-                      Account Name:{" "}
-                      {invoice.bank_account_holder ||
-                        profile?.bank_account_holder}
+              {!isChallan && (
+                <>
+                  <h4 className="text-xs font-bold text-[#0b1b3d] uppercase mb-2">
+                    PAYMENT METHOD
+                  </h4>
+                  {(profile?.bank_enabled ?? true) &&
+                  (invoice.bank_name || profile?.bank_name) ? (
+                    <div className="text-xs text-gray-500 space-y-1">
+                      <p>{invoice.bank_name || profile?.bank_name}</p>
+                      {(invoice.bank_account_holder ||
+                        profile?.bank_account_holder) && (
+                        <p>
+                          Account Name:{" "}
+                          {invoice.bank_account_holder ||
+                            profile?.bank_account_holder}
+                        </p>
+                      )}
+                      {(invoice.bank_account_number ||
+                        profile?.bank_account_number) && (
+                        <p>
+                          Account No:{" "}
+                          {invoice.bank_account_number ||
+                            profile?.bank_account_number}
+                        </p>
+                      )}
+                      {(invoice.bank_swift || profile?.bank_swift) && (
+                        <p>
+                          SWIFT/IFSC: {invoice.bank_swift || profile?.bank_swift}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-500">
+                      Please refer to the payment instructions provided separately.
                     </p>
                   )}
-                  {(invoice.bank_account_number ||
-                    profile?.bank_account_number) && (
-                    <p>
-                      Account No:{" "}
-                      {invoice.bank_account_number ||
-                        profile?.bank_account_number}
-                    </p>
-                  )}
-                  {(invoice.bank_swift || profile?.bank_swift) && (
-                    <p>
-                      SWIFT/IFSC: {invoice.bank_swift || profile?.bank_swift}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <p className="text-xs text-gray-500">
-                  Please refer to the payment instructions provided separately.
-                </p>
+                </>
               )}
 
               {invoice.notes && (
-                <div className="mt-8">
+                <div className={isChallan ? '' : 'mt-8'}>
                   <h4 className="text-xs font-bold text-[#0b1b3d] uppercase mb-2">
                     NOTES
                   </h4>
@@ -313,55 +330,57 @@ export function SleekAccentTemplate({
             </div>
 
             <div className="w-1/2 print:w-1/2 flex flex-col items-end">
-              <div className="w-[80%]">
-                <div className="flex justify-between py-1.5 text-sm font-semibold text-gray-600">
-                  <span>Sub Total</span>
-                  <span>{formatMoney(subtotal, sym)}</span>
-                </div>
-                {discountAmount > 0 && (
+              {!isChallan && (
+                <div className="w-[80%] mb-8">
                   <div className="flex justify-between py-1.5 text-sm font-semibold text-gray-600">
-                    <span>Total Discount</span>
-                    <span>{formatMoney(discountAmount, sym)}</span>
+                    <span>Sub Total</span>
+                    <span>{formatMoney(subtotal, sym)}</span>
                   </div>
-                )}
-                <div className="flex justify-between py-1.5 text-sm font-semibold text-gray-600">
-                  <span>Tax Amount</span>
-                  <span>{formatMoney(tax, sym)}</span>
-                </div>
-                {shippingCost > 0 && (
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between py-1.5 text-sm font-semibold text-gray-600">
+                      <span>Total Discount</span>
+                      <span>{formatMoney(discountAmount, sym)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between py-1.5 text-sm font-semibold text-gray-600">
-                    <span>Shipping Amount</span>
-                    <span>{formatMoney(shippingCost, sym)}</span>
+                    <span>Tax Amount</span>
+                    <span>{formatMoney(tax, sym)}</span>
                   </div>
-                )}
+                  {shippingCost > 0 && (
+                    <div className="flex justify-between py-1.5 text-sm font-semibold text-gray-600">
+                      <span>Shipping Amount</span>
+                      <span>{formatMoney(shippingCost, sym)}</span>
+                    </div>
+                  )}
 
-                <div className="flex justify-between items-center bg-[#0b1b3d] text-white py-2 px-3 mt-2 rounded-sm shadow-sm">
-                  <span className="text-sm font-bold">Total Amount</span>
-                  <span className="text-lg font-bold">
-                    {formatMoney(total, sym)}
-                  </span>
+                  <div className="flex justify-between items-center bg-[#0b1b3d] text-white py-2 px-3 mt-2 rounded-sm shadow-sm">
+                    <span className="text-sm font-bold">Total Amount</span>
+                    <span className="text-lg font-bold">
+                      {formatMoney(total, sym)}
+                    </span>
+                  </div>
+
+                  {amountPaid > 0 && (
+                    <>
+                      <div className="flex justify-between py-2 mt-2 text-sm text-gray-500 font-medium">
+                        <span>Paid</span>
+                        <span>{formatMoney(amountPaid, sym)}</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-t border-gray-300 text-sm font-bold text-[#0b1b3d]">
+                        <span>Balance Due</span>
+                        <span>{formatMoney(balanceDue, sym)}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
-
-                {amountPaid > 0 && (
-                  <>
-                    <div className="flex justify-between py-2 mt-2 text-sm text-gray-500 font-medium">
-                      <span>Paid</span>
-                      <span>{formatMoney(amountPaid, sym)}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-t border-gray-300 text-sm font-bold text-[#0b1b3d]">
-                      <span>Balance Due</span>
-                      <span>{formatMoney(balanceDue, sym)}</span>
-                    </div>
-                  </>
-                )}
-              </div>
+              )}
 
               {(profile?.signature_enabled ?? true) &&
                 (invoice.signature_url ||
                   profile?.signature_url ||
                   invoice.signatory_name ||
                   profile?.signatory_name) && (
-                  <div className="mt-12 flex flex-col items-center">
+                  <div className="flex flex-col items-center">
                     {(invoice.signature_url || profile?.signature_url) && (
                       <img
                         src={
@@ -380,7 +399,7 @@ export function SleekAccentTemplate({
                     <p className="text-[10px] text-gray-500 mt-1">
                       {invoice.signatory_name ||
                         profile?.signatory_name ||
-                        "Authorized Signatory"}
+                        (isChallan ? "Received By" : "Authorized Signatory")}
                     </p>
                   </div>
                 )}

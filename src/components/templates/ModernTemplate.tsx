@@ -19,6 +19,7 @@ export function ModernTemplate({
   isPreview,
   publicUrl,
   showGroupTotals,
+  isChallan,
 }: TemplateProps) {
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
@@ -36,8 +37,7 @@ export function ModernTemplate({
       className="min-h-screen py-8 bg-[#f8f9ff] text-[#0b1c30] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
       style={{ fontFamily: "Hanken Grotesk, sans-serif" }}
     >
-      {" "}
-      {/* Action Bar - hidden in print */}{" "}
+      {/* Action Bar - hidden in print */}
       {!isPreview && (
         <div className="max-w-[210mm] mx-auto mb-3 flex flex-row justify-between items-center gap-2 print:hidden">
           <span
@@ -48,7 +48,7 @@ export function ModernTemplate({
           </span>
           <button
             onClick={() => window.print()}
-            className="px-4 py-2 border border-[#c6c6cd] rounded-lg text-xs hover:bg-[#eff4ff] transition-colors flex items-center gap-2"
+            className="px-4 py-2 border border-[#c6c6cd] rounded-lg text-xs hover:bg-[#eff4ff] transition-colors flex items-center gap-2 cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">
               download
@@ -59,7 +59,6 @@ export function ModernTemplate({
       )}
       {/* Invoice Paper */}
       <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-row print:flex-row print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        {" "}
         {/* Sidebar */}
         <div className="bg-[#0058be] text-white w-[25%] print:w-[25%] p-6 flex flex-col justify-between shrink-0">
           <div>
@@ -109,7 +108,7 @@ export function ModernTemplate({
             </div>
             <div className="mb-2">
               <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">
-                Invoice Number
+                {isChallan ? "Challan Number" : "Invoice Number"}
               </p>
               <p className="text-base font-semibold">
                 {invoice.invoiceNumber ||
@@ -122,14 +121,16 @@ export function ModernTemplate({
               </p>
               <p className="text-[11px]">{formatDate(issueDate)}</p>
             </div>
-            <div className="mb-2">
-              <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">
-                Due Date
-              </p>
-              <p className="text-[11px] font-semibold">{formatDate(dueDate)}</p>
-            </div>
+            {!isChallan && (
+              <div className="mb-2">
+                <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">
+                  Due Date
+                </p>
+                <p className="text-[11px] font-semibold">{formatDate(dueDate)}</p>
+              </div>
+            )}
           </div>
-          {(profile?.bank_enabled ?? true) &&
+          {!isChallan && (profile?.bank_enabled ?? true) &&
             (invoice.bank_name || profile?.bank_name) && (
               <div className="mt-4 block">
                 <p className="text-[12px] uppercase tracking-wider opacity-70 mb-2">
@@ -170,190 +171,199 @@ export function ModernTemplate({
           )}
         </div>
         {/* Main Content */}
-        <div className="w-[75%] print:w-[75%] p-6 print:p-6">
-          <div className="flex flex-row print:flex-row justify-between items-start gap-2 mb-2">
-            <div>
-              <p className="text-[10px] uppercase text-[#76777d] mb-1">
-                Billed To
-              </p>
-              <h3
-                className="text-sm font-semibold mb-0.5"
-                style={{ fontFamily: "Work Sans, sans-serif" }}
-              >
-                {invoice.clientName}
-              </h3>
-              <p className="text-[11px] text-[#45464d] whitespace-pre-line">
-                {invoice.clientAddress || invoice.clientPhone}
-              </p>
-            </div>
-            <div
-              className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                invoice.status === "PAID"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-amber-100 text-amber-700"
-              }`}
-            >
-              {invoice.status}
-            </div>
-          </div>
-
-          {/* Items */}
-          <div className="mb-2">
-            <p className="text-[10px] uppercase text-[#76777d] mb-1.5 border-b border-[#dce9ff] pb-1">
-              Description
-            </p>
-            {invoice.groups?.map((group, gIdx) => (
-              <div key={gIdx} className="mb-3">
-                {group.name && (
-                  <h4 className="font-bold text-xs mb-1">{group.name}</h4>
-                )}
-                {group.items.map((item, iIdx) => (
-                  <div
-                    key={iIdx}
-                    className="flex justify-between items-start mb-1.5"
-                  >
-                    <div className="pr-4">
-                      <h4 className="font-semibold text-xs">{item.name}</h4>
-                      <p
-                        className="text-[10px] text-[#45464d] mt-0.5"
-                        style={{ fontFamily: "Geist, monospace" }}
-                      >
-                        Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()} ×{" "}
-                        {formatMoney(item.unitPrice, sym)}
-                      </p>
-                    </div>
-                    <p
-                      className="text-[11px] whitespace-nowrap"
-                      style={{ fontFamily: "Geist, monospace" }}
-                    >
-                      {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                    </p>
-                  </div>
-                ))}
-
-                {showGroupTotals && (
-                  <div className="flex justify-between items-center px-3 py-0.5 bg-transparent border-t border-slate-100/50">
-                    <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">
-                      Group Subtotal
-                    </div>
-                    <div
-                      className="text-[10px] font-medium text-slate-500"
-                      style={{ fontFamily: "Geist, monospace" }}
-                    >
-                      {formatMoney(
-                        group.items.reduce(
-                          (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                          0,
-                        ),
-                        sym,
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Totals */}
-          <div className="border-t border-[#dce9ff] pt-4">
-            <div className="flex justify-end mb-1.5">
-              <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
-                <p className="text-[10px] text-[#76777d]">Subtotal</p>
-                <p style={{ fontFamily: "Geist, monospace" }}>
-                  {formatMoney(subtotal, sym)}
+        <div className="w-[75%] print:w-[75%] p-6 print:p-6 flex flex-col justify-between">
+          <div>
+            <div className="flex flex-row print:flex-row justify-between items-start gap-2 mb-2">
+              <div>
+                <p className="text-[10px] uppercase text-[#76777d] mb-1">
+                  {isChallan ? "Delivered To" : "Billed To"}
                 </p>
-              </div>
-            </div>
-            {discountAmount > 0 && (
-              <div className="flex justify-end mb-1.5">
-                <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
-                  <p className="text-[10px] text-[#76777d]">
-                    Discount{" "}
-                    {invoice.discount_type === "percentage"
-                      ? `(${invoice.discount_value}%)`
-                      : ""}
-                  </p>
-                  <p style={{ fontFamily: "Geist, monospace" }}>
-                    -{formatMoney(discountAmount, sym)}
-                  </p>
-                </div>
-              </div>
-            )}
-            <div className="flex justify-end mb-3">
-              <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
-                <p className="text-[10px] text-[#76777d]">Tax (0%)</p>
-                <p style={{ fontFamily: "Geist, monospace" }}>
-                  {formatMoney(tax, sym)}
-                </p>
-              </div>
-            </div>
-            {shippingCost > 0 && (
-              <div className="flex justify-end mb-3">
-                <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
-                  <p className="text-[10px] text-[#76777d]">Shipping</p>
-                  <p style={{ fontFamily: "Geist, monospace" }}>
-                    +{formatMoney(shippingCost, sym)}
-                  </p>
-                </div>
-              </div>
-            )}
-            <div className="flex justify-end">
-              <div className="w-2/3 print:w-2/3 bg-[#131b2e] py-3 px-4 rounded-lg flex justify-between items-center">
-                <p className="text-[10px] uppercase tracking-wider text-[#bec6e0]">
-                  Total
-                </p>
-                <p
-                  className="text-[11px] font-bold text-white"
+                <h3
+                  className="text-sm font-semibold mb-0.5"
                   style={{ fontFamily: "Work Sans, sans-serif" }}
                 >
-                  {formatMoney(total, sym)}
+                  {invoice.clientName}
+                </h3>
+                <p className="text-[11px] text-[#45464d] whitespace-pre-line">
+                  {invoice.clientAddress || invoice.clientPhone}
                 </p>
               </div>
+              {!isChallan && (
+                <div
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    invoice.status === "PAID"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-amber-100 text-amber-700"
+                  }`}
+                >
+                  {invoice.status}
+                </div>
+              )}
             </div>
-            {amountPaid > 0 && (
-              <>
-                <div className="flex justify-end mt-2">
-                  <div className="w-2/3 print:w-2/3 py-2 px-4 flex justify-between items-center text-sm">
-                    <p className="text-[10px] uppercase tracking-wider text-[#76777d]">
-                      Paid
-                    </p>
-                    <p
-                      className="text-[11px] font-medium text-green-600"
-                      style={{ fontFamily: "Geist, monospace" }}
+
+            {/* Items */}
+            <div className="mb-2">
+              <p className="text-[10px] uppercase text-[#76777d] mb-1.5 border-b border-[#dce9ff] pb-1">
+                Description
+              </p>
+              {invoice.groups?.map((group, gIdx) => (
+                <div key={gIdx} className="mb-3">
+                  {group.name && (
+                    <h4 className="font-bold text-xs mb-1">{group.name}</h4>
+                  )}
+                  {group.items.map((item, iIdx) => (
+                    <div
+                      key={iIdx}
+                      className="flex justify-between items-start mb-1.5"
                     >
-                      {formatMoney(amountPaid, sym)}
+                      <div className="pr-4">
+                        <h4 className="font-semibold text-xs">{item.name}</h4>
+                        <p
+                          className="text-[10px] text-[#45464d] mt-0.5"
+                          style={{ fontFamily: "Geist, monospace" }}
+                        >
+                          Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                          {!isChallan && ` × ${formatMoney(item.unitPrice, sym)}`}
+                        </p>
+                      </div>
+                      {!isChallan && (
+                        <p
+                          className="text-[11px] whitespace-nowrap font-medium"
+                          style={{ fontFamily: "Geist, monospace" }}
+                        >
+                          {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+
+                  {showGroupTotals && !isChallan && (
+                    <div className="flex justify-between items-center px-3 py-0.5 bg-transparent border-t border-slate-100/50">
+                      <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">
+                        Group Subtotal
+                      </div>
+                      <div
+                        className="text-[10px] font-medium text-slate-500"
+                        style={{ fontFamily: "Geist, monospace" }}
+                      >
+                        {formatMoney(
+                          group.items.reduce(
+                            (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                            0,
+                          ),
+                          sym,
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Totals - Only in Invoice mode */}
+            {!isChallan && (
+              <div className="border-t border-[#dce9ff] pt-4">
+                <div className="flex justify-end mb-1.5">
+                  <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
+                    <p className="text-[10px] text-[#76777d]">Subtotal</p>
+                    <p style={{ fontFamily: "Geist, monospace" }}>
+                      {formatMoney(subtotal, sym)}
                     </p>
                   </div>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-end mb-1.5">
+                    <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
+                      <p className="text-[10px] text-[#76777d]">
+                        Discount{" "}
+                        {invoice.discount_type === "percentage"
+                          ? `(${invoice.discount_value}%)`
+                          : ""}
+                      </p>
+                      <p style={{ fontFamily: "Geist, monospace" }}>
+                        -{formatMoney(discountAmount, sym)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div className="flex justify-end mb-1.5">
+                  <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
+                    <p className="text-[10px] text-[#76777d]">Tax (0%)</p>
+                    <p style={{ fontFamily: "Geist, monospace" }}>
+                      {formatMoney(tax, sym)}
+                    </p>
+                  </div>
+                </div>
+                {shippingCost > 0 && (
+                  <div className="flex justify-end mb-3">
+                    <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
+                      <p className="text-[10px] text-[#76777d]">Shipping</p>
+                      <p style={{ fontFamily: "Geist, monospace" }}>
+                        +{formatMoney(shippingCost, sym)}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 <div className="flex justify-end">
-                  <div className="w-2/3 print:w-2/3 bg-[#eff6ff] py-3 px-4 rounded-lg flex justify-between items-center border border-[#bfdbfe]">
-                    <p className="text-[10px] uppercase tracking-wider text-[#1e40af]">
-                      Due
+                  <div className="w-2/3 print:w-2/3 bg-[#131b2e] py-3 px-4 rounded-lg flex justify-between items-center">
+                    <p className="text-[10px] uppercase tracking-wider text-[#bec6e0]">
+                      Total
                     </p>
                     <p
-                      className="text-[11px] font-bold text-[#1e40af]"
+                      className="text-[11px] font-bold text-white"
                       style={{ fontFamily: "Work Sans, sans-serif" }}
                     >
-                      {formatMoney(balanceDue, sym)}
+                      {formatMoney(total, sym)}
                     </p>
                   </div>
                 </div>
-              </>
+                {amountPaid > 0 && (
+                  <>
+                    <div className="flex justify-end mt-2">
+                      <div className="w-2/3 print:w-2/3 py-2 px-4 flex justify-between items-center text-sm">
+                        <p className="text-[10px] uppercase tracking-wider text-[#76777d]">
+                          Paid
+                        </p>
+                        <p
+                          className="text-[11px] font-medium text-green-600"
+                          style={{ fontFamily: "Geist, monospace" }}
+                        >
+                          {formatMoney(amountPaid, sym)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <div className="w-2/3 print:w-2/3 bg-[#eff6ff] py-3 px-4 rounded-lg flex justify-between items-center border border-[#bfdbfe]">
+                        <p className="text-[10px] uppercase tracking-wider text-[#1e40af]">
+                          Due
+                        </p>
+                        <p
+                          className="text-[11px] font-bold text-[#1e40af]"
+                          style={{ fontFamily: "Work Sans, sans-serif" }}
+                        >
+                          {formatMoney(balanceDue, sym)}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             )}
           </div>
 
           {/* Notes and Signature */}
-          <div className="mt-4 pt-3 border-t border-[#dce9ff] flex flex-row print:flex-row justify-between items-start gap-2">
+          <div className="mt-6 pt-3 border-t border-[#dce9ff] flex flex-row print:flex-row justify-between items-start gap-2">
             <div className="flex-1 flex flex-col gap-3">
-              <div>
-                <p className="text-[10px] uppercase text-[#76777d] mb-1">
-                  Notes
-                </p>
-                <p className="text-[11px] text-[#45464d]">
-                  {invoice.notes ||
-                    "Thank you for your business. Please process payment within 30 days of receiving this invoice."}
-                </p>
-              </div>
+              {invoice.notes && (
+                <div>
+                  <p className="text-[10px] uppercase text-[#76777d] mb-1">
+                    Notes
+                  </p>
+                  <p className="text-[11px] text-[#45464d]">
+                    {invoice.notes}
+                  </p>
+                </div>
+              )}
               {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
                 <div>
                   <p className="text-[10px] uppercase text-[#76777d] mb-1">
@@ -388,7 +398,7 @@ export function ModernTemplate({
                     <p className="text-[10px] text-[#76777d]">
                       {invoice.signatory_name ||
                         profile?.signatory_name ||
-                        "Authorized Signatory"}
+                        (isChallan ? "Received By" : "Authorized Signatory")}
                     </p>
                   </div>
                 )}

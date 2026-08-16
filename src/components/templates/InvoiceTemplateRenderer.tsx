@@ -48,6 +48,7 @@ export function InvoiceTemplateRenderer({
   publicUrl,
   showGroups = false,
   showGroupTotals = false,
+  isChallan = false,
 }: InvoiceTemplateRendererProps) {
   const TemplateComponent =
     TEMPLATE_MAP[templateId || "modern-template"] || ModernTemplate;
@@ -71,7 +72,9 @@ export function InvoiceTemplateRenderer({
         showGroups={showGroups}
         showGroupTotals={showGroupTotals}
         publicUrl={publicUrl}
+        isChallan={isChallan}
       />
     </div>
   );
 }
+

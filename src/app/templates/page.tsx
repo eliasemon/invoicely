@@ -13,6 +13,7 @@ export default function TemplatesGalleryPage() {
   const [zoom, setZoom] = useState(0.85);
   const [showGroups, setShowGroups] = useState(false);
   const [showGroupTotals, setShowGroupTotals] = useState(false);
+  const [isChallan, setIsChallan] = useState(false);
 
   // Refs and dimensions for scaling
   const previewPaneRef = useRef<HTMLDivElement>(null);
@@ -319,6 +320,8 @@ export default function TemplatesGalleryPage() {
               showGroupTotals={showGroupTotals} 
               setShowGroupTotals={setShowGroupTotals} 
               hasGroups={mockInvoice.groups && mockInvoice.groups.length > 0}
+              isChallan={isChallan}
+              setIsChallan={setIsChallan}
             />
           </div>
 
@@ -358,6 +361,7 @@ export default function TemplatesGalleryPage() {
                   isPreview={true}
                   showGroups={showGroups}
                   showGroupTotals={showGroupTotals}
+                  isChallan={isChallan}
                   publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/public/invoice/demo-123`}
                 />
               </div>

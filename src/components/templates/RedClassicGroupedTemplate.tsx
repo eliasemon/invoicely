@@ -19,6 +19,7 @@ export function RedClassicGroupedTemplate({
   profile,
   publicUrl,
   showGroupTotals,
+  isChallan,
 }: TemplateProps) {
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
@@ -32,6 +33,8 @@ export function RedClassicGroupedTemplate({
   // Use custom subject or fallback
   const subject = invoice.notes
     ? invoice.notes.split("\n")[0]
+    : isChallan
+    ? "Delivery Challan for Items/Services"
     : "Bill for Items/Services";
 
   let globalSlNo = 1;
@@ -49,7 +52,6 @@ export function RedClassicGroupedTemplate({
       className="min-h-screen py-8 bg-gray-100 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
       style={{ fontFamily: "Arial, sans-serif" }}
     >
-      {" "}
       <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-black shadow-xl overflow-hidden print:shadow-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 p-8 print:p-6 relative">
         {/* Header section */}
         <div className="flex flex-row items-start justify-between mb-4 pb-4 border-b-4 border-[#8b0000]">
@@ -86,7 +88,7 @@ export function RedClassicGroupedTemplate({
           </div>
           <div className="text-right flex flex-col items-end">
             <div className="bg-[#8b0000] text-white px-4 py-1 rounded-l-md font-bold text-lg tracking-widest uppercase mb-2 shadow-sm">
-              Invoice
+              {isChallan ? "Challan" : "Invoice"}
             </div>
             <p className="text-xs font-semibold text-gray-800">
               Date: {formatDate(issueDate)}
@@ -96,9 +98,10 @@ export function RedClassicGroupedTemplate({
 
         <div className="mb-3 text-xs">
           <p>
-            <span className="font-semibold">Ref:</span> {invoice.invoiceNumber}
+            <span className="font-semibold">{isChallan ? "Challan No:" : "Ref:"}</span>{" "}
+            {invoice.invoiceNumber || invoice.id?.substring(0, 8).toUpperCase()}
           </p>
-          <p className="font-semibold mt-1.5">To,</p>
+          <p className="font-semibold mt-1.5">{isChallan ? "Delivered To," : "To,"}</p>
           <p className="font-bold text-sm">{invoice.clientName}</p>
           {(invoice.clientAddress || invoice.clientPhone) && (
             <p className="whitespace-pre-line text-gray-800 leading-tight mt-0.5">
@@ -127,15 +130,19 @@ export function RedClassicGroupedTemplate({
                   <th className="border border-gray-300 py-1 px-2 text-center font-bold">
                     Description of Item
                   </th>
-                  <th className="border border-gray-300 py-1 px-1 text-center w-16 font-bold">
+                  <th className={`border border-gray-300 py-1 px-1 text-center font-bold ${isChallan ? 'w-28' : 'w-16'}`}>
                     Qty
                   </th>
-                  <th className="border border-gray-300 py-1 px-1 text-center w-20 font-bold">
-                    Rate
-                  </th>
-                  <th className="border border-gray-300 py-1 px-1 text-center w-24 font-bold">
-                    Amount
-                  </th>
+                  {!isChallan && (
+                    <>
+                      <th className="border border-gray-300 py-1 px-1 text-center w-20 font-bold">
+                        Rate
+                      </th>
+                      <th className="border border-gray-300 py-1 px-1 text-center w-24 font-bold">
+                        Amount
+                      </th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -150,7 +157,7 @@ export function RedClassicGroupedTemplate({
                       {group.name && (
                         <tr className="bg-red-50/50">
                           <td
-                            colSpan={5}
+                            colSpan={isChallan ? 3 : 5}
                             className="border border-gray-300 py-1 px-2 font-bold text-gray-900 text-[11px]"
                           >
                             {group.name}
@@ -169,24 +176,28 @@ export function RedClassicGroupedTemplate({
                             <td className="border border-gray-300 py-1 px-1 text-center text-gray-800">
                               {currentSlNo}
                             </td>
-                            <td className="border border-gray-300 py-1 px-2 text-gray-800">
+                            <td className="border border-gray-300 py-1 px-2 text-gray-800 font-medium">
                               {item.name}
                             </td>
                             <td className="border border-gray-300 py-1 px-1 text-center text-gray-800">
                               {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                             </td>
-                            <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
-                              {formatMoney(item.unitPrice, sym)}
-                            </td>
-                            <td className="border border-gray-300 py-1 px-1 text-right text-gray-900">
-                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                            </td>
+                            {!isChallan && (
+                              <>
+                                <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
+                                  {formatMoney(item.unitPrice, sym)}
+                                </td>
+                                <td className="border border-gray-300 py-1 px-1 text-right text-gray-900">
+                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                </td>
+                              </>
+                            )}
                           </tr>
                         );
                       })}
 
                       {/* Group Total */}
-                      {showGroupTotals && group.items.length > 0 && (
+                      {showGroupTotals && !isChallan && group.items.length > 0 && (
                         <tr className="bg-red-50/30">
                           <td
                             colSpan={5}
@@ -211,7 +222,7 @@ export function RedClassicGroupedTemplate({
                 {(!invoice.groups || invoice.groups.length === 0) && (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={isChallan ? 3 : 5}
                       className="border border-gray-300 py-2 text-center text-gray-500 italic"
                     >
                       No items found
@@ -219,72 +230,76 @@ export function RedClassicGroupedTemplate({
                   </tr>
                 )}
 
-                {/* Adjustments (Discount, Shipping) if any */}
-                {discountAmount > 0 && (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="border border-gray-300 py-1 px-2 text-right font-semibold text-gray-700"
-                    >
-                      Discount
-                    </td>
-                    <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
-                      -{formatMoney(discountAmount, sym)}
-                    </td>
-                  </tr>
-                )}
-                {shippingCost > 0 && (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="border border-gray-300 py-1 px-2 text-right font-semibold text-gray-700"
-                    >
-                      Shipping
-                    </td>
-                    <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
-                      +{formatMoney(shippingCost, sym)}
-                    </td>
-                  </tr>
-                )}
-
-                {/* Grand Total */}
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="border border-gray-300 py-1.5 px-2 text-right font-bold text-[#8b0000] text-[12px]"
-                  >
-                    Grand Total
-                  </td>
-                  <td className="border border-[#8b0000] bg-[#8b0000] py-1.5 px-1 text-right font-bold text-white text-[12px]">
-                    {formatMoney(total, "")}
-                  </td>
-                </tr>
-
-                {/* Paid Amount and Balance Due */}
-                {amountPaid > 0 && (
+                {/* Adjustments & Totals - Only in Invoice Mode */}
+                {!isChallan && (
                   <>
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="border border-gray-300 py-1 px-2 text-right font-semibold text-gray-700"
-                      >
-                        Paid Amount
-                      </td>
-                      <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
-                        {formatMoney(amountPaid, "")}
-                      </td>
-                    </tr>
+                    {discountAmount > 0 && (
+                      <tr>
+                        <td
+                          colSpan={4}
+                          className="border border-gray-300 py-1 px-2 text-right font-semibold text-gray-700"
+                        >
+                          Discount
+                        </td>
+                        <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
+                          -{formatMoney(discountAmount, sym)}
+                        </td>
+                      </tr>
+                    )}
+                    {shippingCost > 0 && (
+                      <tr>
+                        <td
+                          colSpan={4}
+                          className="border border-gray-300 py-1 px-2 text-right font-semibold text-gray-700"
+                        >
+                          Shipping
+                        </td>
+                        <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
+                          +{formatMoney(shippingCost, sym)}
+                        </td>
+                      </tr>
+                    )}
+
+                    {/* Grand Total */}
                     <tr>
                       <td
                         colSpan={4}
                         className="border border-gray-300 py-1.5 px-2 text-right font-bold text-[#8b0000] text-[12px]"
                       >
-                        Balance Due
+                        Grand Total
                       </td>
-                      <td className="border border-[#8b0000] py-1.5 px-1 text-right font-bold text-[#8b0000] text-[12px]">
-                        {formatMoney(balanceDue, "")}
+                      <td className="border border-[#8b0000] bg-[#8b0000] py-1.5 px-1 text-right font-bold text-white text-[12px]">
+                        {formatMoney(total, "")}
                       </td>
                     </tr>
+
+                    {/* Paid Amount and Balance Due */}
+                    {amountPaid > 0 && (
+                      <>
+                        <tr>
+                          <td
+                            colSpan={4}
+                            className="border border-gray-300 py-1 px-2 text-right font-semibold text-gray-700"
+                          >
+                            Paid Amount
+                          </td>
+                          <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
+                            {formatMoney(amountPaid, "")}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            colSpan={4}
+                            className="border border-gray-300 py-1.5 px-2 text-right font-bold text-[#8b0000] text-[12px]"
+                          >
+                            Balance Due
+                          </td>
+                          <td className="border border-[#8b0000] py-1.5 px-1 text-right font-bold text-[#8b0000] text-[12px]">
+                            {formatMoney(balanceDue, "")}
+                          </td>
+                        </tr>
+                      </>
+                    )}
                   </>
                 )}
               </tbody>
@@ -292,15 +307,17 @@ export function RedClassicGroupedTemplate({
           </div>
         </div>
 
-        {/* Amount in Words */}
-        <div className="mb-4">
-          <p className="text-xs">
-            <span className="font-bold">In Word: </span>
-            <span className="text-[#8b0000] italic font-bold">
-              {numberToWords(total)} {currencyName}
-            </span>
-          </p>
-        </div>
+        {/* Amount in Words - Only in Invoice Mode */}
+        {!isChallan && (
+          <div className="mb-4">
+            <p className="text-xs">
+              <span className="font-bold">In Word: </span>
+              <span className="text-[#8b0000] italic font-bold">
+                {numberToWords(total)} {currencyName}
+              </span>
+            </p>
+          </div>
+        )}
 
         {/* Notes */}
         {((invoice as any).tax_amount || 0) === 0 ? (
@@ -327,8 +344,8 @@ export function RedClassicGroupedTemplate({
           </div>
         )}
 
-        {/* Bank Details */}
-        {(profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) && (
+        {/* Bank Details - Only in Invoice Mode */}
+        {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) && (
           <div className="mb-4 text-[11px]">
             <p className="font-bold mb-0.5">Bank Details:</p>
             <p className="text-gray-800">
@@ -375,7 +392,7 @@ export function RedClassicGroupedTemplate({
                   <p className="text-[10px] font-bold text-gray-800">
                     {invoice.signatory_name ||
                       profile?.signatory_name ||
-                      "Authorized Signatory"}
+                      (isChallan ? "Received By" : "Authorized Signatory")}
                   </p>
                 </div>
               ) : (

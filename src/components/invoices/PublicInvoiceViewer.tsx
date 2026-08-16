@@ -8,6 +8,7 @@ import { MaterialIcon } from '@/components/shared/MaterialIcon';
 export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }: any) {
   const [showGroups, setShowGroups] = useState(false);
   const [showGroupTotals, setShowGroupTotals] = useState(false);
+  const [isChallan, setIsChallan] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState(templateId || 'sleek-accent');
   
   const [previewZoom, setPreviewZoom] = useState(0.5);
@@ -108,6 +109,8 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
             showGroupTotals={showGroupTotals}
             setShowGroupTotals={setShowGroupTotals}
             hasGroups={hasGroups}
+            isChallan={isChallan}
+            setIsChallan={setIsChallan}
           />
         </div>
       </div>
@@ -149,6 +152,7 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
               showGroups={showGroups}
               showGroupTotals={showGroupTotals}
               isPreview={false}
+              isChallan={isChallan}
             />
           </div>
         </div>
@@ -164,6 +168,7 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
           showGroups={showGroups}
           showGroupTotals={showGroupTotals}
           isPreview={false}
+          isChallan={isChallan}
         />
       </div>
     </div>

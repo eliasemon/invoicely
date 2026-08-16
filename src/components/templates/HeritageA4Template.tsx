@@ -20,6 +20,7 @@ export function HeritageA4Template({
   showGroups,
   showGroupTotals,
   publicUrl,
+  isChallan,
 }: TemplateProps) {
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
@@ -34,359 +35,369 @@ export function HeritageA4Template({
 
   return (
     <div
-      className="min-h-screen py-8 bg-[#f5f0eb] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
-      style={{ fontFamily: "Georgia, serif" }}
+      className="min-h-screen py-8 bg-[#fdfaf5] text-[#451a03] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
+      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
     >
-      {" "}
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-[#fffdf8] shadow-lg border border-[#d4c5b0] print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        {" "}
-        <div className="p-6 p-6 print:p-6">
-          {/* Header with ornamental line */}
-          <div className="text-center mb-3">
-            <div className="w-24 h-[2px] bg-[#8b7355] mx-auto mb-2"></div>
-            {profile?.company_logo && (
-              <img
-                alt="Company Logo"
-                className="max-h-16 max-w-[200px] mx-auto mb-2 object-contain w-auto h-auto"
-                src={profile.company_logo}
-              />
-            )}
-            <h1
-              className="text-sm font-bold text-[#2c1810] mb-2"
-              style={{ fontFamily: "Work Sans, sans-serif" }}
-            >
-              {profile?.company_name || "Your Company"}
-            </h1>
-            {((invoice.brand_voice_enabled ?? profile?.brand_voice_enabled ?? true) && (invoice.brand_voice || profile?.brand_voice)) && (
-              <p className="text-[11px] text-[#8b7355] italic mb-2">
-                {invoice.brand_voice || profile?.brand_voice}
-              </p>
-            )}
-            <p className="text-[11px] text-[#8b7355] tracking-widest uppercase">
-              {profile?.company_address || ""}
-            </p>
-            {(profile?.email || profile?.phone) && (
-              <p
-                className="text-[11px] text-[#8b7355]/85 tracking-wider mt-1"
-                style={{ fontFamily: "Geist, monospace" }}
-              >
-                {profile.email}
-                {profile.email && profile.phone ? " • " : ""}
-                {profile.phone}
-              </p>
-            )}
-            <div className="w-24 h-[2px] bg-[#8b7355] mx-auto mt-4"></div>
-          </div>
-
-          <div className="flex flex-row print:flex-row justify-between items-start gap-3 mb-3">
-            <div>
-              <p className="text-[11px] text-[#8b7355] uppercase tracking-[0.2em] mb-1.5">
-                Invoice To
-              </p>
-              <p className="text-[11px] font-bold text-[#2c1810]">
-                {invoice.clientName}
-              </p>
-              <p className="text-[11px] text-[#6b5b4a] mt-1 whitespace-pre-line">
-                {invoice.clientAddress || invoice.clientPhone}
-              </p>
-            </div>
-            <div className="text-right print:text-right w-auto print:w-auto">
-              <p className="text-[11px] text-[#8b7355] uppercase tracking-[0.2em] mb-1.5">
-                Invoice Details
-              </p>
-              <p
-                className="text-[11px]"
-                style={{ fontFamily: "Geist, monospace" }}
-              >
-                <span className="text-[#8b7355]">No:</span>{" "}
-                {invoice.invoiceNumber}
-              </p>
-              <p
-                className="text-[11px] mt-1"
-                style={{ fontFamily: "Geist, monospace" }}
-              >
-                <span className="text-[#8b7355]">Date:</span>{" "}
-                {formatDate(issueDate)}
-              </p>
-              <p
-                className="text-[11px] mt-1"
-                style={{ fontFamily: "Geist, monospace" }}
-              >
-                <span className="text-[#8b7355]">Due:</span>{" "}
-                {formatDate(dueDate)}
-              </p>
-              {profile?.qr_code_enabled && publicUrl && (
-                <div className="mt-4 flex justify-end print:justify-end">
-                  <QRCodeSVG value={publicUrl} size={54} />
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-[#fffefb] border-2 border-[#b45309] shadow-xl p-6 print:p-6 relative overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 flex flex-col justify-between">
+        <div>
+          {/* Vintage border inner */}
+          <div className="border border-[#d97706]/40 p-5 mb-4">
+            {/* Header */}
+            <div className="flex flex-row print:flex-row justify-between items-start border-b-2 border-[#b45309] pb-4 mb-4">
+              <div>
+                {profile?.company_logo && (
+                  <img
+                    alt="Logo"
+                    className="max-h-16 max-w-[200px] mb-2 object-contain w-auto h-auto"
+                    src={profile.company_logo}
+                  />
+                )}
+                <h1 className="text-xl font-bold tracking-wider uppercase text-[#78350f]">
+                  {profile?.company_name || "Your Company"}
+                </h1>
+                {((invoice.brand_voice_enabled ?? profile?.brand_voice_enabled ?? true) && (invoice.brand_voice || profile?.brand_voice)) && (
+                  <p className="text-[11px] text-[#92400e] italic mt-0.5">
+                    {invoice.brand_voice || profile?.brand_voice}
+                  </p>
+                )}
+                <div
+                  className="text-[11px] text-[#92400e] whitespace-pre-line mt-1"
+                  style={{ fontFamily: "Geist, serif" }}
+                >
+                  {profile?.company_address || ""}
+                  {profile?.email ? ` • ${profile.email}` : ""}
+                  {profile?.phone ? ` • ${profile.phone}` : ""}
                 </div>
-              )}
+              </div>
+              <div className="text-right print:text-right">
+                <h2 className="text-2xl font-bold tracking-widest text-[#78350f] uppercase">
+                  {isChallan ? "CHALLAN" : "INVOICE"}
+                </h2>
+                <p
+                  className="text-xs text-[#92400e] font-mono mt-1"
+                  style={{ fontFamily: "Geist, monospace" }}
+                >
+                  N° {invoice.invoiceNumber}
+                </p>
+                {profile?.qr_code_enabled && publicUrl && (
+                  <div className="mt-3 flex justify-end print:justify-end">
+                    <QRCodeSVG value={publicUrl} size={48} />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Items */}
-          <div className="overflow-x-auto mb-2">
-            <table className="w-full min-w-[500px] mb-3">
-              <thead>
-                <tr className="border-y-2 border-[#8b7355]">
-                  <th className="text-left py-0.5 text-[11px] text-[#8b7355] uppercase tracking-wider">
-                    Item
-                  </th>
-                  <th className="text-right py-0.5 text-[11px] text-[#8b7355] uppercase tracking-wider w-20">
-                    Qty
-                  </th>
-                  <th className="text-right py-0.5 text-[11px] text-[#8b7355] uppercase tracking-wider w-28">
-                    Rate
-                  </th>
-                  <th className="text-right py-0.5 text-[11px] text-[#8b7355] uppercase tracking-wider w-28">
-                    Amount
-                  </th>
-                </tr>
-              </thead>
-              <tbody style={{ fontFamily: "Geist, monospace" }}>
-                {showGroups && invoice.groups && invoice.groups.length > 0
-                  ? invoice.groups.map((group, gIdx) => (
-                      <React.Fragment key={gIdx}>
-                        {group.name && (
-                          <tr className="bg-[#fcfaf7] font-bold">
-                            <td
-                              className="py-0.5 text-[10px] text-[#2c1810] border-b border-[#e8ddd0] uppercase text-left font-semibold"
-                              style={{ fontFamily: "Georgia, serif" }}
-                            >
-                              {group.name}
-                            </td>
-                          </tr>
-                        )}
-                        {group.items.map((item, iIdx) => (
-                          <tr key={iIdx} className="border-b border-[#e8ddd0]">
-                            <td
-                              className="py-0.5 text-[#2c1810]"
-                              style={{ fontFamily: "Georgia, serif" }}
-                            >
-                              {item.name}
-                            </td>
-                            <td className="py-0.5 text-right text-[11px] text-[#6b5b4a]">
-                              {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                            </td>
-                            <td className="py-0.5 text-right text-[11px] text-[#6b5b4a]">
-                              {formatMoney(item.unitPrice, sym)}
-                            </td>
-                            <td className="py-0.5 text-right text-[11px] font-semibold text-[#2c1810]">
-                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                            </td>
-                          </tr>
-                        ))}
+            {/* Bill To & Dates */}
+            <div className="grid grid-cols-2 gap-4 mb-4 pb-3 border-b border-[#d97706]/30">
+              <div>
+                <p className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
+                  {isChallan ? "DELIVERED TO" : "BILL TO"}
+                </p>
+                <p className="text-base font-bold text-[#78350f]">
+                  {invoice.clientName}
+                </p>
+                <p
+                  className="text-[11px] text-[#92400e] mt-0.5 whitespace-pre-line"
+                  style={{ fontFamily: "Geist, serif" }}
+                >
+                  {invoice.clientAddress || invoice.clientPhone}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-right">
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-0.5">
+                    DATE
+                  </p>
+                  <p
+                    className="text-xs text-[#78350f]"
+                    style={{ fontFamily: "Geist, monospace" }}
+                  >
+                    {formatDate(issueDate)}
+                  </p>
+                </div>
+                {!isChallan ? (
+                  <div>
+                    <p className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-0.5">
+                      DUE
+                    </p>
+                    <p
+                      className="text-xs text-[#78350f] font-bold"
+                      style={{ fontFamily: "Geist, monospace" }}
+                    >
+                      {formatDate(dueDate)}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-0.5">
+                      TYPE
+                    </p>
+                    <span className="text-xs text-[#78350f] font-bold">
+                      Delivery
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
 
-                        {showGroupTotals && (
-                          <tr className="bg-transparent">
-                            <td className="py-0.5 px-2 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">
-                              Group Subtotal
-                            </td>
-                            <td
-                              className="py-0.5 px-2 text-right text-[10px] font-medium text-slate-500"
-                              style={{ fontFamily: "Geist, monospace" }}
+            {/* Items */}
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-xs min-w-[450px]">
+                <thead>
+                  <tr className="border-b-2 border-[#b45309]">
+                    <th className="text-left py-2 px-3 text-[10px] font-bold uppercase text-[#78350f] tracking-wider">
+                      Description
+                    </th>
+                    <th className={`text-right py-2 px-3 text-[10px] font-bold uppercase text-[#78350f] tracking-wider ${isChallan ? 'w-32' : 'w-20'}`}>
+                      Qty
+                    </th>
+                    {!isChallan && (
+                      <>
+                        <th className="text-right py-2 px-3 text-[10px] font-bold uppercase text-[#78350f] tracking-wider w-24">
+                          Rate
+                        </th>
+                        <th className="text-right py-2 px-3 text-[10px] font-bold uppercase text-[#78350f] tracking-wider w-28">
+                          Amount
+                        </th>
+                      </>
+                    )}
+                  </tr>
+                </thead>
+                <tbody style={{ fontFamily: "Geist, monospace" }}>
+                  {showGroups && invoice.groups && invoice.groups.length > 0
+                    ? invoice.groups.map((group, gIdx) => (
+                        <React.Fragment key={gIdx}>
+                          {group.name && (
+                            <tr className="bg-[#fef3c7]/60 font-bold">
+                              <td
+                                colSpan={isChallan ? 2 : 4}
+                                className="py-1 px-3 text-[11px] text-[#78350f] border-b border-[#d97706]/20 uppercase text-left"
+                                style={{ fontFamily: "'Playfair Display', serif" }}
+                              >
+                                {group.name}
+                              </td>
+                            </tr>
+                          )}
+                          {group.items.map((item, iIdx) => (
+                            <tr
+                              key={iIdx}
+                              className="border-b border-[#d97706]/20 hover:bg-[#fef3c7]/30 transition-colors"
                             >
-                              {formatMoney(
-                                group.items.reduce(
-                                  (sum, item) =>
-                                    sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                                  0,
-                                ),
-                                sym,
+                              <td
+                                className="py-2 px-3 text-[#451a03]"
+                                style={{ fontFamily: "'Playfair Display', serif" }}
+                              >
+                                {item.name}
+                              </td>
+                              <td className="py-2 px-3 text-right text-[#92400e]">
+                                {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                              </td>
+                              {!isChallan && (
+                                <>
+                                  <td className="py-2 px-3 text-right text-[#92400e]">
+                                    {formatMoney(item.unitPrice, sym)}
+                                  </td>
+                                  <td className="py-2 px-3 text-right font-semibold text-[#78350f]">
+                                    {formatMoney(
+                                      (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                      sym,
+                                    )}
+                                  </td>
+                                </>
                               )}
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    ))
-                  : items.map((item, idx) => (
-                      <tr key={idx} className="border-b border-[#e8ddd0]">
-                        <td
-                          className="py-0.5 text-[#2c1810]"
-                          style={{ fontFamily: "Georgia, serif" }}
+                            </tr>
+                          ))}
+
+                          {showGroupTotals && !isChallan && (
+                            <tr className="bg-transparent">
+                              <td colSpan={3} className="py-1 px-3 text-[9px] font-medium text-[#b45309] uppercase text-right tracking-wide">
+                                Group Subtotal
+                              </td>
+                              <td className="py-1 px-3 text-right text-[10px] font-medium text-[#78350f]">
+                                {formatMoney(
+                                  group.items.reduce(
+                                    (sum, item) =>
+                                      sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                    0,
+                                  ),
+                                  sym,
+                                )}
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      ))
+                    : items.map((item, idx) => (
+                        <tr
+                          key={idx}
+                          className="border-b border-[#d97706]/20 hover:bg-[#fef3c7]/30 transition-colors"
                         >
-                          {item.name}
-                        </td>
-                        <td className="py-0.5 text-right text-[11px] text-[#6b5b4a]">
-                          {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                        </td>
-                        <td className="py-0.5 text-right text-[11px] text-[#6b5b4a]">
-                          {formatMoney(item.unitPrice, sym)}
-                        </td>
-                        <td className="py-0.5 text-right text-[11px] font-semibold text-[#2c1810]">
-                          {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                        </td>
-                      </tr>
-                    ))}
-              </tbody>
-            </table>
+                          <td
+                            className="py-2 px-3 text-[#451a03]"
+                            style={{ fontFamily: "'Playfair Display', serif" }}
+                          >
+                            {item.name}
+                          </td>
+                          <td className="py-2 px-3 text-right text-[#92400e]">
+                            {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                          </td>
+                          {!isChallan && (
+                            <>
+                              <td className="py-2 px-3 text-right text-[#92400e]">
+                                {formatMoney(item.unitPrice, sym)}
+                              </td>
+                              <td className="py-2 px-3 text-right font-semibold text-[#78350f]">
+                                {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                              </td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Totals - Only in Invoice Mode */}
+            {!isChallan && (
+              <div className="flex justify-end mb-4">
+                <div className="w-64" style={{ fontFamily: "Geist, monospace" }}>
+                  <div className="flex justify-between py-1 text-xs text-[#92400e]">
+                    <span>Subtotal</span>
+                    <span>{formatMoney(subtotal, sym)}</span>
+                  </div>
+
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between py-1 text-xs text-[#92400e]">
+                      <span>
+                        Discount{" "}
+                        {invoice.discount_type === "percentage"
+                          ? `(${invoice.discount_value}%)`
+                          : ""}
+                      </span>
+                      <span className="text-red-600">-{formatMoney(discountAmount, sym)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between py-1 text-xs text-[#92400e]">
+                    <span>Tax (0%)</span>
+                    <span>{formatMoney(0, sym)}</span>
+                  </div>
+                  {shippingCost > 0 && (
+                    <div className="flex justify-between py-1 text-xs text-[#92400e]">
+                      <span>Shipping</span>
+                      <span>+{formatMoney(shippingCost, sym)}</span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between py-2 border-t-2 border-[#b45309] mt-1 text-sm font-bold text-[#78350f]">
+                    <span>TOTAL DUE</span>
+                    <span>{formatMoney(total, sym)}</span>
+                  </div>
+                  {amountPaid > 0 && (
+                    <>
+                      <div className="flex justify-between py-1 text-xs text-[#92400e] font-medium">
+                        <span>Paid</span>
+                        <span>{formatMoney(amountPaid, sym)}</span>
+                      </div>
+                      <div className="flex justify-between py-1.5 border-t border-[#d97706]/40 text-xs font-bold text-[#78350f]">
+                        <span>Balance Due</span>
+                        <span>{formatMoney(balanceDue, sym)}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* Totals */}
-          <div className="flex justify-end mb-3">
-            <div className="w-64 print:w-64">
-              <div className="flex justify-between py-2 text-sm text-[#6b5b4a]">
-                <span>Subtotal</span>
-                <span style={{ fontFamily: "Geist, monospace" }}>
-                  {formatMoney(subtotal, sym)}
-                </span>
+        {/* Bank Details & Signature Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t-2 border-[#b45309] pt-4 items-start">
+          {/* Bank Details - Only in Invoice Mode */}
+          {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+            <div>
+              <h4 className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
+                PAYMENT INSTRUCTIONS
+              </h4>
+              <div
+                className="text-xs text-[#92400e] space-y-0.5"
+                style={{ fontFamily: "Geist, monospace" }}
+              >
+                <p>
+                  <span className="font-semibold text-[#78350f]">Bank:</span>{" "}
+                  {invoice.bank_name || profile?.bank_name}
+                </p>
+                {(invoice.bank_account_holder || profile?.bank_account_holder) && (
+                  <p>
+                    <span className="font-semibold text-[#78350f]">Holder:</span>{" "}
+                    {invoice.bank_account_holder || profile?.bank_account_holder}
+                  </p>
+                )}
+                {(invoice.bank_account_number || profile?.bank_account_number) && (
+                  <p>
+                    <span className="font-semibold text-[#78350f]">Account:</span>{" "}
+                    {invoice.bank_account_number || profile?.bank_account_number}
+                  </p>
+                )}
+                {(invoice.bank_swift || profile?.bank_swift) && (
+                  <p>
+                    <span className="font-semibold text-[#78350f]">SWIFT:</span>{" "}
+                    {invoice.bank_swift || profile?.bank_swift}
+                  </p>
+                )}
               </div>
-
-              {discountAmount > 0 && (
-                <div className="flex justify-between py-2 text-sm text-[#6b5b4a]">
-                  <span>
-                    Discount{" "}
-                    {invoice.discount_type === "percentage"
-                      ? `(${invoice.discount_value}%)`
-                      : ""}
-                  </span>
-                  <span style={{ fontFamily: "Geist, monospace" }}>
-                    -{formatMoney(discountAmount, sym)}
-                  </span>
+            </div>
+          ) : (
+            <div>
+              {invoice.notes && (
+                <div>
+                  <h4 className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
+                    NOTES
+                  </h4>
+                  <p className="text-xs text-[#92400e]">{invoice.notes}</p>
                 </div>
-              )}
-              <div className="flex justify-between py-2 text-sm text-[#6b5b4a]">
-                <span>Tax</span>
-                <span style={{ fontFamily: "Geist, monospace" }}>
-                  {formatMoney(0, sym)}
-                </span>
-              </div>
-              {shippingCost > 0 && (
-                <div className="flex justify-between py-2 text-sm text-[#6b5b4a]">
-                  <span>Shipping</span>
-                  <span style={{ fontFamily: "Geist, monospace" }}>
-                    +{formatMoney(shippingCost, sym)}
-                  </span>
-                </div>
-              )}
-
-              <div className="flex justify-between py-3 border-t-2 border-[#8b7355] mt-2 text-sm font-bold text-[#2c1810]">
-                <span>Total</span>
-                <span style={{ fontFamily: "Geist, monospace" }}>
-                  {formatMoney(total, sym)}
-                </span>
-              </div>
-              {amountPaid > 0 && (
-                <>
-                  <div className="flex justify-between py-2 text-sm text-gray-500 font-medium">
-                    <span>Paid</span>
-                    <span>{formatMoney(amountPaid, sym)}</span>
-                  </div>
-                  <div className="flex justify-between py-3 mt-2 border-t-2 border-gray-800 text-sm font-bold text-gray-900">
-                    <span>Due</span>
-                    <span>{formatMoney(balanceDue, sym)}</span>
-                  </div>
-                </>
               )}
             </div>
-          </div>
+          )}
 
-          {/* Bank Details & Signature Section */}
-          {(((profile?.bank_enabled ?? true) &&
-            (invoice.bank_name || profile?.bank_name)) ||
-            ((profile?.signature_enabled ?? true) &&
+          {/* Signature */}
+          <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
+            {(profile?.signature_enabled ?? true) &&
               (invoice.signature_url ||
                 profile?.signature_url ||
                 invoice.signatory_name ||
-                profile?.signatory_name))) && (
-            <div className="grid grid-cols-2 print:grid-cols-2 gap-2 mb-3 border-t border-[#d4c5b0] pt-4 text-left w-full">
-              {/* Bank Details */}
-              {(profile?.bank_enabled ?? true) &&
-              (invoice.bank_name || profile?.bank_name) ? (
-                <div>
-                  <h4 className="text-[11px] text-[#8b7355] uppercase tracking-wider mb-2">
-                    Payment Transfer Details
-                  </h4>
-                  <div className="text-sm text-[#6b5b4a] space-y-1">
-                    <p>
-                      <span className="font-semibold text-[#2c1810]">
-                        Bank:
-                      </span>{" "}
-                      {invoice.bank_name || profile?.bank_name}
-                    </p>
-                    {(invoice.bank_account_holder ||
-                      profile?.bank_account_holder) && (
-                      <p>
-                        <span className="font-semibold text-[#2c1810]">
-                          Holder:
-                        </span>{" "}
-                        {invoice.bank_account_holder ||
-                          profile?.bank_account_holder}
-                      </p>
-                    )}
-                    {(invoice.bank_account_number ||
-                      profile?.bank_account_number) && (
-                      <p>
-                        <span className="font-semibold text-[#2c1810]">
-                          Account:
-                        </span>{" "}
-                        {invoice.bank_account_number ||
-                          profile?.bank_account_number}
-                      </p>
-                    )}
-                    {(invoice.bank_swift || profile?.bank_swift) && (
-                      <p>
-                        <span className="font-semibold text-[#2c1810]">
-                          SWIFT:
-                        </span>{" "}
-                        {invoice.bank_swift || profile?.bank_swift}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div></div>
-              )}
-
-              {/* Signature */}
-              <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
-                {(profile?.signature_enabled ?? true) &&
-                  (invoice.signature_url ||
-                    profile?.signature_url ||
-                    invoice.signatory_name ||
-                    profile?.signatory_name) && (
-                    <div className="flex flex-col items-end print:items-end">
-                      {(invoice.signature_url || profile?.signature_url) && (
-                        <img
-                          src={
-                            invoice.signature_url ||
-                            profile?.signature_url ||
-                            undefined
-                          }
-                          alt="Signature"
-                          className="h-10 mb-2 object-contain"
-                        />
-                      )}
-                      <div className="w-full border-b border-[#d4c5b0] mb-1"></div>
-                      <p className="text-[11px] text-[#8b7355]">
-                        {invoice.signatory_name ||
-                          profile?.signatory_name ||
-                          "Authorized Signatory"}
-                      </p>
-                    </div>
+                profile?.signatory_name) && (
+                <div className="flex flex-col items-end print:items-end">
+                  {(invoice.signature_url || profile?.signature_url) && (
+                    <img
+                      src={
+                        invoice.signature_url ||
+                        profile?.signature_url ||
+                        undefined
+                      }
+                      alt="Signature"
+                      className="h-10 mb-2 object-contain"
+                    />
                   )}
-              </div>
-            </div>
-          )}
-
-          {/* Terms & Conditions */}
-          {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-            <div className="mb-3 pt-3 border-t border-[#d4c5b0] text-left">
-              <h4 className="text-[11px] text-[#8b7355] uppercase tracking-wider mb-1">
-                Terms & Conditions
-              </h4>
-              <p className="text-[11px] text-[#6b5b4a] whitespace-pre-wrap">
-                {invoice.terms_and_conditions || profile?.terms_and_conditions}
-              </p>
-            </div>
-          )}
-
-          {/* Footer */}
-          <div className="text-center border-t border-[#d4c5b0] pt-4">
-            <p className="text-[11px] text-[#8b7355] italic">
-              Thank you for your patronage
-            </p>
+                  <div className="w-36 border-b border-[#b45309] mb-1"></div>
+                  <p className="text-[11px] text-[#78350f] font-semibold">
+                    {invoice.signatory_name ||
+                      profile?.signatory_name ||
+                      (isChallan ? "Received By" : "Authorized Signatory")}
+                  </p>
+                </div>
+              )}
           </div>
         </div>
+
+        {/* Footer Terms */}
+        {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
+          <div className="mt-4 pt-3 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-wrap">
+            <p className="font-semibold text-[#78350f] mb-0.5">
+              Terms & Conditions
+            </p>
+            <p>{invoice.terms_and_conditions || profile?.terms_and_conditions}</p>
+          </div>
+        )}
       </div>
     </div>
   );
