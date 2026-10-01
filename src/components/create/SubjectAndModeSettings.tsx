@@ -20,6 +20,10 @@ export function SubjectAndModeSettings() {
     setChallanModeEnabled,
     quotationModeEnabled,
     setQuotationModeEnabled,
+    noteEnabled,
+    setNoteEnabled,
+    noteText,
+    setNoteText,
   } = useCreateInvoice();
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -236,6 +240,50 @@ export function SubjectAndModeSettings() {
                   className="w-full text-xs px-3 py-2 rounded-xl bg-surface border border-outline-variant/50 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-outline"
                 />
               </div>
+            </div>
+          )}
+        </div>
+
+        {/* N.B. Note Section */}
+        <div className="pt-2 border-t border-outline-variant/20">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <MaterialIcon icon="note" className="text-primary text-[18px]" />
+              <label htmlFor="note-master-toggle" className="font-label-md text-xs font-bold text-on-surface cursor-pointer">
+                Bottom Note (N.B.)
+              </label>
+            </div>
+
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                id="note-master-toggle"
+                type="checkbox"
+                checked={noteEnabled}
+                onChange={(e) => setNoteEnabled(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-9 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+              <span className="ml-2 text-xs font-medium text-on-surface-variant">
+                {noteEnabled ? 'Enabled' : 'Disabled'}
+              </span>
+            </label>
+          </div>
+
+          {noteEnabled && (
+            <div className="flex flex-col gap-1">
+              <label className="text-[11px] font-semibold text-on-surface-variant">
+                Note Text
+              </label>
+              <textarea
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                placeholder="Thank you for your business. Please make payment within the due date."
+                rows={2}
+                className="w-full text-xs px-3 py-2 rounded-xl bg-surface border border-outline-variant/50 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-outline resize-none"
+              />
+              <p className="text-[10px] text-on-surface-variant">
+                Appears at the bottom of the printed invoice as <strong>N.B: ...</strong>
+              </p>
             </div>
           )}
         </div>

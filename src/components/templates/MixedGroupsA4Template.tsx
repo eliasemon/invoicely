@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getSubjectForDoc,
+  getNoteText,
 } from "./templateUtils";
 
 export function MixedGroupsA4Template({

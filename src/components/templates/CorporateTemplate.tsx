@@ -13,6 +13,7 @@ import {
   getAmountPaid,
   getAllItems,
   getSubjectForDoc,
+  getNoteText,
 } from "./templateUtils";
 
 export function CorporateTemplate({
@@ -44,6 +45,7 @@ export function CorporateTemplate({
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   return (
     <div

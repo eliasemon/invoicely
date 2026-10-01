@@ -13,6 +13,7 @@ import {
   getAmountPaid,
   getAllItems,
   getSubjectForDoc,
+  getNoteText,
 } from "./templateUtils";
 
 export function GeometricA4Template({
@@ -42,6 +43,7 @@ export function GeometricA4Template({
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   return (
     <div

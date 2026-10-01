@@ -13,6 +13,7 @@ import {
   getAmountPaid,
   getAllItems,
   getSubjectForDoc,
+  getNoteText,
 } from "./templateUtils";
 
 export function HeritageA4Template({

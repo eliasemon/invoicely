@@ -13,6 +13,7 @@ import {
   getAmountPaid,
   getAllItems,
   getSubjectForDoc,
+  getNoteText,
 } from "./templateUtils";
 
 export function FintechA4Template({
@@ -42,6 +43,7 @@ export function FintechA4Template({
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   return (
     <div
@@ -96,6 +98,12 @@ export function FintechA4Template({
                     {invoice.invoiceNumber}
                   </p>
                 </div>
+
+                {profile?.qr_code_enabled && publicUrl && (
+                  <div className="flex justify-end print:justify-end">
+                    <QRCodeSVG value={publicUrl} size={48} />
+                  </div>
+                )}
 
                 {/* Compact Client, Issued, Due Meta Card */}
                 <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 text-right print:text-right space-y-2 w-64 print:w-64 shadow-sm">

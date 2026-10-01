@@ -57,6 +57,8 @@ export function PublicInvoiceViewer({
   const [invoiceModeEnabled, setInvoiceModeEnabled] = useState<boolean>(invoice.invoice_mode_enabled ?? true);
   const [challanModeEnabled, setChallanModeEnabled] = useState<boolean>(invoice.challan_mode_enabled ?? true);
   const [quotationModeEnabled, setQuotationModeEnabled] = useState<boolean>(invoice.quotation_mode_enabled ?? true);
+  const [noteEnabled, setNoteEnabled] = useState<boolean>(invoice.note_enabled ?? true);
+  const [noteText, setNoteText] = useState<string>(invoice.note_text || '');
 
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsSavedMessage, setSettingsSavedMessage] = useState<string | null>(null);
@@ -75,6 +77,8 @@ export function PublicInvoiceViewer({
         invoice_mode_enabled: invoiceModeEnabled,
         challan_mode_enabled: challanModeEnabled,
         quotation_mode_enabled: quotationModeEnabled,
+        note_enabled: noteEnabled,
+        note_text: noteText || null,
         template: currentTemplate,
       });
       setSettingsSavedMessage('Settings saved successfully!');
@@ -98,6 +102,8 @@ export function PublicInvoiceViewer({
     invoice_mode_enabled: invoiceModeEnabled,
     challan_mode_enabled: challanModeEnabled,
     quotation_mode_enabled: quotationModeEnabled,
+    note_enabled: noteEnabled,
+    note_text: noteText || null,
   };
   
   const [previewZoom, setPreviewZoom] = useState(0.5);
@@ -334,6 +340,42 @@ export function PublicInvoiceViewer({
                     className="text-xs px-2.5 py-1.5 rounded-lg bg-surface border border-outline-variant/40 focus:border-primary outline-none"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* N.B. Note Section */}
+            <div>
+              <label className="text-[11px] font-bold text-on-surface-variant block mb-1.5 uppercase tracking-wider">
+                Bottom Note (N.B.)
+              </label>
+              <div className="flex flex-col gap-2 bg-surface border border-outline-variant/40 rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-on-surface">Show N.B. note on invoice</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={noteEnabled}
+                      onChange={(e) => setNoteEnabled(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-9 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                    <span className="ml-2 text-[11px] font-medium text-on-surface-variant">
+                      {noteEnabled ? 'Visible' : 'Hidden'}
+                    </span>
+                  </label>
+                </div>
+                {noteEnabled && (
+                  <textarea
+                    value={noteText}
+                    onChange={(e) => setNoteText(e.target.value)}
+                    placeholder="Thank you for your business. Please make payment within the due date."
+                    rows={2}
+                    className="w-full text-xs px-2.5 py-1.5 rounded-lg bg-surface border border-outline-variant/40 focus:border-primary outline-none resize-none"
+                  />
+                )}
+                <p className="text-[10px] text-on-surface-variant">
+                  Appears at the bottom of the downloaded PDF as <strong>N.B: ...</strong>. Toggle off to hide it completely.
+                </p>
               </div>
             </div>
 

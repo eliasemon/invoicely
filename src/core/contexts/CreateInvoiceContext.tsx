@@ -50,6 +50,10 @@ interface CreateInvoiceContextType {
   setChallanModeEnabled: (enabled: boolean) => void;
   quotationModeEnabled: boolean;
   setQuotationModeEnabled: (enabled: boolean) => void;
+  noteEnabled: boolean;
+  setNoteEnabled: (enabled: boolean) => void;
+  noteText: string;
+  setNoteText: (text: string) => void;
 }
 
 const CreateInvoiceContext = createContext<CreateInvoiceContextType | undefined>(undefined);
@@ -81,6 +85,8 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
   const [invoiceModeEnabled, setInvoiceModeEnabled] = useState(true);
   const [challanModeEnabled, setChallanModeEnabled] = useState(true);
   const [quotationModeEnabled, setQuotationModeEnabled] = useState(true);
+  const [noteEnabled, setNoteEnabled] = useState(true);
+  const [noteText, setNoteText] = useState('Thank you for your business. Please make payment within the due date.');
 
   const currency = profile?.default_currency || initialCurrency || 'USD';
   const currencySymbol = profile?.currency_symbol || initialCurrencySymbol || (() => {
@@ -129,7 +135,9 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
           subjectQuotation,
           invoiceModeEnabled,
           challanModeEnabled,
-          quotationModeEnabled
+          quotationModeEnabled,
+          noteEnabled,
+          noteText,
         });
         
         if (!draftIdRef.current && invoice?.id) {
@@ -141,7 +149,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost, issuedAt, dueDate, subjectEnabled, subjectInvoice, subjectChallan, subjectQuotation, invoiceModeEnabled, challanModeEnabled, quotationModeEnabled]);
+  }, [clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost, issuedAt, dueDate, subjectEnabled, subjectInvoice, subjectChallan, subjectQuotation, invoiceModeEnabled, challanModeEnabled, quotationModeEnabled, noteEnabled, noteText]);
 
   return (
     <CreateInvoiceContext.Provider value={{
@@ -166,7 +174,9 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
       subjectQuotation, setSubjectQuotation,
       invoiceModeEnabled, setInvoiceModeEnabled,
       challanModeEnabled, setChallanModeEnabled,
-      quotationModeEnabled, setQuotationModeEnabled
+      quotationModeEnabled, setQuotationModeEnabled,
+      noteEnabled, setNoteEnabled,
+      noteText, setNoteText,
     }}>
       {children}
     </CreateInvoiceContext.Provider>

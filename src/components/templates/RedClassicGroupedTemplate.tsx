@@ -13,6 +13,7 @@ import {
   getBalanceDue,
   numberToWords,
   getSubjectForDoc,
+  getNoteText,
 } from "./templateUtils";
 
 export function RedClassicGroupedTemplate({

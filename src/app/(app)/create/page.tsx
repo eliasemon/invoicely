@@ -39,6 +39,8 @@ function CreateInvoiceForm() {
     invoiceModeEnabled, setInvoiceModeEnabled,
     challanModeEnabled, setChallanModeEnabled,
     quotationModeEnabled, setQuotationModeEnabled,
+    noteEnabled, setNoteEnabled,
+    noteText, setNoteText,
   } = useCreateInvoice();
 
   const searchParams = useSearchParams();
@@ -77,6 +79,8 @@ function CreateInvoiceForm() {
           if (invoice.invoice_mode_enabled !== undefined) setInvoiceModeEnabled(invoice.invoice_mode_enabled);
           if (invoice.challan_mode_enabled !== undefined) setChallanModeEnabled(invoice.challan_mode_enabled);
           if (invoice.quotation_mode_enabled !== undefined) setQuotationModeEnabled(invoice.quotation_mode_enabled);
+          if (invoice.note_enabled !== undefined) setNoteEnabled(invoice.note_enabled);
+          if (invoice.note_text) setNoteText(invoice.note_text);
         } else if (invoice && invoice.status !== 'DRAFT') {
            console.warn('Invoice editing is disabled for non-draft invoices');
         }
@@ -203,6 +207,8 @@ function CreateInvoiceForm() {
         invoiceModeEnabled,
         challanModeEnabled,
         quotationModeEnabled,
+        noteEnabled,
+        noteText: noteText || undefined,
         template: selectedTemplate,
       });
       
@@ -239,6 +245,8 @@ function CreateInvoiceForm() {
         invoiceModeEnabled,
         challanModeEnabled,
         quotationModeEnabled,
+        noteEnabled,
+        noteText: noteText || undefined,
         template: selectedTemplate,
       });
       

@@ -43,6 +43,11 @@ export interface TemplateProps {
   overallTextSize?: TextSize;
 }
 
+export function getNoteText(invoice: Invoice): string | null {
+  if (invoice.note_enabled === false) return null;
+  return invoice.note_text || null;
+}
+
 export function formatDate(date: Date | string): string {
   try {
     return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(date));

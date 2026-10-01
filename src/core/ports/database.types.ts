@@ -59,7 +59,11 @@ export interface Invoice {
   // Brand Voice
   brand_voice_enabled?: boolean;
   brand_voice?: string | null;
-  
+
+  // N.B. Note (bottom of invoice)
+  note_enabled?: boolean;
+  note_text?: string | null;
+
   // Dates
   issued_at?: Date | string | null;
   due_date?: Date | string | null;

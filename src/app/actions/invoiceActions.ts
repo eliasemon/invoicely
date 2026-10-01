@@ -50,6 +50,8 @@ export async function createInvoice(data: {
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
+  noteEnabled?: boolean;
+  noteText?: string;
   template?: string;
 }) {
   const userId = await getUserId();
@@ -196,6 +198,8 @@ export async function createInvoice(data: {
       invoice_mode_enabled: data.invoiceModeEnabled ?? true,
       challan_mode_enabled: data.challanModeEnabled ?? true,
       quotation_mode_enabled: data.quotationModeEnabled ?? true,
+      note_enabled: data.noteEnabled ?? true,
+      note_text: data.noteText || null,
       template: data.template || 'sleek-accent',
       updated_at: now.toISOString()
   } as any;
@@ -388,6 +392,8 @@ export async function saveDraftInvoice(data: {
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
+  noteEnabled?: boolean;
+  noteText?: string;
   template?: string;
 }) {
   const userId = await getUserId();
@@ -482,6 +488,8 @@ export async function saveDraftInvoice(data: {
       invoice_mode_enabled: data.invoiceModeEnabled ?? true,
       challan_mode_enabled: data.challanModeEnabled ?? true,
       quotation_mode_enabled: data.quotationModeEnabled ?? true,
+      note_enabled: data.noteEnabled ?? true,
+      note_text: data.noteText || null,
       template: data.template || 'sleek-accent',
       updated_at: new Date().toISOString()
   };
@@ -713,6 +721,8 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
   invoice_mode_enabled?: boolean;
   challan_mode_enabled?: boolean;
   quotation_mode_enabled?: boolean;
+  note_enabled?: boolean;
+  note_text?: string | null;
   template?: string;
 }) {
   const userId = await getUserId();

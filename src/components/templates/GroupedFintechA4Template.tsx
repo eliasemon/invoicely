@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getSubjectForDoc,
+  getNoteText,
 } from "./templateUtils";
 
 export function GroupedFintechA4Template({
@@ -39,6 +40,7 @@ export function GroupedFintechA4Template({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   return (
     <div
