@@ -50,6 +50,7 @@ export async function createInvoice(data: {
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
+  template?: string;
 }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
@@ -195,6 +196,7 @@ export async function createInvoice(data: {
       invoice_mode_enabled: data.invoiceModeEnabled ?? true,
       challan_mode_enabled: data.challanModeEnabled ?? true,
       quotation_mode_enabled: data.quotationModeEnabled ?? true,
+      template: data.template || 'sleek-accent',
       updated_at: now.toISOString()
   } as any;
 
@@ -386,6 +388,7 @@ export async function saveDraftInvoice(data: {
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
+  template?: string;
 }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
@@ -479,6 +482,7 @@ export async function saveDraftInvoice(data: {
       invoice_mode_enabled: data.invoiceModeEnabled ?? true,
       challan_mode_enabled: data.challanModeEnabled ?? true,
       quotation_mode_enabled: data.quotationModeEnabled ?? true,
+      template: data.template || 'sleek-accent',
       updated_at: new Date().toISOString()
   };
 
@@ -709,6 +713,7 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
   invoice_mode_enabled?: boolean;
   challan_mode_enabled?: boolean;
   quotation_mode_enabled?: boolean;
+  template?: string;
 }) {
   const userId = await getUserId();
   if (!userId) {

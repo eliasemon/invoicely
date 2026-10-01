@@ -89,9 +89,10 @@ export function InvoiceDisplayOptions({
 
   return (
     <div className="w-full flex flex-col gap-4 print:hidden mb-4">
-      {/* Document Type Section */}
-      <div>
-        <div className="flex items-center justify-between mb-2.5">
+      {/* Document Type Section - Only available to the owner of the document */}
+      {isOwner && (
+        <div>
+          <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-2">
             <MaterialIcon
               icon="swap_horiz"
@@ -312,6 +313,7 @@ export function InvoiceDisplayOptions({
           );
         })()}
       </div>
+      )}
 
       {/* Overall Document Font Size Controls (Excluding line items) */}
       {setOverallTextSize && (

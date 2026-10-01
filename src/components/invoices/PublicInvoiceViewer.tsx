@@ -29,8 +29,24 @@ export function PublicInvoiceViewer({
   const [documentType, setDocumentType] = useState<DocumentType>(initialDocumentType);
   const [textSize, setTextSize] = useState<TextSize>('normal');
   const [overallTextSize, setOverallTextSize] = useState<TextSize>('normal');
-  const [currentTemplate, setCurrentTemplate] = useState(templateId || 'sleek-accent');
+  const [currentTemplate, setCurrentTemplate] = useState(invoice.template || templateId || 'sleek-accent');
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
+  const [templateSavedNotification, setTemplateSavedNotification] = useState<string | null>(null);
+
+  const handleTemplateChange = async (newTemplate: string) => {
+    setCurrentTemplate(newTemplate);
+    if (isOwner && invoice?.id) {
+      try {
+        await updateInvoiceSettings(invoice.id, {
+          template: newTemplate,
+        });
+        setTemplateSavedNotification('Template saved as default!');
+        setTimeout(() => setTemplateSavedNotification(null), 2500);
+      } catch (err) {
+        console.error('Failed to auto-save default template:', err);
+      }
+    }
+  };
 
   // Owner settings state
   const [subjectEnabled, setSubjectEnabled] = useState<boolean>(invoice.subject_enabled ?? true);
@@ -59,6 +75,7 @@ export function PublicInvoiceViewer({
         invoice_mode_enabled: invoiceModeEnabled,
         challan_mode_enabled: challanModeEnabled,
         quotation_mode_enabled: quotationModeEnabled,
+        template: currentTemplate,
       });
       setSettingsSavedMessage('Settings saved successfully!');
       setTimeout(() => setSettingsSavedMessage(null), 3000);
@@ -73,6 +90,7 @@ export function PublicInvoiceViewer({
 
   const effectiveInvoice = {
     ...invoice,
+    template: currentTemplate,
     subject_enabled: subjectEnabled,
     subject_invoice: subjectInvoice,
     subject_challan: subjectChallan,
@@ -464,8 +482,14 @@ export function PublicInvoiceViewer({
         <div className="print:hidden">
           <TemplateSelector 
             selectedTemplate={currentTemplate} 
-            onSelect={setCurrentTemplate} 
+            onSelect={handleTemplateChange} 
           />
+          {templateSavedNotification && (
+            <div className="mt-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg flex items-center gap-1.5 w-fit">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              {templateSavedNotification}
+            </div>
+          )}
         </div>
         <div className="mt-4">
           <InvoiceDisplayOptions 
@@ -641,8 +665,14 @@ export function PublicInvoiceViewer({
               <div>
                 <TemplateSelector 
                   selectedTemplate={currentTemplate} 
-                  onSelect={(t) => setCurrentTemplate(t)} 
+                  onSelect={handleTemplateChange} 
                 />
+                {templateSavedNotification && (
+                  <div className="mt-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg flex items-center gap-1.5 w-fit">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    {templateSavedNotification}
+                  </div>
+                )}
               </div>
 
               {/* Document Format, Overall Font Size, Table Items Font Size, Group Toggles */}

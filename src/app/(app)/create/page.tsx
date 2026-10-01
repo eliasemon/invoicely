@@ -203,6 +203,7 @@ function CreateInvoiceForm() {
         invoiceModeEnabled,
         challanModeEnabled,
         quotationModeEnabled,
+        template: selectedTemplate,
       });
       
       router.push(`/invoices/${invoice.id}`);
@@ -238,6 +239,7 @@ function CreateInvoiceForm() {
         invoiceModeEnabled,
         challanModeEnabled,
         quotationModeEnabled,
+        template: selectedTemplate,
       });
       
       router.push(`/invoices/${invoice.id}`);
