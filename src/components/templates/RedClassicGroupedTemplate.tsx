@@ -20,7 +20,21 @@ export function RedClassicGroupedTemplate({
   publicUrl,
   showGroupTotals,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
+  const clientLabel = isQuotationDoc ? "Quotation To," : isChallanDoc ? "Delivered To," : "To,";
+  const refLabel = isQuotationDoc ? "Quotation No:" : isChallanDoc ? "Challan No:" : "Ref:";
+  const subjectFallback = isQuotationDoc
+    ? "Quotation for Items/Services"
+    : isChallanDoc
+    ? "Delivery Challan for Items/Services"
+    : "Bill for Items/Services";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const subtotal = getSubtotal(invoice);
@@ -33,9 +47,7 @@ export function RedClassicGroupedTemplate({
   // Use custom subject or fallback
   const subject = invoice.notes
     ? invoice.notes.split("\n")[0]
-    : isChallan
-    ? "Delivery Challan for Items/Services"
-    : "Bill for Items/Services";
+    : subjectFallback;
 
   let globalSlNo = 1;
 
@@ -88,7 +100,7 @@ export function RedClassicGroupedTemplate({
           </div>
           <div className="text-right flex flex-col items-end">
             <div className="bg-[#8b0000] text-white px-4 py-1 rounded-l-md font-bold text-lg tracking-widest uppercase mb-2 shadow-sm">
-              {isChallan ? "Challan" : "Invoice"}
+              {docTitle}
             </div>
             <p className="text-xs font-semibold text-gray-800">
               Date: {formatDate(issueDate)}
@@ -98,10 +110,10 @@ export function RedClassicGroupedTemplate({
 
         <div className="mb-3 text-xs">
           <p>
-            <span className="font-semibold">{isChallan ? "Challan No:" : "Ref:"}</span>{" "}
+            <span className="font-semibold">{refLabel}</span>{" "}
             {invoice.invoiceNumber || invoice.id?.substring(0, 8).toUpperCase()}
           </p>
-          <p className="font-semibold mt-1.5">{isChallan ? "Delivered To," : "To,"}</p>
+          <p className="font-semibold mt-1.5">{clientLabel}</p>
           <p className="font-bold text-sm">{invoice.clientName}</p>
           {(invoice.clientAddress || invoice.clientPhone) && (
             <p className="whitespace-pre-line text-gray-800 leading-tight mt-0.5">
@@ -130,10 +142,10 @@ export function RedClassicGroupedTemplate({
                   <th className="border border-gray-300 py-1 px-2 text-center font-bold">
                     Description of Item
                   </th>
-                  <th className={`border border-gray-300 py-1 px-1 text-center font-bold ${isChallan ? 'w-28' : 'w-16'}`}>
+                  <th className={`border border-gray-300 py-1 px-1 text-center font-bold ${isPricingHidden ? 'w-28' : 'w-16'}`}>
                     Qty
                   </th>
-                  {!isChallan && (
+                  {!isPricingHidden && (
                     <>
                       <th className="border border-gray-300 py-1 px-1 text-center w-20 font-bold">
                         Rate
@@ -157,7 +169,7 @@ export function RedClassicGroupedTemplate({
                       {group.name && (
                         <tr className="bg-red-50/50">
                           <td
-                            colSpan={isChallan ? 3 : 5}
+                            colSpan={isPricingHidden ? 3 : 5}
                             className="border border-gray-300 py-1 px-2 font-bold text-gray-900 text-[11px]"
                           >
                             {group.name}
@@ -182,7 +194,7 @@ export function RedClassicGroupedTemplate({
                             <td className="border border-gray-300 py-1 px-1 text-center text-gray-800">
                               {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                             </td>
-                            {!isChallan && (
+                            {!isPricingHidden && (
                               <>
                                 <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
                                   {formatMoney(item.unitPrice, sym)}
@@ -197,7 +209,7 @@ export function RedClassicGroupedTemplate({
                       })}
 
                       {/* Group Total */}
-                      {showGroupTotals && !isChallan && group.items.length > 0 && (
+                      {showGroupTotals && !isPricingHidden && group.items.length > 0 && (
                         <tr className="bg-red-50/30">
                           <td
                             colSpan={5}
@@ -222,7 +234,7 @@ export function RedClassicGroupedTemplate({
                 {(!invoice.groups || invoice.groups.length === 0) && (
                   <tr>
                     <td
-                      colSpan={isChallan ? 3 : 5}
+                      colSpan={isPricingHidden ? 3 : 5}
                       className="border border-gray-300 py-2 text-center text-gray-500 italic"
                     >
                       No items found
@@ -231,7 +243,7 @@ export function RedClassicGroupedTemplate({
                 )}
 
                 {/* Adjustments & Totals - Only in Invoice Mode */}
-                {!isChallan && (
+                {!isPricingHidden && (
                   <>
                     {discountAmount > 0 && (
                       <tr>
@@ -308,7 +320,7 @@ export function RedClassicGroupedTemplate({
         </div>
 
         {/* Amount in Words - Only in Invoice Mode */}
-        {!isChallan && (
+        {!isPricingHidden && (
           <div className="mb-4">
             <p className="text-xs">
               <span className="font-bold">In Word: </span>
@@ -320,7 +332,7 @@ export function RedClassicGroupedTemplate({
         )}
 
         {/* Notes */}
-        {((invoice as any).tax_amount || 0) === 0 ? (
+        {!isPricingHidden && ((invoice as any).tax_amount || 0) === 0 ? (
           <div className="mb-4 text-[11px]">
             <p className="font-bold mb-0.5">N.B:</p>
             <p className="text-gray-800 whitespace-pre-line">
@@ -345,7 +357,7 @@ export function RedClassicGroupedTemplate({
         )}
 
         {/* Bank Details - Only in Invoice Mode */}
-        {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) && (
+        {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) && (
           <div className="mb-4 text-[11px]">
             <p className="font-bold mb-0.5">Bank Details:</p>
             <p className="text-gray-800">
@@ -392,7 +404,7 @@ export function RedClassicGroupedTemplate({
                   <p className="text-[10px] font-bold text-gray-800">
                     {invoice.signatory_name ||
                       profile?.signatory_name ||
-                      (isChallan ? "Received By" : "Authorized Signatory")}
+                      (isChallanDoc ? "Received By" : "Authorized Signatory")}
                   </p>
                 </div>
               ) : (

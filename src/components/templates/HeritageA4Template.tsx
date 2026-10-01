@@ -21,7 +21,15 @@ export function HeritageA4Template({
   showGroupTotals,
   publicUrl,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
+  const clientLabel = isQuotationDoc ? "QUOTATION FOR" : isChallanDoc ? "DELIVERED TO" : "BILL TO";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
@@ -71,7 +79,7 @@ export function HeritageA4Template({
               </div>
               <div className="text-right print:text-right">
                 <h2 className="text-2xl font-bold tracking-widest text-[#78350f] uppercase">
-                  {isChallan ? "CHALLAN" : "INVOICE"}
+                  {docTitleUpper}
                 </h2>
                 <p
                   className="text-xs text-[#92400e] font-mono mt-1"
@@ -91,7 +99,7 @@ export function HeritageA4Template({
             <div className="grid grid-cols-2 gap-4 mb-4 pb-3 border-b border-[#d97706]/30">
               <div>
                 <p className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
-                  {isChallan ? "DELIVERED TO" : "BILL TO"}
+                  {clientLabel}
                 </p>
                 <p className="text-base font-bold text-[#78350f]">
                   {invoice.clientName}
@@ -115,7 +123,7 @@ export function HeritageA4Template({
                     {formatDate(issueDate)}
                   </p>
                 </div>
-                {!isChallan ? (
+                {!isPricingHidden ? (
                   <div>
                     <p className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-0.5">
                       DUE
@@ -133,7 +141,7 @@ export function HeritageA4Template({
                       TYPE
                     </p>
                     <span className="text-xs text-[#78350f] font-bold">
-                      Delivery
+                      {isQuotationDoc ? "Quotation" : "Delivery"}
                     </span>
                   </div>
                 )}
@@ -145,13 +153,16 @@ export function HeritageA4Template({
               <table className="w-full text-xs min-w-[450px]">
                 <thead>
                   <tr className="border-b-2 border-[#b45309]">
+                    <th className="text-center py-2 px-3 text-[10px] font-bold uppercase text-[#78350f] tracking-wider w-12">
+                      #
+                    </th>
                     <th className="text-left py-2 px-3 text-[10px] font-bold uppercase text-[#78350f] tracking-wider">
                       Description
                     </th>
-                    <th className={`text-right py-2 px-3 text-[10px] font-bold uppercase text-[#78350f] tracking-wider ${isChallan ? 'w-32' : 'w-20'}`}>
+                    <th className={`text-right py-2 px-3 text-[10px] font-bold uppercase text-[#78350f] tracking-wider ${isPricingHidden ? 'w-32' : 'w-20'}`}>
                       Qty
                     </th>
-                    {!isChallan && (
+                    {!isPricingHidden && (
                       <>
                         <th className="text-right py-2 px-3 text-[10px] font-bold uppercase text-[#78350f] tracking-wider w-24">
                           Rate
@@ -165,73 +176,85 @@ export function HeritageA4Template({
                 </thead>
                 <tbody style={{ fontFamily: "Geist, monospace" }}>
                   {showGroups && invoice.groups && invoice.groups.length > 0
-                    ? invoice.groups.map((group, gIdx) => (
-                        <React.Fragment key={gIdx}>
-                          {group.name && (
-                            <tr className="bg-[#fef3c7]/60 font-bold">
-                              <td
-                                colSpan={isChallan ? 2 : 4}
-                                className="py-1 px-3 text-[11px] text-[#78350f] border-b border-[#d97706]/20 uppercase text-left"
-                                style={{ fontFamily: "'Playfair Display', serif" }}
-                              >
-                                {group.name}
-                              </td>
-                            </tr>
-                          )}
-                          {group.items.map((item, iIdx) => (
-                            <tr
-                              key={iIdx}
-                              className="border-b border-[#d97706]/20 hover:bg-[#fef3c7]/30 transition-colors"
-                            >
-                              <td
-                                className="py-2 px-3 text-[#451a03]"
-                                style={{ fontFamily: "'Playfair Display', serif" }}
-                              >
-                                {item.name}
-                              </td>
-                              <td className="py-2 px-3 text-right text-[#92400e]">
-                                {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                              </td>
-                              {!isChallan && (
-                                <>
+                    ? (() => {
+                        let runningIdx = 0;
+                        return invoice.groups.map((group, gIdx) => (
+                          <React.Fragment key={gIdx}>
+                            {group.name && (
+                              <tr className="bg-[#fef3c7]/60 font-bold">
+                                <td
+                                  colSpan={isPricingHidden ? 3 : 5}
+                                  className="py-1 px-3 text-[11px] text-[#78350f] border-b border-[#d97706]/20 uppercase text-left"
+                                  style={{ fontFamily: "'Playfair Display', serif" }}
+                                >
+                                  {group.name}
+                                </td>
+                              </tr>
+                            )}
+                            {group.items.map((item, iIdx) => {
+                              runningIdx++;
+                              return (
+                                <tr
+                                  key={iIdx}
+                                  className="border-b border-[#d97706]/20 hover:bg-[#fef3c7]/30 transition-colors"
+                                >
+                                  <td className="py-2 px-3 text-center text-[#78350f] font-mono">
+                                    {runningIdx}
+                                  </td>
+                                  <td
+                                    className="py-2 px-3 text-[#451a03]"
+                                    style={{ fontFamily: "'Playfair Display', serif" }}
+                                  >
+                                    {item.name}
+                                  </td>
                                   <td className="py-2 px-3 text-right text-[#92400e]">
-                                    {formatMoney(item.unitPrice, sym)}
+                                    {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                                   </td>
-                                  <td className="py-2 px-3 text-right font-semibold text-[#78350f]">
-                                    {formatMoney(
-                                      (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                                      sym,
-                                    )}
-                                  </td>
-                                </>
-                              )}
-                            </tr>
-                          ))}
+                                  {!isPricingHidden && (
+                                    <>
+                                      <td className="py-2 px-3 text-right text-[#92400e]">
+                                        {formatMoney(item.unitPrice, sym)}
+                                      </td>
+                                      <td className="py-2 px-3 text-right font-semibold text-[#78350f]">
+                                        {formatMoney(
+                                          (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                          sym,
+                                        )}
+                                      </td>
+                                    </>
+                                  )}
+                                </tr>
+                              );
+                            })}
 
-                          {showGroupTotals && !isChallan && (
-                            <tr className="bg-transparent">
-                              <td colSpan={3} className="py-1 px-3 text-[9px] font-medium text-[#b45309] uppercase text-right tracking-wide">
-                                Group Subtotal
-                              </td>
-                              <td className="py-1 px-3 text-right text-[10px] font-medium text-[#78350f]">
-                                {formatMoney(
-                                  group.items.reduce(
-                                    (sum, item) =>
-                                      sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                                    0,
-                                  ),
-                                  sym,
-                                )}
-                              </td>
-                            </tr>
-                          )}
-                        </React.Fragment>
-                      ))
+                            {showGroupTotals && !isPricingHidden && (
+                              <tr className="bg-transparent">
+                                <td colSpan={4} className="py-1 px-3 text-[9px] font-medium text-[#b45309] uppercase text-right tracking-wide">
+                                  Group Subtotal
+                                </td>
+                                <td className="py-1 px-3 text-right text-[10px] font-medium text-[#78350f]">
+                                  {formatMoney(
+                                    group.items.reduce(
+                                      (sum, item) =>
+                                        sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                      0,
+                                    ),
+                                    sym,
+                                  )}
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        ));
+                      })()
                     : items.map((item, idx) => (
                         <tr
                           key={idx}
                           className="border-b border-[#d97706]/20 hover:bg-[#fef3c7]/30 transition-colors"
                         >
+                          <td className="py-2 px-3 text-center text-[#78350f] font-mono">
+                            {idx + 1}
+                          </td>
                           <td
                             className="py-2 px-3 text-[#451a03]"
                             style={{ fontFamily: "'Playfair Display', serif" }}
@@ -241,7 +264,7 @@ export function HeritageA4Template({
                           <td className="py-2 px-3 text-right text-[#92400e]">
                             {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                           </td>
-                          {!isChallan && (
+                          {!isPricingHidden && (
                             <>
                               <td className="py-2 px-3 text-right text-[#92400e]">
                                 {formatMoney(item.unitPrice, sym)}
@@ -258,7 +281,7 @@ export function HeritageA4Template({
             </div>
 
             {/* Totals - Only in Invoice Mode */}
-            {!isChallan && (
+            {!isPricingHidden && (
               <div className="flex justify-end mb-4">
                 <div className="w-64" style={{ fontFamily: "Geist, monospace" }}>
                   <div className="flex justify-between py-1 text-xs text-[#92400e]">
@@ -313,7 +336,7 @@ export function HeritageA4Template({
         {/* Bank Details & Signature Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t-2 border-[#b45309] pt-4 items-start">
           {/* Bank Details - Only in Invoice Mode */}
-          {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+          {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
             <div>
               <h4 className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
                 PAYMENT INSTRUCTIONS
@@ -382,7 +405,7 @@ export function HeritageA4Template({
                   <p className="text-[11px] text-[#78350f] font-semibold">
                     {invoice.signatory_name ||
                       profile?.signatory_name ||
-                      (isChallan ? "Received By" : "Authorized Signatory")}
+                      (isChallanDoc ? "Received By" : "Authorized Signatory")}
                   </p>
                 </div>
               )}

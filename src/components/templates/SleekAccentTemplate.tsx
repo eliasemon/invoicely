@@ -22,7 +22,15 @@ export function SleekAccentTemplate({
   showGroupTotals,
   publicUrl,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
+  const clientLabel = isQuotationDoc ? "QUOTATION FOR" : isChallanDoc ? "DELIVERED TO" : "BILL TO";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
@@ -88,10 +96,10 @@ export function SleekAccentTemplate({
                 className="text-2xl font-bold text-[#0b1b3d] tracking-wide mb-4"
                 style={{ fontFamily: "Work Sans, sans-serif" }}
               >
-                {isChallan ? 'CHALLAN' : 'INVOICE'} #
+                {docTitleUpper} #
               </h2>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-right text-sm">
-                <span className="text-gray-500 font-medium">{isChallan ? 'CHALLAN' : 'INVOICE'} # :</span>
+                <span className="text-gray-500 font-medium">{docTitleUpper} # :</span>
                 <span className="font-semibold">
                   {invoice.invoiceNumber ||
                     invoice.id?.substring(0, 8).toUpperCase()}
@@ -100,8 +108,12 @@ export function SleekAccentTemplate({
                   CREATION DATE :
                 </span>
                 <span>{formatDate(issueDate)}</span>
-                <span className="text-gray-500 font-medium">DUE DATE :</span>
-                <span>{formatDate(dueDate)}</span>
+                {!isPricingHidden && (
+                  <>
+                    <span className="text-gray-500 font-medium">DUE DATE :</span>
+                    <span>{formatDate(dueDate)}</span>
+                  </>
+                )}
               </div>
             </div>
           </header>
@@ -128,7 +140,7 @@ export function SleekAccentTemplate({
             </div>
             <div className="text-right print:text-right">
               <h3 className="text-sm font-bold text-[#0b1b3d] mb-2 uppercase tracking-wide">
-                BILL TO
+                {clientLabel}
               </h3>
               <p className="text-sm font-bold">{invoice.clientName}</p>
               <p className="text-xs text-gray-500 whitespace-pre-line mt-1 leading-relaxed">
@@ -140,14 +152,17 @@ export function SleekAccentTemplate({
           {/* Line Items Table */}
           <section className="mb-8">
             <div className="w-full border border-gray-200">
-              <div className={`grid ${isChallan ? 'grid-cols-12' : 'grid-cols-12'} bg-[#0b1b3d] text-white py-3 px-4 rounded-t-sm`}>
-                <div className={`${isChallan ? 'col-span-8' : 'col-span-4'} text-xs font-semibold tracking-wider text-center`}>
+              <div className={`grid grid-cols-12 bg-[#0b1b3d] text-white py-3 px-4 rounded-t-sm`}>
+                <div className="col-span-1 text-xs font-semibold tracking-wider text-center">
+                  #
+                </div>
+                <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-3'} text-xs font-semibold tracking-wider text-center`}>
                   DESCRIPTION
                 </div>
-                <div className={`${isChallan ? 'col-span-4' : 'col-span-2'} text-xs font-semibold tracking-wider text-center`}>
+                <div className={`${isPricingHidden ? 'col-span-4' : 'col-span-2'} text-xs font-semibold tracking-wider text-center`}>
                   QTY
                 </div>
-                {!isChallan && (
+                {!isPricingHidden && (
                   <>
                     <div className="col-span-2 text-xs font-semibold tracking-wider text-center">
                       PRICE
@@ -167,73 +182,85 @@ export function SleekAccentTemplate({
 
               <div className="divide-y divide-gray-200">
                 {showGroups && invoice.groups && invoice.groups.length > 0
-                  ? invoice.groups.map((group, gIdx) => (
-                      <React.Fragment key={gIdx}>
-                        {group.name && (
-                          <div className="bg-gray-100 col-span-12 px-4 py-2 text-xs font-bold text-[#0b1b3d]">
-                            {group.name}
-                          </div>
-                        )}
-                        {group.items.map((item, iIdx) => (
-                          <div
-                            key={iIdx}
-                            className={`grid grid-cols-12 py-3 px-4 ${iIdx % 2 !== 0 ? "bg-orange-50/30" : "bg-white"} items-center`}
-                          >
-                            <div className={`${isChallan ? 'col-span-8' : 'col-span-4'} text-sm font-medium text-center`}>
-                              {item.name}
+                  ? (() => {
+                      let runningIdx = 0;
+                      return invoice.groups.map((group, gIdx) => (
+                        <React.Fragment key={gIdx}>
+                          {group.name && (
+                            <div className="bg-gray-100 col-span-12 px-4 py-2 text-xs font-bold text-[#0b1b3d]">
+                              {group.name}
                             </div>
-                            <div className={`${isChallan ? 'col-span-4' : 'col-span-2'} text-sm text-center`}>
-                              {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                          )}
+                          {group.items.map((item, iIdx) => {
+                            runningIdx++;
+                            return (
+                              <div
+                                key={iIdx}
+                                className={`template-item-row grid grid-cols-12 py-3 px-4 ${iIdx % 2 !== 0 ? "bg-orange-50/30" : "bg-white"} items-center`}
+                              >
+                                <div className="col-span-1 text-xs font-mono text-center text-gray-500">
+                                  {runningIdx}
+                                </div>
+                                <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-3'} text-sm font-medium text-center`}>
+                                  {item.name}
+                                </div>
+                                <div className={`${isPricingHidden ? 'col-span-4' : 'col-span-2'} text-sm text-center`}>
+                                  {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                                </div>
+                                {!isPricingHidden && (
+                                  <>
+                                    <div className="col-span-2 text-sm text-center">
+                                      {formatMoney(item.unitPrice, sym)}
+                                    </div>
+                                    <div className="col-span-1 text-sm text-center">
+                                      {formatMoney(tax, sym)}
+                                    </div>
+                                    <div className="col-span-1 text-sm text-center">
+                                      {sym}0
+                                    </div>
+                                    <div className="col-span-2 text-sm font-medium text-center">
+                                      {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            );
+                          })}
+                          {showGroupTotals && !isPricingHidden && (
+                            <div className="bg-gray-50 flex justify-start px-4 py-2 border-t border-gray-200">
+                              <span className="text-xs text-gray-500 font-bold mr-4 uppercase">
+                                Group Subtotal
+                              </span>
+                              <span className="text-xs font-bold text-[#0b1b3d]">
+                                {formatMoney(
+                                  group.items.reduce(
+                                    (sum, item) =>
+                                      sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                    0,
+                                  ),
+                                  sym,
+                                )}
+                              </span>
                             </div>
-                            {!isChallan && (
-                              <>
-                                <div className="col-span-2 text-sm text-center">
-                                  {formatMoney(item.unitPrice, sym)}
-                                </div>
-                                <div className="col-span-1 text-sm text-center">
-                                  {formatMoney(tax, sym)}
-                                </div>
-                                <div className="col-span-1 text-sm text-center">
-                                  {sym}0
-                                </div>
-                                <div className="col-span-2 text-sm font-medium text-center">
-                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ))}
-                        {showGroupTotals && !isChallan && (
-                          <div className="bg-gray-50 flex justify-start px-4 py-2 border-t border-gray-200">
-                            <span className="text-xs text-gray-500 font-bold mr-4 uppercase">
-                              Group Subtotal
-                            </span>
-                            <span className="text-xs font-bold text-[#0b1b3d]">
-                              {formatMoney(
-                                group.items.reduce(
-                                  (sum, item) =>
-                                    sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                                  0,
-                                ),
-                                sym,
-                              )}
-                            </span>
-                          </div>
-                        )}
-                      </React.Fragment>
-                    ))
+                          )}
+                        </React.Fragment>
+                      ));
+                    })()
                   : items.map((item, idx) => (
                       <div
                         key={idx}
-                        className={`grid grid-cols-12 py-3 px-4 ${idx % 2 !== 0 ? "bg-orange-50/30" : "bg-white"} items-center`}
+                        className={`template-item-row grid grid-cols-12 py-3 px-4 ${idx % 2 !== 0 ? "bg-orange-50/30" : "bg-white"} items-center`}
                       >
-                        <div className={`${isChallan ? 'col-span-8' : 'col-span-4'} text-sm font-medium text-center`}>
+                        <div className="col-span-1 text-xs font-mono text-center text-gray-500">
+                          {idx + 1}
+                        </div>
+                        <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-3'} text-sm font-medium text-center`}>
                           {item.name}
                         </div>
-                        <div className={`${isChallan ? 'col-span-4' : 'col-span-2'} text-sm text-center`}>
+                        <div className={`${isPricingHidden ? 'col-span-4' : 'col-span-2'} text-sm text-center`}>
                           {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                         </div>
-                        {!isChallan && (
+                        {!isPricingHidden && (
                           <>
                             <div className="col-span-2 text-sm text-center">
                               {formatMoney(item.unitPrice, sym)}
@@ -258,7 +285,7 @@ export function SleekAccentTemplate({
           {/* Payment & Totals */}
           <section className="flex flex-row print:flex-row justify-between items-start mt-auto gap-8">
             <div className="w-1/2 print:w-1/2">
-              {!isChallan && (
+              {!isPricingHidden && (
                 <>
                   <h4 className="text-xs font-bold text-[#0b1b3d] uppercase mb-2">
                     PAYMENT METHOD
@@ -298,7 +325,7 @@ export function SleekAccentTemplate({
               )}
 
               {invoice.notes && (
-                <div className={isChallan ? '' : 'mt-8'}>
+                <div className={isPricingHidden ? '' : 'mt-8'}>
                   <h4 className="text-xs font-bold text-[#0b1b3d] uppercase mb-2">
                     NOTES
                   </h4>
@@ -330,7 +357,7 @@ export function SleekAccentTemplate({
             </div>
 
             <div className="w-1/2 print:w-1/2 flex flex-col items-end">
-              {!isChallan && (
+              {!isPricingHidden && (
                 <div className="w-[80%] mb-8">
                   <div className="flex justify-between py-1.5 text-sm font-semibold text-gray-600">
                     <span>Sub Total</span>
@@ -399,7 +426,7 @@ export function SleekAccentTemplate({
                     <p className="text-[10px] text-gray-500 mt-1">
                       {invoice.signatory_name ||
                         profile?.signatory_name ||
-                        (isChallan ? "Received By" : "Authorized Signatory")}
+                        (isChallanDoc ? "Received By" : "Authorized Signatory")}
                     </p>
                   </div>
                 )}

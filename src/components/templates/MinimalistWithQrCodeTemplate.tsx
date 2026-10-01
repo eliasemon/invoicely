@@ -22,7 +22,15 @@ export function MinimalistWithQrCodeTemplate({
   showGroupTotals,
   publicUrl,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
+  const clientLabel = isQuotationDoc ? "Quotation to" : isChallanDoc ? "Delivered to" : "Billed to";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
@@ -67,7 +75,7 @@ export function MinimalistWithQrCodeTemplate({
             </div>
             <div className="text-right print:text-right">
               <h2 className="text-2xl font-bold tracking-tight text-black uppercase">
-                {isChallan ? "CHALLAN" : "INVOICE"}
+                {docTitleUpper}
               </h2>
               <p className="font-mono text-xs text-gray-500 mt-1">
                 #{invoice.invoiceNumber}
@@ -84,7 +92,7 @@ export function MinimalistWithQrCodeTemplate({
           <div className="grid grid-cols-2 gap-6 mb-8 text-xs">
             <div>
               <p className="text-gray-400 font-medium mb-1">
-                {isChallan ? "Delivered to" : "Billed to"}
+                {clientLabel}
               </p>
               <p className="font-bold text-black text-sm">{invoice.clientName}</p>
               <p className="text-gray-500 whitespace-pre-line mt-0.5">
@@ -96,7 +104,7 @@ export function MinimalistWithQrCodeTemplate({
                 <p className="text-gray-400 font-medium mb-1">Issued</p>
                 <p className="font-mono text-gray-900">{formatDate(issueDate)}</p>
               </div>
-              {!isChallan ? (
+              {!isPricingHidden ? (
                 <div>
                   <p className="text-gray-400 font-medium mb-1">Due</p>
                   <p className="font-mono text-gray-900 font-semibold">{formatDate(dueDate)}</p>
@@ -104,7 +112,9 @@ export function MinimalistWithQrCodeTemplate({
               ) : (
                 <div>
                   <p className="text-gray-400 font-medium mb-1">Type</p>
-                  <span className="font-mono text-gray-900 font-semibold">Delivery</span>
+                  <span className="font-mono text-gray-900 font-semibold">
+                    {isQuotationDoc ? "Quotation" : "Delivery"}
+                  </span>
                 </div>
               )}
             </div>
@@ -113,9 +123,10 @@ export function MinimalistWithQrCodeTemplate({
           {/* Line Items */}
           <div className="mb-8">
             <div className="grid grid-cols-12 gap-4 pb-2 border-b border-black text-xs font-bold uppercase tracking-wider text-black">
-              <div className={isChallan ? "col-span-8" : "col-span-6"}>Description</div>
-              <div className={`${isChallan ? "col-span-4" : "col-span-2"} text-right`}>Qty</div>
-              {!isChallan && (
+              <div className="col-span-1 text-center">#</div>
+              <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>Description</div>
+              <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right`}>Qty</div>
+              {!isPricingHidden && (
                 <>
                   <div className="col-span-2 text-right">Rate</div>
                   <div className="col-span-2 text-right">Amount</div>
@@ -124,68 +135,80 @@ export function MinimalistWithQrCodeTemplate({
             </div>
 
             {showGroups && invoice.groups && invoice.groups.length > 0
-              ? invoice.groups.map((group, gIdx) => (
-                  <div key={gIdx} className="mb-4">
-                    {group.name && (
-                      <div className="py-2 text-xs font-bold text-gray-900 bg-gray-50 px-2 my-1 uppercase">
-                        {group.name}
-                      </div>
-                    )}
-                    {group.items.map((item, iIdx) => (
-                      <div
-                        key={iIdx}
-                        className="grid grid-cols-12 gap-4 py-2.5 border-b border-gray-100 text-xs items-center"
-                      >
-                        <div className={isChallan ? "col-span-8" : "col-span-6"}>
-                          <p className="font-semibold text-black">{item.name}</p>
+              ? (() => {
+                  let runningIdx = 0;
+                  return invoice.groups.map((group, gIdx) => (
+                    <div key={gIdx} className="mb-4">
+                      {group.name && (
+                        <div className="py-2 text-xs font-bold text-gray-900 bg-gray-50 px-2 my-1 uppercase">
+                          {group.name}
                         </div>
-                        <div className={`${isChallan ? "col-span-4" : "col-span-2"} text-right font-mono`}>
-                          {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                        </div>
-                        {!isChallan && (
-                          <>
-                            <div className="col-span-2 text-right font-mono text-gray-600">
-                              {formatMoney(item.unitPrice, sym)}
+                      )}
+                      {group.items.map((item, iIdx) => {
+                        runningIdx++;
+                        return (
+                          <div
+                            key={iIdx}
+                            className="template-item-row grid grid-cols-12 gap-4 py-2.5 border-b border-gray-100 text-xs items-center"
+                          >
+                            <div className="col-span-1 text-center font-mono text-gray-500">
+                              {runningIdx}
                             </div>
-                            <div className="col-span-2 text-right font-mono font-semibold text-black">
-                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                            <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>
+                              <p className="font-semibold text-black">{item.name}</p>
                             </div>
-                          </>
-                        )}
-                      </div>
-                    ))}
+                            <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right font-mono`}>
+                              {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                            </div>
+                            {!isPricingHidden && (
+                              <>
+                                <div className="col-span-2 text-right font-mono text-gray-600">
+                                  {formatMoney(item.unitPrice, sym)}
+                                </div>
+                                <div className="col-span-2 text-right font-mono font-semibold text-black">
+                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        );
+                      })}
 
-                    {showGroupTotals && !isChallan && (
-                      <div className="flex justify-between py-1.5 text-xs border-b border-gray-200">
-                        <span className="text-gray-400 uppercase tracking-wider font-semibold">
-                          Group Subtotal
-                        </span>
-                        <span className="font-mono font-bold text-gray-900">
-                          {formatMoney(
-                            group.items.reduce(
-                              (sum, item) =>
-                                sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                              0,
-                            ),
-                            sym,
-                          )}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                ))
+                      {showGroupTotals && !isPricingHidden && (
+                        <div className="flex justify-between py-1.5 text-xs border-b border-gray-200">
+                          <span className="text-gray-400 uppercase tracking-wider font-semibold">
+                            Group Subtotal
+                          </span>
+                          <span className="font-mono font-bold text-gray-900">
+                            {formatMoney(
+                              group.items.reduce(
+                                (sum, item) =>
+                                  sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                0,
+                              ),
+                              sym,
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ));
+                })()
               : items.map((item, idx) => (
                   <div
                     key={idx}
-                    className="grid grid-cols-12 gap-4 py-2.5 border-b border-gray-100 text-xs items-center"
+                    className="template-item-row grid grid-cols-12 gap-4 py-2.5 border-b border-gray-100 text-xs items-center"
                   >
-                    <div className={isChallan ? "col-span-8" : "col-span-6"}>
+                    <div className="col-span-1 text-center font-mono text-gray-500">
+                      {idx + 1}
+                    </div>
+                    <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>
                       <p className="font-semibold text-black">{item.name}</p>
                     </div>
-                    <div className={`${isChallan ? "col-span-4" : "col-span-2"} text-right font-mono`}>
+                    <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right font-mono`}>
                       {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                     </div>
-                    {!isChallan && (
+                    {!isPricingHidden && (
                       <>
                         <div className="col-span-2 text-right font-mono text-gray-600">
                           {formatMoney(item.unitPrice, sym)}
@@ -200,7 +223,7 @@ export function MinimalistWithQrCodeTemplate({
           </div>
 
           {/* Totals - Only in Invoice Mode */}
-          {!isChallan && (
+          {!isPricingHidden && (
             <div className="flex justify-end mb-8">
               <div className="w-full sm:w-1/2 md:w-1/3">
                 <div className="flex justify-between py-1.5 text-xs text-gray-600">
@@ -255,7 +278,7 @@ export function MinimalistWithQrCodeTemplate({
         <div>
           <div className="flex flex-row print:flex-row justify-between items-start border-t border-gray-100 pt-6">
             {/* Bank details - Only in Invoice Mode */}
-            {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+            {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
               <div className="text-xs text-gray-500 space-y-1">
                 <p className="font-bold text-black uppercase tracking-wider text-[10px]">Payment Method</p>
                 <p>Bank: {invoice.bank_name || profile?.bank_name}</p>
@@ -303,7 +326,7 @@ export function MinimalistWithQrCodeTemplate({
                       <p className="text-[11px] text-gray-500 font-semibold">
                         {invoice.signatory_name ||
                           profile?.signatory_name ||
-                          (isChallan ? "Received By" : "Authorized Signatory")}
+                          (isChallanDoc ? "Received By" : "Authorized Signatory")}
                       </p>
                     </div>
                   )}

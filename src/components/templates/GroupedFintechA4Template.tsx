@@ -19,7 +19,15 @@ export function GroupedFintechA4Template({
   publicUrl,
   showGroupTotals,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
+  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
@@ -76,7 +84,7 @@ export function GroupedFintechA4Template({
               </div>
               <div className="text-right print:text-right">
                 <h2 className="text-xl font-bold tracking-tight text-[#0f172a] uppercase">
-                  {isChallan ? "CHALLAN" : "INVOICE"}
+                  {docTitleUpper}
                 </h2>
                 <p className="text-xs font-mono text-[#64748b]">
                   #{invoice.invoiceNumber || invoice.id?.substring(0, 8).toUpperCase()}
@@ -93,7 +101,7 @@ export function GroupedFintechA4Template({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-[#f8fafc] rounded-xl border border-[#e2e8f0] mb-4">
               <div className="col-span-2">
                 <p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">
-                  {isChallan ? "Delivered To" : "Bill To"}
+                  {clientLabel}
                 </p>
                 <p className="font-bold text-[#0f172a] text-sm">
                   {invoice.clientName}
@@ -110,7 +118,7 @@ export function GroupedFintechA4Template({
                   {formatDate(issueDate)}
                 </p>
               </div>
-              {!isChallan ? (
+              {!isPricingHidden ? (
                 <div>
                   <p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">
                     Due Date
@@ -125,7 +133,7 @@ export function GroupedFintechA4Template({
                     Status
                   </p>
                   <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
-                    Consignment
+                    {isQuotationDoc ? "Quotation" : "Consignment"}
                   </span>
                 </div>
               )}
@@ -137,13 +145,16 @@ export function GroupedFintechA4Template({
                 <table className="w-full min-w-[450px] text-xs">
                   <thead>
                     <tr className="border-b border-[#e2e8f0] bg-[#f1f5f9]">
+                      <th className="text-center py-2 px-3 text-[10px] font-bold text-[#64748b] uppercase tracking-wider w-12">
+                        #
+                      </th>
                       <th className="text-left py-2 px-3 text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                         Item
                       </th>
-                      <th className={`text-right py-2 px-3 text-[10px] font-bold text-[#64748b] uppercase tracking-wider ${isChallan ? 'w-32' : 'w-20'}`}>
+                      <th className={`text-right py-2 px-3 text-[10px] font-bold text-[#64748b] uppercase tracking-wider ${isPricingHidden ? 'w-32' : 'w-20'}`}>
                         Qty
                       </th>
-                      {!isChallan && (
+                      {!isPricingHidden && (
                         <>
                           <th className="text-right py-2 px-3 text-[10px] font-bold text-[#64748b] uppercase tracking-wider w-24">
                             Rate
@@ -156,74 +167,83 @@ export function GroupedFintechA4Template({
                     </tr>
                   </thead>
                   <tbody className="font-mono">
-                    {invoice.groups?.map((group, gIdx) => (
-                      <React.Fragment key={gIdx}>
-                        {group.name && (
-                          <tr className="bg-slate-200/60 font-bold">
-                            <td
-                              colSpan={isChallan ? 2 : 4}
-                              className="py-1 px-3 text-[11px] text-[#0f172a] border-b border-[#e2e8f0] uppercase text-left"
-                            >
-                              {group.name}
-                            </td>
-                          </tr>
-                        )}
-                        {group.items.map((item, iIdx) => (
-                          <tr
-                            key={iIdx}
-                            className="border-b border-[#e2e8f0] bg-white hover:bg-[#f8fafc] transition-colors"
-                          >
-                            <td
-                              className="py-2 px-3 text-[#0f172a]"
-                              style={{ fontFamily: "Geist, sans-serif" }}
-                            >
-                              {item.name}
-                            </td>
-                            <td className="py-2 px-3 text-right text-[#475569]">
-                              {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                            </td>
-                            {!isChallan && (
-                              <>
+                    {(() => {
+                      let runningIdx = 0;
+                      return invoice.groups?.map((group, gIdx) => (
+                        <React.Fragment key={gIdx}>
+                          {group.name && (
+                            <tr className="bg-slate-200/60 font-bold">
+                              <td
+                                colSpan={isPricingHidden ? 3 : 5}
+                                className="py-1 px-3 text-[11px] text-[#0f172a] border-b border-[#e2e8f0] uppercase text-left"
+                              >
+                                {group.name}
+                              </td>
+                            </tr>
+                          )}
+                          {group.items.map((item, iIdx) => {
+                            runningIdx++;
+                            return (
+                              <tr
+                                key={iIdx}
+                                className="border-b border-[#e2e8f0] bg-white hover:bg-[#f8fafc] transition-colors"
+                              >
+                                <td className="py-2 px-3 text-center text-[#64748b]">
+                                  {runningIdx}
+                                </td>
+                                <td
+                                  className="py-2 px-3 text-[#0f172a]"
+                                  style={{ fontFamily: "Geist, sans-serif" }}
+                                >
+                                  {item.name}
+                                </td>
                                 <td className="py-2 px-3 text-right text-[#475569]">
-                                  {formatMoney(item.unitPrice, sym)}
+                                  {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                                 </td>
-                                <td className="py-2 px-3 text-right text-[#16a34a] font-semibold">
-                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                                </td>
-                              </>
-                            )}
-                          </tr>
-                        ))}
+                                {!isPricingHidden && (
+                                  <>
+                                    <td className="py-2 px-3 text-right text-[#475569]">
+                                      {formatMoney(item.unitPrice, sym)}
+                                    </td>
+                                    <td className="py-2 px-3 text-right text-[#16a34a] font-semibold">
+                                      {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                    </td>
+                                  </>
+                                )}
+                              </tr>
+                            );
+                          })}
 
-                        {showGroupTotals && !isChallan && (
-                          <tr className="bg-transparent">
-                            <td colSpan={3} className="py-1 px-3 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">
-                              Group Subtotal
-                            </td>
-                            <td
-                              className="py-1 px-3 text-right text-[10px] font-medium text-slate-500"
-                              style={{ fontFamily: "Geist, monospace" }}
-                            >
-                              {formatMoney(
-                                group.items.reduce(
-                                  (sum, item) =>
-                                    sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                                  0,
-                                ),
-                                sym,
-                              )}
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    ))}
+                          {showGroupTotals && !isPricingHidden && (
+                            <tr className="bg-transparent">
+                              <td colSpan={4} className="py-1 px-3 text-[9px] font-medium text-slate-400 uppercase text-right tracking-wide">
+                                Group Subtotal
+                              </td>
+                              <td
+                                className="py-1 px-3 text-right text-[10px] font-medium text-slate-500"
+                                style={{ fontFamily: "Geist, monospace" }}
+                              >
+                                {formatMoney(
+                                  group.items.reduce(
+                                    (sum, item) =>
+                                      sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                    0,
+                                  ),
+                                  sym,
+                                )}
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      ));
+                    })()}
                   </tbody>
                 </table>
               </div>
             </div>
 
             {/* Totals - Only in Invoice Mode */}
-            {!isChallan && (
+            {!isPricingHidden && (
               <div className="flex justify-end mb-4">
                 <div className="w-64">
                   <div className="flex justify-between py-1.5 text-xs text-[#64748b] font-mono">
@@ -279,7 +299,7 @@ export function GroupedFintechA4Template({
         <div className="p-6 pt-0 print:p-6 print:pt-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#e2e8f0] pt-4 items-start">
             {/* Bank Details - Only in Invoice Mode */}
-            {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+            {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
               <div>
                 <h4 className="text-[10px] text-[#64748b] uppercase tracking-wider mb-2 font-semibold">
                   Settlement Account Details
@@ -345,7 +365,7 @@ export function GroupedFintechA4Template({
                     <p className="text-[11px] text-[#64748b] font-semibold">
                       {invoice.signatory_name ||
                         profile?.signatory_name ||
-                        (isChallan ? "Received By" : "Authorized Signatory")}
+                        (isChallanDoc ? "Received By" : "Authorized Signatory")}
                     </p>
                   </div>
                 )}

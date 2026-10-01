@@ -1,5 +1,6 @@
 import React from "react";
 import { MaterialIcon } from "@/components/shared/MaterialIcon";
+import { DocumentType, TextSize } from "./templateUtils";
 
 interface InvoiceDisplayOptionsProps {
   showGroups: boolean;
@@ -9,6 +10,12 @@ interface InvoiceDisplayOptionsProps {
   hasGroups: boolean;
   isChallan: boolean;
   setIsChallan: (val: boolean) => void;
+  isQuotation?: boolean;
+  setIsQuotation?: (val: boolean) => void;
+  documentType?: DocumentType;
+  setDocumentType?: (val: DocumentType) => void;
+  textSize?: TextSize;
+  setTextSize?: (val: TextSize) => void;
 }
 
 export function InvoiceDisplayOptions({
@@ -19,7 +26,43 @@ export function InvoiceDisplayOptions({
   hasGroups,
   isChallan,
   setIsChallan,
+  isQuotation = false,
+  setIsQuotation,
+  documentType,
+  setDocumentType,
+  textSize = "normal",
+  setTextSize,
 }: InvoiceDisplayOptionsProps) {
+  // Determine current active document type
+  const currentDocType: DocumentType =
+    documentType || (isQuotation ? "quotation" : isChallan ? "challan" : "invoice");
+
+  const handleSelectDocType = (type: DocumentType) => {
+    if (setDocumentType) {
+      setDocumentType(type);
+    }
+    if (setIsChallan) {
+      setIsChallan(type === "challan");
+    }
+    if (setIsQuotation) {
+      setIsQuotation(type === "quotation");
+    }
+  };
+
+  const handleDecreaseTextSize = () => {
+    if (!setTextSize) return;
+    if (textSize === "large") setTextSize("normal");
+    else if (textSize === "normal") setTextSize("compact");
+  };
+
+  const handleIncreaseTextSize = () => {
+    if (!setTextSize) return;
+    if (textSize === "compact") setTextSize("normal");
+    else if (textSize === "normal") setTextSize("large");
+  };
+
+  const isPricingHidden = currentDocType !== "invoice";
+
   return (
     <div className="w-full flex flex-col gap-4 print:hidden mb-4">
       {/* Document Type Section */}
@@ -35,131 +78,280 @@ export function InvoiceDisplayOptions({
             </h3>
           </div>
           <span className="text-[11px] sm:text-xs font-medium px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
-            {isChallan ? "Consignment Mode" : "Standard Mode"}
+            {currentDocType === "quotation"
+              ? "Quotation Mode"
+              : currentDocType === "challan"
+              ? "Consignment Mode"
+              : "Commercial Mode"}
           </span>
         </div>
 
-        {/* Responsive Document Type Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5">
-          {/* Option: Standard Invoice */}
+        {/* 3 Document Type Cards: Commercial Invoice, Delivery Challan, Quotation */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+          {/* Option 1: Commercial Invoice */}
           <button
             type="button"
-            onClick={() => setIsChallan(false)}
-            aria-pressed={!isChallan}
-            className={`group relative flex items-start gap-3 p-3 sm:p-3.5 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
-              !isChallan
+            onClick={() => handleSelectDocType("invoice")}
+            aria-pressed={currentDocType === "invoice"}
+            className={`group relative flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
+              currentDocType === "invoice"
                 ? "border-primary bg-surface-container-lowest shadow-sm ring-2 ring-primary/10"
                 : "border-outline-variant/60 bg-surface-container-lowest/70 hover:border-outline-variant hover:bg-surface-container-lowest"
             }`}
           >
             <div
-              className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-colors ${
-                !isChallan
+              className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                currentDocType === "invoice"
                   ? "bg-primary text-on-primary shadow-sm"
                   : "bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high"
               }`}
             >
               <MaterialIcon
                 icon="receipt_long"
-                filled={!isChallan}
-                className="text-[20px] sm:text-[22px]"
+                filled={currentDocType === "invoice"}
+                className="text-[18px]"
               />
             </div>
 
-            <div className="flex-1 min-w-0 pr-6">
+            <div className="flex-1 min-w-0 pr-4">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span
-                  className={`font-semibold text-xs sm:text-sm transition-colors ${
-                    !isChallan ? "text-primary font-bold" : "text-on-surface"
+                  className={`font-semibold text-xs transition-colors ${
+                    currentDocType === "invoice"
+                      ? "text-primary font-bold"
+                      : "text-on-surface"
                   }`}
                 >
                   Commercial Invoice
                 </span>
-                {!isChallan && (
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary">
-                    Active
-                  </span>
-                )}
               </div>
-              <p className="text-[11px] sm:text-xs text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
-                Standard invoice with unit rates, tax & financial totals
+              <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
+                Standard invoice with unit rates & financial totals
               </p>
             </div>
 
             {/* Checkmark Indicator */}
             <div
-              className={`absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                !isChallan
+              className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-all ${
+                currentDocType === "invoice"
                   ? "bg-primary text-on-primary opacity-100 scale-100 shadow-sm"
-                  : "border border-outline-variant/80 opacity-40 scale-90"
+                  : "border border-outline-variant/80 opacity-30 scale-90"
               }`}
             >
-              {!isChallan && (
-                <MaterialIcon icon="check" className="text-[14px]" />
+              {currentDocType === "invoice" && (
+                <MaterialIcon icon="check" className="text-[12px]" />
               )}
             </div>
           </button>
 
-          {/* Option: Delivery Challan */}
+          {/* Option 2: Delivery Challan */}
           <button
             type="button"
-            onClick={() => setIsChallan(true)}
-            aria-pressed={isChallan}
-            className={`group relative flex items-start gap-3 p-3 sm:p-3.5 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
-              isChallan
+            onClick={() => handleSelectDocType("challan")}
+            aria-pressed={currentDocType === "challan"}
+            className={`group relative flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
+              currentDocType === "challan"
                 ? "border-primary bg-surface-container-lowest shadow-sm ring-2 ring-primary/10"
                 : "border-outline-variant/60 bg-surface-container-lowest/70 hover:border-outline-variant hover:bg-surface-container-lowest"
             }`}
           >
             <div
-              className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-colors ${
-                isChallan
+              className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                currentDocType === "challan"
                   ? "bg-primary text-on-primary shadow-sm"
                   : "bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high"
               }`}
             >
               <MaterialIcon
                 icon="local_shipping"
-                filled={isChallan}
-                className="text-[20px] sm:text-[22px]"
+                filled={currentDocType === "challan"}
+                className="text-[18px]"
               />
             </div>
 
-            <div className="flex-1 min-w-0 pr-6">
+            <div className="flex-1 min-w-0 pr-4">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span
-                  className={`font-semibold text-xs sm:text-sm transition-colors ${
-                    isChallan ? "text-primary font-bold" : "text-on-surface"
+                  className={`font-semibold text-xs transition-colors ${
+                    currentDocType === "challan"
+                      ? "text-primary font-bold"
+                      : "text-on-surface"
                   }`}
                 >
                   Delivery Challan
                 </span>
-                {isChallan && (
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary">
-                    Active
-                  </span>
-                )}
               </div>
-              <p className="text-[11px] sm:text-xs text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
-                Consignment note with quantities only — hides all prices
+              <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
+                Consignment note with quantities only — hides prices
               </p>
             </div>
 
             {/* Checkmark Indicator */}
             <div
-              className={`absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                isChallan
+              className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-all ${
+                currentDocType === "challan"
                   ? "bg-primary text-on-primary opacity-100 scale-100 shadow-sm"
-                  : "border border-outline-variant/80 opacity-40 scale-90"
+                  : "border border-outline-variant/80 opacity-30 scale-90"
               }`}
             >
-              {isChallan && (
-                <MaterialIcon icon="check" className="text-[14px]" />
+              {currentDocType === "challan" && (
+                <MaterialIcon icon="check" className="text-[12px]" />
+              )}
+            </div>
+          </button>
+
+          {/* Option 3: Quotation */}
+          <button
+            type="button"
+            onClick={() => handleSelectDocType("quotation")}
+            aria-pressed={currentDocType === "quotation"}
+            className={`group relative flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
+              currentDocType === "quotation"
+                ? "border-primary bg-surface-container-lowest shadow-sm ring-2 ring-primary/10"
+                : "border-outline-variant/60 bg-surface-container-lowest/70 hover:border-outline-variant hover:bg-surface-container-lowest"
+            }`}
+          >
+            <div
+              className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                currentDocType === "quotation"
+                  ? "bg-primary text-on-primary shadow-sm"
+                  : "bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high"
+              }`}
+            >
+              <MaterialIcon
+                icon="request_quote"
+                filled={currentDocType === "quotation"}
+                className="text-[18px]"
+              />
+            </div>
+
+            <div className="flex-1 min-w-0 pr-4">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span
+                  className={`font-semibold text-xs transition-colors ${
+                    currentDocType === "quotation"
+                      ? "text-primary font-bold"
+                      : "text-on-surface"
+                  }`}
+                >
+                  Quotation
+                </span>
+              </div>
+              <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
+                Item list with quantities only — hides all pricing details
+              </p>
+            </div>
+
+            {/* Checkmark Indicator */}
+            <div
+              className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-all ${
+                currentDocType === "quotation"
+                  ? "bg-primary text-on-primary opacity-100 scale-100 shadow-sm"
+                  : "border border-outline-variant/80 opacity-30 scale-90"
+              }`}
+            >
+              {currentDocType === "quotation" && (
+                <MaterialIcon icon="check" className="text-[12px]" />
               )}
             </div>
           </button>
         </div>
       </div>
+
+      {/* PDF Text Size & Density Controls (Ensuring 15 rows fit on single A4) */}
+      {setTextSize && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface border border-outline-variant/70 rounded-xl px-4 py-3 shadow-sm text-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="material-symbols-outlined text-primary text-[20px] flex-shrink-0">
+              format_size
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-xs sm:text-sm text-on-surface">
+                  PDF Text Size & Page Fit
+                </p>
+                <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
+                  Fits 15+ Rows / Page
+                </span>
+              </div>
+              <p className="text-[11px] text-on-surface-variant">
+                Adjust font size and row padding to fit all content on a single A4 sheet
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 self-end sm:self-auto bg-surface-container-high/60 p-1 rounded-lg border border-outline-variant/40">
+            {/* A- Stepper */}
+            <button
+              type="button"
+              onClick={handleDecreaseTextSize}
+              disabled={textSize === "compact"}
+              title="Decrease text size (more rows per page)"
+              className={`px-2 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                textSize === "compact"
+                  ? "opacity-30 cursor-not-allowed text-on-surface-variant"
+                  : "hover:bg-surface-container-highest text-on-surface active:scale-95"
+              }`}
+            >
+              A-
+            </button>
+
+            {/* Compact Pill */}
+            <button
+              type="button"
+              onClick={() => setTextSize("compact")}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all cursor-pointer ${
+                textSize === "compact"
+                  ? "bg-primary text-on-primary font-bold shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface"
+              }`}
+            >
+              Compact
+            </button>
+
+            {/* Normal Pill */}
+            <button
+              type="button"
+              onClick={() => setTextSize("normal")}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all cursor-pointer ${
+                textSize === "normal"
+                  ? "bg-primary text-on-primary font-bold shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface"
+              }`}
+            >
+              Normal
+            </button>
+
+            {/* Large Pill */}
+            <button
+              type="button"
+              onClick={() => setTextSize("large")}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all cursor-pointer ${
+                textSize === "large"
+                  ? "bg-primary text-on-primary font-bold shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface"
+              }`}
+            >
+              Large
+            </button>
+
+            {/* A+ Stepper */}
+            <button
+              type="button"
+              onClick={handleIncreaseTextSize}
+              disabled={textSize === "large"}
+              title="Increase text size"
+              className={`px-2 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                textSize === "large"
+                  ? "opacity-30 cursor-not-allowed text-on-surface-variant"
+                  : "hover:bg-surface-container-highest text-on-surface active:scale-95"
+              }`}
+            >
+              A+
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Group-Wise Layout Section (if groups exist) */}
       {hasGroups && (
@@ -197,7 +389,7 @@ export function InvoiceDisplayOptions({
             </button>
           </div>
 
-          {showGroups && !isChallan && (
+          {showGroups && !isPricingHidden && (
             <div className="flex items-center justify-between gap-3 pt-2.5 border-t border-outline-variant/30">
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <span className="material-symbols-outlined text-primary text-[20px] flex-shrink-0">

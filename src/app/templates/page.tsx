@@ -6,6 +6,7 @@ import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { availableTemplates } from '@/components/templates/TemplateSelector';
 import { InvoiceTemplateRenderer } from '@/components/templates/InvoiceTemplateRenderer';
 import { InvoiceDisplayOptions } from '@/components/templates/InvoiceDisplayOptions';
+import { DocumentType, TextSize } from '@/components/templates/templateUtils';
 
 export default function TemplatesGalleryPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>(availableTemplates[0]?.id || 'modern-template');
@@ -13,7 +14,8 @@ export default function TemplatesGalleryPage() {
   const [zoom, setZoom] = useState(0.85);
   const [showGroups, setShowGroups] = useState(false);
   const [showGroupTotals, setShowGroupTotals] = useState(false);
-  const [isChallan, setIsChallan] = useState(false);
+  const [documentType, setDocumentType] = useState<DocumentType>('invoice');
+  const [textSize, setTextSize] = useState<TextSize>('normal');
 
   // Refs and dimensions for scaling
   const previewPaneRef = useRef<HTMLDivElement>(null);
@@ -320,8 +322,14 @@ export default function TemplatesGalleryPage() {
               showGroupTotals={showGroupTotals} 
               setShowGroupTotals={setShowGroupTotals} 
               hasGroups={mockInvoice.groups && mockInvoice.groups.length > 0}
-              isChallan={isChallan}
-              setIsChallan={setIsChallan}
+              isChallan={documentType === 'challan'}
+              setIsChallan={(val) => setDocumentType(val ? 'challan' : 'invoice')}
+              isQuotation={documentType === 'quotation'}
+              setIsQuotation={(val) => setDocumentType(val ? 'quotation' : 'invoice')}
+              documentType={documentType}
+              setDocumentType={setDocumentType}
+              textSize={textSize}
+              setTextSize={setTextSize}
             />
           </div>
 
@@ -361,7 +369,10 @@ export default function TemplatesGalleryPage() {
                   isPreview={true}
                   showGroups={showGroups}
                   showGroupTotals={showGroupTotals}
-                  isChallan={isChallan}
+                  isChallan={documentType === 'challan'}
+                  isQuotation={documentType === 'quotation'}
+                  documentType={documentType}
+                  textSize={textSize}
                   publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/public/invoice/demo-123`}
                 />
               </div>

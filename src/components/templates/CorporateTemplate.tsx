@@ -22,7 +22,16 @@ export function CorporateTemplate({
   showGroupTotals,
   publicUrl,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
+  const docNumberLabel = isQuotationDoc ? "Quotation Number:" : isChallanDoc ? "Challan Number:" : "Invoice Number:";
+  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
@@ -49,7 +58,7 @@ export function CorporateTemplate({
                   className="text-sm font-semibold text-black"
                   style={{ fontFamily: "Work Sans, sans-serif" }}
                 >
-                  {isChallan ? "Challan" : "Invoice"} #{invoice.invoiceNumber}
+                  {docTitle} #{invoice.invoiceNumber}
                 </h2>
                 <p className="text-[11px] text-[#45464d]">
                   Viewing Corporate Template
@@ -72,7 +81,7 @@ export function CorporateTemplate({
             <div className="p-6 print:p-6">
               {/* Header */}
               <div className="border-2 border-[#c6c6cd] p-4 mb-2 flex flex-col gap-3 relative">
-                {!isChallan && (
+                {!isPricingHidden && (
                   <div
                     className={`absolute -top-3 -right-3 px-4 py-1 rounded text-[12px] font-bold uppercase flex items-center gap-1 shadow-sm ${
                       invoice.status === "PAID"
@@ -106,7 +115,7 @@ export function CorporateTemplate({
                       letterSpacing: "-0.02em",
                     }}
                   >
-                    {isChallan ? "Challan" : "Invoice"}
+                    {docTitle}
                   </h1>
                 </div>
 
@@ -144,7 +153,7 @@ export function CorporateTemplate({
                   <div className="flex flex-col gap-1 text-right print:text-right w-auto print:w-auto">
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-right print:text-right">
                       <div className="text-[12px] text-[#45464d] uppercase font-bold">
-                        {isChallan ? "Challan Number:" : "Invoice Number:"}
+                        {docNumberLabel}
                       </div>
                       <div
                         className="text-sm font-semibold text-black break-all"
@@ -166,7 +175,7 @@ export function CorporateTemplate({
                       >
                         {formatDate(issueDate)}
                       </div>
-                      {!isChallan && (
+                      {!isPricingHidden && (
                         <>
                           <div className="text-[12px] text-[#45464d] uppercase font-bold">
                             Date Due:
@@ -188,7 +197,7 @@ export function CorporateTemplate({
               <div className="mb-3 p-4 bg-[#eff4ff] border border-[#c6c6cd] flex flex-row print:flex-row justify-between items-center gap-2">
                 <div>
                   <div className="text-[12px] text-[#45464d] uppercase tracking-widest font-bold mb-2 border-b border-[#c6c6cd] pb-2 inline-block">
-                    {isChallan ? "Delivered To" : "Bill To"}
+                    {clientLabel}
                   </div>
                   <div className="font-bold text-black mt-2">
                     {invoice.clientName}
@@ -200,7 +209,7 @@ export function CorporateTemplate({
                     {invoice.clientAddress || invoice.clientPhone}
                   </div>
                 </div>
-                {!isChallan && (
+                {!isPricingHidden && (
                   <div className="flex-shrink-0">
                     <div className="text-[12px] text-[#45464d] uppercase tracking-widest font-bold mb-2 border-b border-[#c6c6cd] pb-2 inline-block">
                       Amount Due
@@ -226,10 +235,10 @@ export function CorporateTemplate({
                       <th className="py-2 px-3 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd]">
                         Description
                       </th>
-                      <th className={`py-2 px-3 text-[12px] font-bold text-[#45464d] uppercase tracking-wider text-right ${isChallan ? 'w-32' : 'border-r border-[#c6c6cd] w-24'}`}>
+                      <th className={`py-2 px-3 text-[12px] font-bold text-[#45464d] uppercase tracking-wider text-right ${isPricingHidden ? 'w-32' : 'border-r border-[#c6c6cd] w-24'}`}>
                         Qty
                       </th>
-                      {!isChallan && (
+                      {!isPricingHidden && (
                         <>
                           <th className="py-2 px-3 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd] text-right w-32">
                             Rate
@@ -243,33 +252,37 @@ export function CorporateTemplate({
                   </thead>
                   <tbody style={{ fontFamily: "Geist, monospace" }}>
                     {showGroups && invoice.groups && invoice.groups.length > 0
-                      ? invoice.groups.map((group, gIdx) => (
-                          <React.Fragment key={gIdx}>
-                            {group.name && (
-                              <tr className="bg-[#f1f5f9] font-bold">
-                                <td
-                                  colSpan={isChallan ? 3 : 5}
-                                  className="py-1 px-3 text-[11px] text-black border-b border-[#c6c6cd] uppercase text-left"
-                                >
-                                  {group.name}
-                                </td>
-                              </tr>
-                            )}
-                            {group.items.map((item, iIdx) => (
-                              <tr
-                                key={iIdx}
-                                className="border-b border-[#c6c6cd]"
-                              >
-                                <td className="py-2 px-3 border-r border-[#c6c6cd] text-center text-[#45464d]">
-                                  {iIdx + 1}
-                                </td>
-                                <td className="py-2 px-3 border-r border-[#c6c6cd] text-[12px]">
-                                  <div className="font-bold">{item.name}</div>
-                                </td>
-                                <td className={`py-2 px-3 ${isChallan ? '' : 'border-r border-[#c6c6cd]'} text-right text-[12px]`}>
+                      ? (() => {
+                          let runningIdx = 0;
+                          return invoice.groups.map((group, gIdx) => (
+                            <React.Fragment key={gIdx}>
+                              {group.name && (
+                                <tr className="bg-[#f1f5f9] font-bold">
+                                  <td
+                                    colSpan={isPricingHidden ? 3 : 5}
+                                    className="py-1 px-3 text-[11px] text-black border-b border-[#c6c6cd] uppercase text-left"
+                                  >
+                                    {group.name}
+                                  </td>
+                                </tr>
+                              )}
+                              {group.items.map((item, iIdx) => {
+                                runningIdx++;
+                                return (
+                                  <tr
+                                    key={iIdx}
+                                    className="border-b border-[#c6c6cd]"
+                                  >
+                                    <td className="py-2 px-3 border-r border-[#c6c6cd] text-center text-[#45464d]">
+                                      {runningIdx}
+                                    </td>
+                                    <td className="py-2 px-3 border-r border-[#c6c6cd] text-[12px]">
+                                      <div className="font-bold">{item.name}</div>
+                                    </td>
+                                <td className={`py-2 px-3 ${isPricingHidden ? '' : 'border-r border-[#c6c6cd]'} text-right text-[12px]`}>
                                   {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                                 </td>
-                                {!isChallan && (
+                                {!isPricingHidden && (
                                   <>
                                     <td className="py-2 px-3 border-r border-[#c6c6cd] text-right text-[12px]">
                                       {formatMoney(item.unitPrice, sym)}
@@ -283,9 +296,10 @@ export function CorporateTemplate({
                                   </>
                                 )}
                               </tr>
-                            ))}
+                            );
+                          })}
 
-                            {showGroupTotals && !isChallan && (
+                          {showGroupTotals && !isPricingHidden && (
                               <tr className="bg-transparent border-b border-[#c6c6cd]">
                                 <td colSpan={4} className="py-1 px-3 text-[10px] font-medium text-slate-400 uppercase text-right tracking-wide">
                                   Group Subtotal
@@ -306,7 +320,8 @@ export function CorporateTemplate({
                               </tr>
                             )}
                           </React.Fragment>
-                        ))
+                        ));
+                      })()
                       : items.map((item, idx) => (
                           <tr
                             key={idx}
@@ -318,10 +333,10 @@ export function CorporateTemplate({
                             <td className="py-2 px-3 border-r border-[#c6c6cd] text-[12px]">
                               <div className="font-bold">{item.name}</div>
                             </td>
-                            <td className={`py-2 px-3 ${isChallan ? '' : 'border-r border-[#c6c6cd]'} text-right text-[12px]`}>
+                            <td className={`py-2 px-3 ${isPricingHidden ? '' : 'border-r border-[#c6c6cd]'} text-right text-[12px]`}>
                               {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                             </td>
-                            {!isChallan && (
+                            {!isPricingHidden && (
                               <>
                                 <td className="py-2 px-3 border-r border-[#c6c6cd] text-right text-[12px]">
                                   {formatMoney(item.unitPrice, sym)}
@@ -338,7 +353,7 @@ export function CorporateTemplate({
               </div>
 
               {/* Financial Totals - Only visible in Invoice Mode */}
-              {!isChallan && (
+              {!isPricingHidden && (
                 <div className="flex justify-end mb-4">
                   <div className="w-full sm:w-1/2 md:w-1/3">
                     <div className="flex justify-between py-1.5 border-b border-dotted border-[#c6c6cd]">
@@ -424,7 +439,7 @@ export function CorporateTemplate({
               {/* Bank Details & Signature Section */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3 border-t border-[#c6c6cd] pt-4 items-start">
                 {/* Bank Details - Only in Invoice Mode */}
-                {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+                {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
                   <div>
                     <h4 className="text-[12px] font-bold text-black uppercase tracking-wider mb-2">
                       Bank Details
@@ -492,7 +507,7 @@ export function CorporateTemplate({
                         <p className="text-[11px] text-[#76777d]">
                           {invoice.signatory_name ||
                             profile?.signatory_name ||
-                            (isChallan ? "Received By / Signatory" : "Authorized Signatory")}
+                            (isChallanDoc ? "Received By / Signatory" : "Authorized Signatory")}
                         </p>
                       </div>
                     )}

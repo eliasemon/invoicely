@@ -49,9 +49,17 @@ export function InvoiceTemplateRenderer({
   showGroups = false,
   showGroupTotals = false,
   isChallan = false,
+  isQuotation = false,
+  documentType = 'invoice',
+  textSize = 'normal',
 }: InvoiceTemplateRendererProps) {
   const TemplateComponent =
     TEMPLATE_MAP[templateId || "modern-template"] || ModernTemplate;
+
+  // Resolve document type flags
+  const effectiveChallan = Boolean(isChallan || documentType === 'challan');
+  const effectiveQuotation = Boolean(isQuotation || documentType === 'quotation');
+  const effectiveDocType = effectiveQuotation ? 'quotation' : effectiveChallan ? 'challan' : 'invoice';
 
   // Normalize profile to make sure company_address falls back to billing_address
   const normalizedProfile = profile
@@ -63,8 +71,7 @@ export function InvoiceTemplateRenderer({
     : null;
 
   return (
-    <div className="flex flex-col w-full print:block print:w-[210mm] print:p-0 print:m-0">
-      {" "}
+    <div className={`flex flex-col w-full print:block print:w-[210mm] print:p-0 print:m-0 pdf-density-${textSize}`}>
       <TemplateComponent
         invoice={invoice}
         profile={normalizedProfile}
@@ -72,7 +79,10 @@ export function InvoiceTemplateRenderer({
         showGroups={showGroups}
         showGroupTotals={showGroupTotals}
         publicUrl={publicUrl}
-        isChallan={isChallan}
+        isChallan={effectiveChallan}
+        isQuotation={effectiveQuotation}
+        documentType={effectiveDocType}
+        textSize={textSize}
       />
     </div>
   );

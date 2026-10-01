@@ -1,5 +1,8 @@
 import { Invoice } from '@/core/ports/database.types';
 
+export type DocumentType = 'invoice' | 'challan' | 'quotation';
+export type TextSize = 'compact' | 'normal' | 'large';
+
 export interface TemplateProps {
   invoice: Invoice;
   profile?: {
@@ -34,6 +37,9 @@ export interface TemplateProps {
   showGroupTotals?: boolean;
   publicUrl?: string;
   isChallan?: boolean;
+  isQuotation?: boolean;
+  documentType?: DocumentType;
+  textSize?: TextSize;
 }
 
 export function formatDate(date: Date | string): string {

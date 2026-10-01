@@ -227,10 +227,22 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                 <CurrencyDisplay amount={remainingAmount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
               </p>
               
-              <Link href={`/public/invoice/${invoice.id}`} target="_blank" className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-secondary text-secondary hover:bg-secondary/5 rounded-lg transition-all active:scale-95 relative z-10 font-label-sm">
-                <MaterialIcon icon="download" />
-                <span>Download / Print Invoice</span>
-              </Link>
+              <div className="mt-4 flex flex-col gap-2 relative z-10">
+                <Link href={`/public/invoice/${invoice.id}`} target="_blank" className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-secondary text-on-secondary hover:opacity-90 rounded-lg transition-all active:scale-95 font-label-sm shadow-sm">
+                  <MaterialIcon icon="receipt_long" className="text-[18px]" />
+                  <span>Download / Print Invoice</span>
+                </Link>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link href={`/public/invoice/${invoice.id}?type=challan`} target="_blank" className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 border border-white/20 hover:bg-white/10 text-white rounded-lg transition-all active:scale-95 font-label-sm text-xs">
+                    <MaterialIcon icon="local_shipping" className="text-[16px]" />
+                    <span>Challan</span>
+                  </Link>
+                  <Link href={`/public/invoice/${invoice.id}?type=quotation`} target="_blank" className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 border border-white/20 hover:bg-white/10 text-white rounded-lg transition-all active:scale-95 font-label-sm text-xs">
+                    <MaterialIcon icon="request_quote" className="text-[16px]" />
+                    <span>Quotation</span>
+                  </Link>
+                </div>
+              </div>
             </div>
           </section>
 

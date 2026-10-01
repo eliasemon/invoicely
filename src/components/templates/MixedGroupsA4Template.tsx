@@ -19,7 +19,15 @@ export function MixedGroupsA4Template({
   publicUrl,
   showGroupTotals,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
+  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
@@ -76,7 +84,7 @@ export function MixedGroupsA4Template({
               </div>
               <div className="text-right print:text-right">
                 <h2 className="text-xl font-bold tracking-tight text-[#2563eb] uppercase">
-                  {isChallan ? "CHALLAN" : "INVOICE"}
+                  {docTitleUpper}
                 </h2>
                 <p className="text-xs font-mono text-[#64748b]">
                   #{invoice.invoiceNumber || invoice.id?.substring(0, 8).toUpperCase()}
@@ -93,7 +101,7 @@ export function MixedGroupsA4Template({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-[#f8fafc] rounded-xl border border-[#e2e8f0] mb-4">
               <div className="col-span-2">
                 <p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">
-                  {isChallan ? "Delivered To" : "Bill To"}
+                  {clientLabel}
                 </p>
                 <p className="font-bold text-[#0f172a] text-sm">
                   {invoice.clientName}
@@ -110,7 +118,7 @@ export function MixedGroupsA4Template({
                   {formatDate(issueDate)}
                 </p>
               </div>
-              {!isChallan ? (
+              {!isPricingHidden ? (
                 <div>
                   <p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">
                     Due
@@ -125,7 +133,7 @@ export function MixedGroupsA4Template({
                     Type
                   </p>
                   <span className="text-xs font-semibold text-blue-700">
-                    Delivery
+                    {isQuotationDoc ? "Quotation" : "Delivery"}
                   </span>
                 </div>
               )}
@@ -133,54 +141,65 @@ export function MixedGroupsA4Template({
 
             {/* Items */}
             <div className="space-y-4 mb-4">
-              {invoice.groups?.map((group, gIdx) => (
-                <div key={gIdx} className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] p-4">
-                  {group.name && (
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#2563eb] mb-2 border-b border-[#e2e8f0] pb-1">
-                      {group.name}
-                    </h3>
-                  )}
-                  <div className="space-y-2">
-                    {group.items.map((item, iIdx) => (
-                      <div key={iIdx} className="flex justify-between items-center text-xs py-1 border-b border-gray-100 last:border-0">
-                        <div>
-                          <p className="font-medium text-[#0f172a]">{item.name}</p>
-                          <p className="text-[11px] text-[#64748b] font-mono">
-                            Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                            {!isChallan && ` × ${formatMoney(item.unitPrice, sym)}`}
-                          </p>
-                        </div>
-                        {!isChallan && (
-                          <p className="text-[11px] font-semibold font-mono text-[#0f172a]">
-                            {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-
-                    {showGroupTotals && !isChallan && (
-                      <div className="flex justify-between items-center pt-2 border-t border-[#e2e8f0] text-xs">
-                        <span className="text-[10px] uppercase font-bold text-[#64748b]">
-                          Group Subtotal
-                        </span>
-                        <span className="font-bold font-mono text-[#2563eb]">
-                          {formatMoney(
-                            group.items.reduce(
-                              (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                              0,
-                            ),
-                            sym,
-                          )}
-                        </span>
-                      </div>
+              {(() => {
+                let runningIdx = 0;
+                return invoice.groups?.map((group, gIdx) => (
+                  <div key={gIdx} className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] p-4">
+                    {group.name && (
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-[#2563eb] mb-2 border-b border-[#e2e8f0] pb-1">
+                        {group.name}
+                      </h3>
                     )}
+                    <div className="space-y-2">
+                      {group.items.map((item, iIdx) => {
+                        runningIdx++;
+                        return (
+                          <div key={iIdx} className="template-item-row flex justify-between items-center text-xs py-1 border-b border-gray-100 last:border-0">
+                            <div className="flex items-center gap-2.5">
+                              <span className="w-5 h-5 rounded-full bg-slate-200 text-[#0f172a] text-[10px] font-mono flex items-center justify-center font-bold flex-shrink-0">
+                                {runningIdx}
+                              </span>
+                              <div>
+                                <p className="font-medium text-[#0f172a]">{item.name}</p>
+                                <p className="text-[11px] text-[#64748b] font-mono">
+                                  Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                                  {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
+                                </p>
+                              </div>
+                            </div>
+                            {!isPricingHidden && (
+                              <p className="text-[11px] font-semibold font-mono text-[#0f172a]">
+                                {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      {showGroupTotals && !isPricingHidden && (
+                        <div className="flex justify-between items-center pt-2 border-t border-[#e2e8f0] text-xs">
+                          <span className="text-[10px] uppercase font-bold text-[#64748b]">
+                            Group Subtotal
+                          </span>
+                          <span className="font-bold font-mono text-[#2563eb]">
+                            {formatMoney(
+                              group.items.reduce(
+                                (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                0,
+                              ),
+                              sym,
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ));
+              })()}
             </div>
 
             {/* Totals - Only in Invoice Mode */}
-            {!isChallan && (
+            {!isPricingHidden && (
               <div className="flex justify-end mb-4">
                 <div className="w-64">
                   <div className="flex justify-between py-1.5 text-xs text-[#64748b] font-mono">
@@ -236,7 +255,7 @@ export function MixedGroupsA4Template({
         <div className="p-6 pt-0 print:p-6 print:pt-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#e2e8f0] pt-4 items-start">
             {/* Bank Details - Only in Invoice Mode */}
-            {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+            {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
               <div>
                 <h4 className="text-[10px] text-[#64748b] uppercase tracking-wider mb-2 font-semibold">
                   Settlement Details
@@ -302,7 +321,7 @@ export function MixedGroupsA4Template({
                     <p className="text-[11px] text-[#64748b] font-semibold">
                       {invoice.signatory_name ||
                         profile?.signatory_name ||
-                        (isChallan ? "Received By" : "Authorized Signatory")}
+                        (isChallanDoc ? "Received By" : "Authorized Signatory")}
                     </p>
                   </div>
                 )}

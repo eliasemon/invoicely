@@ -173,4 +173,87 @@
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
+
+  /* Prevent awkward page breaks on table rows and sections */
+  tr, .template-item-row {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+/* ==========================================================================
+   PDF Text Size & Content Density Controls
+   Ensures at least 15 rows fit cleanly on 1 single A4 page
+   ========================================================================== */
+.pdf-density-compact {
+  --row-py: 2px;
+  --row-font-size: 10px;
+  --row-lh: 13px;
+}
+.pdf-density-normal {
+  --row-py: 4px;
+  --row-font-size: 11px;
+  --row-lh: 15px;
+}
+.pdf-density-large {
+  --row-py: 7px;
+  --row-font-size: 12.5px;
+  --row-lh: 18px;
+}
+
+/* Compact Density (Optimized for 15-20+ items on 1 single A4 page) */
+.pdf-density-compact table tbody tr td,
+.pdf-density-compact table thead tr th,
+.pdf-density-compact .template-item-row {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  font-size: 10px !important;
+  line-height: 13px !important;
+}
+.pdf-density-compact table tbody tr td .font-bold,
+.pdf-density-compact table tbody tr td p,
+.pdf-density-compact .template-item-row p,
+.pdf-density-compact .template-item-row div {
+  font-size: 10px !important;
+  line-height: 13px !important;
+}
+.pdf-density-compact .compact-gap {
+  margin-top: 4px !important;
+  margin-bottom: 4px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+/* Normal Density (Default balanced layout, fits 15 items on 1 single page) */
+.pdf-density-normal table tbody tr td,
+.pdf-density-normal table thead tr th,
+.pdf-density-normal .template-item-row {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  font-size: 11px !important;
+  line-height: 15px !important;
+}
+.pdf-density-normal table tbody tr td .font-bold,
+.pdf-density-normal table tbody tr td p,
+.pdf-density-normal .template-item-row p,
+.pdf-density-normal .template-item-row div {
+  font-size: 11px !important;
+  line-height: 15px !important;
+}
+
+/* Large Density (Spacious display for short invoices) */
+.pdf-density-large table tbody tr td,
+.pdf-density-large table thead tr th,
+.pdf-density-large .template-item-row {
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+  font-size: 12.5px !important;
+  line-height: 18px !important;
+}
+.pdf-density-large table tbody tr td .font-bold,
+.pdf-density-large table tbody tr td p,
+.pdf-density-large .template-item-row p,
+.pdf-density-large .template-item-row div {
+  font-size: 12.5px !important;
+  line-height: 18px !important;
 }

@@ -4,8 +4,20 @@ import { PublicInvoiceViewer } from '@/components/invoices/PublicInvoiceViewer';
 import { PublicInvoiceHeader } from '@/components/invoices/PublicInvoiceHeader';
 import { notFound } from 'next/navigation';
 
-export default async function PublicInvoicePage({ params }: { params: Promise<{ id: string }> }) {
+import { DocumentType } from '@/components/templates/templateUtils';
+
+export default async function PublicInvoicePage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ type?: string }>;
+}) {
   const { id } = await params;
+  const sParams = searchParams ? await searchParams : {};
+  const rawType = sParams.type?.toLowerCase();
+  const initialDocumentType: DocumentType = 
+    rawType === 'quotation' ? 'quotation' : rawType === 'challan' ? 'challan' : 'invoice';
   
   const invoice = await getPublicInvoice(id);
   if (!invoice) return notFound();
@@ -45,6 +57,7 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
           invoice={fullInvoice as any} 
           profile={invoice.profile} 
           publicUrl={publicUrl}
+          initialDocumentType={initialDocumentType}
         />
       </div>
     </div>

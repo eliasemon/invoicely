@@ -21,7 +21,15 @@ export function GeometricA4Template({
   showGroupTotals,
   publicUrl,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
+  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
@@ -82,7 +90,7 @@ export function GeometricA4Template({
             </div>
             <div className="text-right print:text-right w-auto print:w-auto bg-[#f8fafc] p-4 rounded-xl border border-[#e2e8f0]">
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-semibold">
-                {isChallan ? "Challan" : "Invoice"}
+                {docTitle}
               </p>
               <p className="text-[11px] font-bold text-[#3b82f6] font-mono break-all">
                 {invoice.invoiceNumber}
@@ -102,7 +110,7 @@ export function GeometricA4Template({
           <div className="grid grid-cols-2 gap-4 mb-4 p-4 bg-[#f8fafc] rounded-xl border border-[#e2e8f0]">
             <div>
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider mb-1 font-semibold">
-                {isChallan ? "Delivered To" : "Bill To"}
+                {clientLabel}
               </p>
               <p className="font-bold text-[#1e293b]">{invoice.clientName}</p>
               <p className="text-[11px] text-[#64748b] whitespace-pre-line mt-0.5">
@@ -110,7 +118,7 @@ export function GeometricA4Template({
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2 w-full">
-              {!isChallan ? (
+              {!isPricingHidden ? (
                 <>
                   <div>
                     <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider mb-1 font-semibold">
@@ -149,68 +157,74 @@ export function GeometricA4Template({
           {/* Items */}
           <div className="mb-4">
             {showGroups && invoice.groups && invoice.groups.length > 0
-              ? invoice.groups.map((group, gIdx) => (
-                  <div key={gIdx} className="mb-3 last:mb-0">
-                    {group.name && (
-                      <div className="text-[10px] font-bold tracking-wider text-[#3b82f6] bg-[#eff6ff] px-2.5 py-0.5 rounded mb-2 uppercase inline-block">
-                        {group.name}
-                      </div>
-                    )}
-                    <div className="space-y-1">
-                      {group.items.map((item, iIdx) => (
-                        <div
-                          key={iIdx}
-                          className="flex justify-between items-center py-1.5 border-b border-[#f1f5f9]/60 last:border-0"
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-6 h-6 bg-[#eff6ff] rounded-md flex items-center justify-center text-[#3b82f6] text-[10px] font-bold">
-                              {iIdx + 1}
-                            </div>
-                            <div>
-                              <p className="font-medium text-[11px] text-[#1e293b]">
-                                {item.name}
-                              </p>
-                              <p className="text-[10px] text-[#94a3b8] font-mono">
-                                {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                                {!isChallan && ` × ${formatMoney(item.unitPrice, sym)}`}
-                              </p>
-                            </div>
-                          </div>
-                          {!isChallan && (
-                            <p className="font-mono font-semibold text-[11px] text-[#1e293b]">
-                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-
-                      {showGroupTotals && !isChallan && (
-                        <div className="flex justify-between items-center px-3 py-1 bg-transparent border-t border-slate-100/50">
-                          <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">
-                            Group Subtotal
-                          </div>
-                          <div
-                            className="text-[10px] font-medium text-slate-500"
-                            style={{ fontFamily: "Geist, monospace" }}
-                          >
-                            {formatMoney(
-                              group.items.reduce(
-                                (sum, item) =>
-                                  sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                                0,
-                              ),
-                              sym,
-                            )}
-                          </div>
+              ? (() => {
+                  let runningIdx = 0;
+                  return invoice.groups.map((group, gIdx) => (
+                    <div key={gIdx} className="mb-3 last:mb-0">
+                      {group.name && (
+                        <div className="text-[10px] font-bold tracking-wider text-[#3b82f6] bg-[#eff6ff] px-2.5 py-0.5 rounded mb-2 uppercase inline-block">
+                          {group.name}
                         </div>
                       )}
+                      <div className="space-y-1">
+                        {group.items.map((item, iIdx) => {
+                          runningIdx++;
+                          return (
+                            <div
+                              key={iIdx}
+                              className="template-item-row flex justify-between items-center py-1.5 border-b border-[#f1f5f9]/60 last:border-0"
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-6 h-6 bg-[#eff6ff] rounded-md flex items-center justify-center text-[#3b82f6] text-[10px] font-bold">
+                                  {runningIdx}
+                                </div>
+                                <div>
+                                  <p className="font-medium text-[11px] text-[#1e293b]">
+                                    {item.name}
+                                  </p>
+                                  <p className="text-[10px] text-[#94a3b8] font-mono">
+                                    {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                                    {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
+                                  </p>
+                                </div>
+                              </div>
+                              {!isPricingHidden && (
+                                <p className="font-mono font-semibold text-[11px] text-[#1e293b]">
+                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })}
+
+                        {showGroupTotals && !isPricingHidden && (
+                          <div className="flex justify-between items-center px-3 py-1 bg-transparent border-t border-slate-100/50">
+                            <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">
+                              Group Subtotal
+                            </div>
+                            <div
+                              className="text-[10px] font-medium text-slate-500"
+                              style={{ fontFamily: "Geist, monospace" }}
+                            >
+                              {formatMoney(
+                                group.items.reduce(
+                                  (sum, item) =>
+                                    sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                  0,
+                                ),
+                                sym,
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ));
+                })()
               : items.map((item, idx) => (
                   <div
                     key={idx}
-                    className={`flex justify-between items-center py-1.5 ${idx < items.length - 1 ? "border-b border-[#f1f5f9]" : ""}`}
+                    className={`template-item-row flex justify-between items-center py-1.5 ${idx < items.length - 1 ? "border-b border-[#f1f5f9]" : ""}`}
                   >
                     <div className="flex items-center gap-2.5">
                       <div className="w-6 h-6 bg-[#eff6ff] rounded-md flex items-center justify-center text-[#3b82f6] text-[10px] font-bold">
@@ -222,11 +236,11 @@ export function GeometricA4Template({
                         </p>
                         <p className="text-[10px] text-[#94a3b8] font-mono">
                           {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                          {!isChallan && ` × ${formatMoney(item.unitPrice, sym)}`}
+                          {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
                         </p>
                       </div>
                     </div>
-                    {!isChallan && (
+                    {!isPricingHidden && (
                       <p className="font-mono font-semibold text-[11px] text-[#1e293b]">
                         {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
                       </p>
@@ -236,7 +250,7 @@ export function GeometricA4Template({
           </div>
 
           {/* Totals - Only in Invoice Mode */}
-          {!isChallan && (
+          {!isPricingHidden && (
             <div className="border-t-2 border-[#111c2d] pt-4 mb-4">
               <div className="flex justify-end">
                 <div className="w-full sm:w-1/2 md:w-1/3">
@@ -293,7 +307,7 @@ export function GeometricA4Template({
         <div className="p-6 pt-0 print:p-6 print:pt-0 relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#e2e8f0] pt-4 items-start">
             {/* Bank Details - Only in Invoice Mode */}
-            {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+            {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
               <div>
                 <h4 className="text-[10px] text-[#64748b] uppercase tracking-wider mb-2 font-semibold">
                   Settlement Details
@@ -359,7 +373,7 @@ export function GeometricA4Template({
                     <p className="text-[11px] text-[#64748b] font-semibold">
                       {invoice.signatory_name ||
                         profile?.signatory_name ||
-                        (isChallan ? "Received By" : "Authorized Signatory")}
+                        (isChallanDoc ? "Received By" : "Authorized Signatory")}
                     </p>
                   </div>
                 )}

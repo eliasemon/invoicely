@@ -20,7 +20,15 @@ export function ModernTemplate({
   publicUrl,
   showGroupTotals,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitle = isQuotationDoc ? "Quotation Number" : isChallanDoc ? "Challan Number" : "Invoice Number";
+  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Billed To";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
@@ -108,7 +116,7 @@ export function ModernTemplate({
             </div>
             <div className="mb-2">
               <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">
-                {isChallan ? "Challan Number" : "Invoice Number"}
+                {docTitle}
               </p>
               <p className="text-base font-semibold">
                 {invoice.invoiceNumber ||
@@ -121,7 +129,7 @@ export function ModernTemplate({
               </p>
               <p className="text-[11px]">{formatDate(issueDate)}</p>
             </div>
-            {!isChallan && (
+            {!isPricingHidden && (
               <div className="mb-2">
                 <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">
                   Due Date
@@ -130,7 +138,7 @@ export function ModernTemplate({
               </div>
             )}
           </div>
-          {!isChallan && (profile?.bank_enabled ?? true) &&
+          {!isPricingHidden && (profile?.bank_enabled ?? true) &&
             (invoice.bank_name || profile?.bank_name) && (
               <div className="mt-4 block">
                 <p className="text-[12px] uppercase tracking-wider opacity-70 mb-2">
@@ -176,7 +184,7 @@ export function ModernTemplate({
             <div className="flex flex-row print:flex-row justify-between items-start gap-2 mb-2">
               <div>
                 <p className="text-[10px] uppercase text-[#76777d] mb-1">
-                  {isChallan ? "Delivered To" : "Billed To"}
+                  {clientLabel}
                 </p>
                 <h3
                   className="text-sm font-semibold mb-0.5"
@@ -188,7 +196,7 @@ export function ModernTemplate({
                   {invoice.clientAddress || invoice.clientPhone}
                 </p>
               </div>
-              {!isChallan && (
+              {!isPricingHidden && (
                 <div
                   className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                     invoice.status === "PAID"
@@ -203,41 +211,52 @@ export function ModernTemplate({
 
             {/* Items */}
             <div className="mb-2">
-              <p className="text-[10px] uppercase text-[#76777d] mb-1.5 border-b border-[#dce9ff] pb-1">
-                Description
-              </p>
-              {invoice.groups?.map((group, gIdx) => (
-                <div key={gIdx} className="mb-3">
-                  {group.name && (
-                    <h4 className="font-bold text-xs mb-1">{group.name}</h4>
-                  )}
-                  {group.items.map((item, iIdx) => (
-                    <div
-                      key={iIdx}
-                      className="flex justify-between items-start mb-1.5"
-                    >
-                      <div className="pr-4">
-                        <h4 className="font-semibold text-xs">{item.name}</h4>
-                        <p
-                          className="text-[10px] text-[#45464d] mt-0.5"
-                          style={{ fontFamily: "Geist, monospace" }}
+              <div className="flex justify-between text-[10px] uppercase text-[#76777d] mb-1.5 border-b border-[#dce9ff] pb-1">
+                <span># Description</span>
+                <span>{isPricingHidden ? 'Qty' : 'Amount'}</span>
+              </div>
+              {(() => {
+                let runningIdx = 0;
+                return invoice.groups?.map((group, gIdx) => (
+                  <div key={gIdx} className="mb-3">
+                    {group.name && (
+                      <h4 className="font-bold text-xs mb-1">{group.name}</h4>
+                    )}
+                    {group.items.map((item, iIdx) => {
+                      runningIdx++;
+                      return (
+                        <div
+                          key={iIdx}
+                          className="template-item-row flex justify-between items-start mb-1.5"
                         >
-                          Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                          {!isChallan && ` × ${formatMoney(item.unitPrice, sym)}`}
-                        </p>
-                      </div>
-                      {!isChallan && (
-                        <p
-                          className="text-[11px] whitespace-nowrap font-medium"
-                          style={{ fontFamily: "Geist, monospace" }}
-                        >
-                          {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
-                        </p>
-                      )}
-                    </div>
-                  ))}
+                          <div className="flex items-start gap-2 pr-4">
+                            <span className="text-[11px] font-mono text-[#0058be] font-bold mt-0.5 min-w-[16px]">
+                              {runningIdx}.
+                            </span>
+                            <div>
+                              <h4 className="font-semibold text-xs">{item.name}</h4>
+                              <p
+                                className="text-[10px] text-[#45464d] mt-0.5"
+                                style={{ fontFamily: "Geist, monospace" }}
+                              >
+                                Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                                {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
+                              </p>
+                            </div>
+                          </div>
+                          {!isPricingHidden && (
+                            <p
+                              className="text-[11px] whitespace-nowrap font-medium"
+                              style={{ fontFamily: "Geist, monospace" }}
+                            >
+                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
 
-                  {showGroupTotals && !isChallan && (
+                  {showGroupTotals && !isPricingHidden && (
                     <div className="flex justify-between items-center px-3 py-0.5 bg-transparent border-t border-slate-100/50">
                       <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wide">
                         Group Subtotal
@@ -257,11 +276,12 @@ export function ModernTemplate({
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
+              ));
+            })()}
+          </div>
 
             {/* Totals - Only in Invoice mode */}
-            {!isChallan && (
+            {!isPricingHidden && (
               <div className="border-t border-[#dce9ff] pt-4">
                 <div className="flex justify-end mb-1.5">
                   <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
@@ -398,7 +418,7 @@ export function ModernTemplate({
                     <p className="text-[10px] text-[#76777d]">
                       {invoice.signatory_name ||
                         profile?.signatory_name ||
-                        (isChallan ? "Received By" : "Authorized Signatory")}
+                        (isChallanDoc ? "Received By" : "Authorized Signatory")}
                     </p>
                   </div>
                 )}

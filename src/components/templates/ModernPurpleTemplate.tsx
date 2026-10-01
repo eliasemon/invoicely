@@ -22,7 +22,15 @@ export function ModernPurpleTemplate({
   showGroupTotals,
   publicUrl,
   isChallan,
+  isQuotation,
+  documentType,
 }: TemplateProps) {
+  const isChallanDoc = Boolean(isChallan || documentType === 'challan');
+  const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
+  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
+  const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Delivered To" : "Billed To";
+
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
@@ -69,7 +77,7 @@ export function ModernPurpleTemplate({
               </div>
               <div className="text-right print:text-right">
                 <h2 className="text-2xl font-bold tracking-wider uppercase">
-                  {isChallan ? "CHALLAN" : "INVOICE"}
+                  {docTitleUpper}
                 </h2>
                 <p className="text-xs font-mono text-purple-200 mt-1">
                   #{invoice.invoiceNumber}
@@ -90,7 +98,7 @@ export function ModernPurpleTemplate({
             <div className="grid grid-cols-2 gap-6 mb-6 p-4 bg-purple-50/50 rounded-2xl border border-purple-100">
               <div>
                 <p className="text-[10px] uppercase font-bold text-[#6b21a8] tracking-wider mb-1">
-                  {isChallan ? "Delivered To" : "Billed To"}
+                  {clientLabel}
                 </p>
                 <p className="font-bold text-gray-900 text-sm">{invoice.clientName}</p>
                 <p className="text-xs text-gray-600 whitespace-pre-line mt-0.5">
@@ -104,7 +112,7 @@ export function ModernPurpleTemplate({
                   </p>
                   <p className="text-xs font-mono text-gray-800">{formatDate(issueDate)}</p>
                 </div>
-                {!isChallan ? (
+                {!isPricingHidden ? (
                   <div>
                     <p className="text-[10px] uppercase font-bold text-[#6b21a8] tracking-wider mb-1">
                       Due
@@ -116,7 +124,9 @@ export function ModernPurpleTemplate({
                     <p className="text-[10px] uppercase font-bold text-[#6b21a8] tracking-wider mb-1">
                       Type
                     </p>
-                    <span className="text-xs font-semibold text-purple-800">Delivery</span>
+                    <span className="text-xs font-semibold text-purple-800">
+                      {isQuotationDoc ? "Quotation" : "Delivery"}
+                    </span>
                   </div>
                 )}
               </div>
@@ -125,9 +135,10 @@ export function ModernPurpleTemplate({
             {/* Line Items */}
             <div className="mb-6">
               <div className="grid grid-cols-12 gap-4 pb-2 border-b-2 border-purple-200 text-xs font-bold uppercase tracking-wider text-[#6b21a8]">
-                <div className={isChallan ? "col-span-8" : "col-span-6"}>DESCRIPTION</div>
-                <div className={`${isChallan ? "col-span-4" : "col-span-2"} text-right`}>QTY</div>
-                {!isChallan && (
+                <div className="col-span-1 text-center">#</div>
+                <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>DESCRIPTION</div>
+                <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right`}>QTY</div>
+                {!isPricingHidden && (
                   <>
                     <div className="col-span-2 text-right">PRICE</div>
                     <div className="col-span-2 text-right">TOTAL</div>
@@ -136,67 +147,79 @@ export function ModernPurpleTemplate({
               </div>
 
               {showGroups && invoice.groups && invoice.groups.length > 0
-                ? invoice.groups.map((group, gIdx) => (
-                    <div key={gIdx} className="mb-4">
-                      {group.name && (
-                        <div className="py-1.5 text-xs font-bold text-[#6b21a8] bg-purple-50 px-2 my-1 rounded uppercase">
-                          {group.name}
-                        </div>
-                      )}
-                      {group.items.map((item, iIdx) => (
-                        <div
-                          key={iIdx}
-                          className="grid grid-cols-12 gap-4 py-2 border-b border-gray-100 text-xs items-center"
-                        >
-                          <div className={isChallan ? "col-span-8" : "col-span-6"}>
-                            <p className="font-semibold text-gray-900">{item.name}</p>
+                ? (() => {
+                    let runningIdx = 0;
+                    return invoice.groups.map((group, gIdx) => (
+                      <div key={gIdx} className="mb-4">
+                        {group.name && (
+                          <div className="py-1.5 text-xs font-bold text-[#6b21a8] bg-purple-50 px-2 my-1 rounded uppercase">
+                            {group.name}
                           </div>
-                          <div className={`${isChallan ? "col-span-4" : "col-span-2"} text-right text-gray-600 font-mono`}>
-                            {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                          </div>
-                          {!isChallan && (
-                            <>
-                              <div className="col-span-2 text-right text-gray-600 font-mono">
-                                {formatMoney(item.unitPrice, sym)}
+                        )}
+                        {group.items.map((item, iIdx) => {
+                          runningIdx++;
+                          return (
+                            <div
+                              key={iIdx}
+                              className="template-item-row grid grid-cols-12 gap-4 py-2 border-b border-gray-100 text-xs items-center"
+                            >
+                              <div className="col-span-1 text-center font-mono text-purple-700 font-semibold">
+                                {runningIdx}
                               </div>
-                              <div className="col-span-2 text-right font-semibold text-gray-900 font-mono">
-                                {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                              <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>
+                                <p className="font-semibold text-gray-900">{item.name}</p>
                               </div>
-                            </>
-                          )}
-                        </div>
-                      ))}
+                              <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right text-gray-600 font-mono`}>
+                                {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                              </div>
+                              {!isPricingHidden && (
+                                <>
+                                  <div className="col-span-2 text-right text-gray-600 font-mono">
+                                    {formatMoney(item.unitPrice, sym)}
+                                  </div>
+                                  <div className="col-span-2 text-right font-semibold text-gray-900 font-mono">
+                                    {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          );
+                        })}
 
-                      {showGroupTotals && !isChallan && (
-                        <div className="flex justify-between py-1.5 text-xs border-b border-purple-100">
-                          <span className="text-gray-500 uppercase tracking-wider font-semibold text-[10px]">
-                            Group Subtotal
-                          </span>
-                          <span className="font-mono font-bold text-[#6b21a8]">
-                            {formatMoney(
-                              group.items.reduce(
-                                (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                                0,
-                              ),
-                              sym,
-                            )}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))
+                        {showGroupTotals && !isPricingHidden && (
+                          <div className="flex justify-between py-1.5 text-xs border-b border-purple-100">
+                            <span className="text-gray-500 uppercase tracking-wider font-semibold text-[10px]">
+                              Group Subtotal
+                            </span>
+                            <span className="font-mono font-bold text-[#6b21a8]">
+                              {formatMoney(
+                                group.items.reduce(
+                                  (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                  0,
+                                ),
+                                sym,
+                              )}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ));
+                  })()
                 : items.map((item, idx) => (
                     <div
                       key={idx}
-                      className="grid grid-cols-12 gap-4 py-2 border-b border-gray-100 text-xs items-center"
+                      className="template-item-row grid grid-cols-12 gap-4 py-2 border-b border-gray-100 text-xs items-center"
                     >
-                      <div className={isChallan ? "col-span-8" : "col-span-6"}>
+                      <div className="col-span-1 text-center font-mono text-purple-700 font-semibold">
+                        {idx + 1}
+                      </div>
+                      <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>
                         <p className="font-semibold text-gray-900">{item.name}</p>
                       </div>
-                      <div className={`${isChallan ? "col-span-4" : "col-span-2"} text-right text-gray-600 font-mono`}>
+                      <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right text-gray-600 font-mono`}>
                         {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                       </div>
-                      {!isChallan && (
+                      {!isPricingHidden && (
                         <>
                           <div className="col-span-2 text-right text-gray-600 font-mono">
                             {formatMoney(item.unitPrice, sym)}
@@ -211,7 +234,7 @@ export function ModernPurpleTemplate({
             </div>
 
             {/* Totals - Only in Invoice Mode */}
-            {!isChallan && (
+            {!isPricingHidden && (
               <div className="flex justify-end mb-6">
                 <div className="w-full sm:w-1/2 md:w-1/3">
                   <div className="flex justify-between py-1 text-xs text-gray-600">
@@ -267,7 +290,7 @@ export function ModernPurpleTemplate({
         <div className="p-8 print:p-6 pt-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-purple-100 pt-4 items-start">
             {/* Bank details - Only in Invoice Mode */}
-            {!isChallan && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+            {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
               <div className="text-xs text-gray-600 space-y-1">
                 <p className="font-bold text-[#6b21a8] uppercase tracking-wider text-[10px]">Bank transfer</p>
                 <p>Bank: {invoice.bank_name || profile?.bank_name}</p>
@@ -314,7 +337,7 @@ export function ModernPurpleTemplate({
                     <p className="text-[11px] text-gray-600 font-semibold">
                       {invoice.signatory_name ||
                         profile?.signatory_name ||
-                        (isChallan ? "Received By" : "Authorized Signatory")}
+                        (isChallanDoc ? "Received By" : "Authorized Signatory")}
                     </p>
                   </div>
                 )}

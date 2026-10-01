@@ -4,11 +4,27 @@ import { InvoiceTemplateRenderer } from '@/components/templates/InvoiceTemplateR
 import { InvoiceDisplayOptions } from '@/components/templates/InvoiceDisplayOptions';
 import { TemplateSelector } from '@/components/templates/TemplateSelector';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
+import { DocumentType, TextSize } from '@/components/templates/templateUtils';
 
-export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }: any) {
+interface PublicInvoiceViewerProps {
+  invoice: any;
+  profile: any;
+  publicUrl?: string;
+  templateId?: string;
+  initialDocumentType?: DocumentType;
+}
+
+export function PublicInvoiceViewer({
+  invoice,
+  profile,
+  publicUrl,
+  templateId,
+  initialDocumentType = 'invoice',
+}: PublicInvoiceViewerProps) {
   const [showGroups, setShowGroups] = useState(false);
   const [showGroupTotals, setShowGroupTotals] = useState(false);
-  const [isChallan, setIsChallan] = useState(false);
+  const [documentType, setDocumentType] = useState<DocumentType>(initialDocumentType);
+  const [textSize, setTextSize] = useState<TextSize>('normal');
   const [currentTemplate, setCurrentTemplate] = useState(templateId || 'sleek-accent');
   
   const [previewZoom, setPreviewZoom] = useState(0.5);
@@ -17,6 +33,9 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
   const previewInvoiceRef = useRef<HTMLDivElement>(null);
 
   const hasGroups = invoice.groups && invoice.groups.length > 0 && invoice.groups.some((g: any) => g.name && g.name.trim() !== '');
+
+  const isChallan = documentType === 'challan';
+  const isQuotation = documentType === 'quotation';
 
   const calculateFitZoom = useCallback(() => {
     if (!previewViewportRef.current) return;
@@ -58,40 +77,98 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
   const previewZoomOut = () => setPreviewZoom((z) => Math.max(z - 0.1, 0.15));
   const previewFitToWidth = () => calculateFitZoom();
 
+  const handleDecreaseTextSize = () => {
+    if (textSize === 'large') setTextSize('normal');
+    else if (textSize === 'normal') setTextSize('compact');
+  };
+
+  const handleIncreaseTextSize = () => {
+    if (textSize === 'compact') setTextSize('normal');
+    else if (textSize === 'normal') setTextSize('large');
+  };
+
   return (
     <div className="w-full flex flex-col items-center">
       
-      {/* Zoom Controls (Sticky for easy access) */}
-      <div className="sticky top-4 z-40 mb-4 flex items-center gap-1 bg-surface-container shadow-md p-1 rounded-lg border border-outline-variant/30 print:hidden">
-        <button 
-          onClick={previewZoomOut} 
-          className="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95" 
-          title="Zoom Out"
+      {/* Sticky Action Toolbar (Zoom & PDF Text Size Controls) */}
+      <div className="sticky top-4 z-40 mb-4 flex items-center gap-2 bg-surface-container shadow-md p-1.5 rounded-xl border border-outline-variant/30 print:hidden flex-wrap justify-center">
+        {/* Zoom Controls */}
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={previewZoomOut} 
+            className="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 cursor-pointer" 
+            title="Zoom Out"
+          >
+            <MaterialIcon icon="remove" className="text-[18px]" />
+          </button>
+          
+          <span className="font-label-sm text-on-surface-variant px-1.5 min-w-[46px] text-center font-semibold text-xs">
+            {Math.round(previewZoom * 100)}%
+          </span>
+          
+          <button 
+            onClick={previewZoomIn} 
+            className="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 cursor-pointer" 
+            title="Zoom In"
+          >
+            <MaterialIcon icon="add" className="text-[18px]" />
+          </button>
+          
+          <button 
+            onClick={previewFitToWidth} 
+            className="px-2 h-8 flex items-center gap-1 hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 text-[11px] font-medium cursor-pointer" 
+            title="Fit to Width"
+          >
+            <MaterialIcon icon="fit_width" className="text-[15px]" />
+            <span>Fit</span>
+          </button>
+        </div>
+
+        <div className="w-px bg-outline-variant/50 h-5"></div>
+
+        {/* PDF Font Size Controls */}
+        <div className="flex items-center gap-1">
+          <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider px-1">
+            Text:
+          </span>
+          <button
+            onClick={handleDecreaseTextSize}
+            disabled={textSize === 'compact'}
+            className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
+              textSize === 'compact'
+                ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
+                : 'hover:bg-surface-container-high text-on-surface active:scale-95'
+            }`}
+            title="Decrease text size (fit more rows)"
+          >
+            A-
+          </button>
+          <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-surface-container-high text-primary min-w-[58px] text-center capitalize">
+            {textSize}
+          </span>
+          <button
+            onClick={handleIncreaseTextSize}
+            disabled={textSize === 'large'}
+            className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
+              textSize === 'large'
+                ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
+                : 'hover:bg-surface-container-high text-on-surface active:scale-95'
+            }`}
+            title="Increase text size"
+          >
+            A+
+          </button>
+        </div>
+
+        <div className="w-px bg-outline-variant/50 h-5"></div>
+
+        {/* Print / Download Button */}
+        <button
+          onClick={() => window.print()}
+          className="px-3 h-8 bg-primary text-on-primary rounded-lg text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 active:scale-95 transition-all shadow-sm cursor-pointer"
         >
-          <MaterialIcon icon="remove" className="text-[18px]" />
-        </button>
-        
-        <span className="font-label-sm text-on-surface-variant px-2 min-w-[50px] text-center font-semibold text-xs">
-          {Math.round(previewZoom * 100)}%
-        </span>
-        
-        <button 
-          onClick={previewZoomIn} 
-          className="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95" 
-          title="Zoom In"
-        >
-          <MaterialIcon icon="add" className="text-[18px]" />
-        </button>
-        
-        <div className="w-px bg-outline-variant/50 h-5 mx-1"></div>
-        
-        <button 
-          onClick={previewFitToWidth} 
-          className="px-2.5 h-8 flex items-center gap-1 hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 text-[11px] font-medium" 
-          title="Fit to Width"
-        >
-          <MaterialIcon icon="fit_width" className="text-[15px]" />
-          <span>Fit</span>
+          <MaterialIcon icon="download" className="text-[16px]" />
+          <span>Print / PDF</span>
         </button>
       </div>
 
@@ -110,7 +187,13 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
             setShowGroupTotals={setShowGroupTotals}
             hasGroups={hasGroups}
             isChallan={isChallan}
-            setIsChallan={setIsChallan}
+            setIsChallan={(val) => setDocumentType(val ? 'challan' : 'invoice')}
+            isQuotation={isQuotation}
+            setIsQuotation={(val) => setDocumentType(val ? 'quotation' : 'invoice')}
+            documentType={documentType}
+            setDocumentType={setDocumentType}
+            textSize={textSize}
+            setTextSize={setTextSize}
           />
         </div>
       </div>
@@ -153,6 +236,9 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
               showGroupTotals={showGroupTotals}
               isPreview={false}
               isChallan={isChallan}
+              isQuotation={isQuotation}
+              documentType={documentType}
+              textSize={textSize}
             />
           </div>
         </div>
@@ -169,6 +255,9 @@ export function PublicInvoiceViewer({ invoice, profile, publicUrl, templateId }:
           showGroupTotals={showGroupTotals}
           isPreview={false}
           isChallan={isChallan}
+          isQuotation={isQuotation}
+          documentType={documentType}
+          textSize={textSize}
         />
       </div>
     </div>
