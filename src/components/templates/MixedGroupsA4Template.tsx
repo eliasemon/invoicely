@@ -11,6 +11,7 @@ import {
   getShippingCost,
   getTotal,
   getAmountPaid,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function MixedGroupsA4Template({
@@ -37,6 +38,7 @@ export function MixedGroupsA4Template({
   const total = getTotal(invoice);
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -138,6 +140,14 @@ export function MixedGroupsA4Template({
                 </div>
               )}
             </div>
+
+            {/* Subject */}
+            {subject && (
+              <div className="mb-3 px-3 py-1.5 bg-[#f8fafc] border-l-4 border-[#2563eb] text-xs text-slate-800 flex items-center gap-2 rounded-r">
+                <span className="font-bold uppercase tracking-wider text-[10px] text-[#2563eb]">Subject:</span>
+                <span className="font-semibold text-slate-900">{subject}</span>
+              </div>
+            )}
 
             {/* Items */}
             <div className="space-y-4 mb-4">

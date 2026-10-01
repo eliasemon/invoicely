@@ -1,5 +1,6 @@
 import { getPublicInvoice } from '@/app/actions/invoiceActions';
 import { getProfile } from '@/app/actions/profileActions';
+import { getUserId } from '@/lib/supabase/admin';
 import { PublicInvoiceViewer } from '@/components/invoices/PublicInvoiceViewer';
 import { PublicInvoiceHeader } from '@/components/invoices/PublicInvoiceHeader';
 import { notFound } from 'next/navigation';
@@ -16,11 +17,38 @@ export default async function PublicInvoicePage({
   const { id } = await params;
   const sParams = searchParams ? await searchParams : {};
   const rawType = sParams.type?.toLowerCase();
-  const initialDocumentType: DocumentType = 
-    rawType === 'quotation' ? 'quotation' : rawType === 'challan' ? 'challan' : 'invoice';
   
   const invoice = await getPublicInvoice(id);
   if (!invoice) return notFound();
+
+  // Ownership check
+  let currentUserId: string | undefined = undefined;
+  try {
+    currentUserId = await getUserId();
+  } catch {
+    // Not authenticated
+  }
+  const isOwner = Boolean(currentUserId && invoice.profile_id && currentUserId === invoice.profile_id);
+
+  // Check mode permissions: if public user, fallback to allowed mode
+  const invoiceModeEnabled = invoice.invoice_mode_enabled ?? true;
+  const challanModeEnabled = invoice.challan_mode_enabled ?? true;
+  const quotationModeEnabled = invoice.quotation_mode_enabled ?? true;
+
+  let initialDocumentType: DocumentType;
+  if (rawType === 'quotation' && (isOwner || quotationModeEnabled)) {
+    initialDocumentType = 'quotation';
+  } else if (rawType === 'challan' && (isOwner || challanModeEnabled)) {
+    initialDocumentType = 'challan';
+  } else if ((rawType === 'invoice' || !rawType) && (isOwner || invoiceModeEnabled)) {
+    initialDocumentType = 'invoice';
+  } else {
+    // Fallback for public viewers accessing disabled mode
+    if (invoiceModeEnabled) initialDocumentType = 'invoice';
+    else if (challanModeEnabled) initialDocumentType = 'challan';
+    else if (quotationModeEnabled) initialDocumentType = 'quotation';
+    else initialDocumentType = 'invoice';
+  }
 
 
 
@@ -58,6 +86,7 @@ export default async function PublicInvoicePage({
           profile={invoice.profile} 
           publicUrl={publicUrl}
           initialDocumentType={initialDocumentType}
+          isOwner={isOwner}
         />
       </div>
     </div>

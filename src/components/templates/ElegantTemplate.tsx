@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function ElegantTemplate({
@@ -42,6 +43,7 @@ export function ElegantTemplate({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -159,6 +161,14 @@ export function ElegantTemplate({
               {invoice.clientAddress || invoice.clientPhone}
             </p>
           </section>
+
+          {/* Subject */}
+          {subject && (
+            <div className="mb-3 px-3 py-2 bg-slate-50 border-l-4 border-slate-700 text-xs text-slate-800 flex items-center gap-2 rounded-r">
+              <span className="font-bold uppercase tracking-wider text-[10px] text-slate-500">Subject:</span>
+              <span className="font-semibold text-slate-900">{subject}</span>
+            </div>
+          )}
 
           {/* Line Items Table */}
           <section className="mb-4">

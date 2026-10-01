@@ -12,6 +12,7 @@ import {
   getAmountPaid,
   getBalanceDue,
   numberToWords,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function RedClassicGroupedTemplate({
@@ -43,11 +44,7 @@ export function RedClassicGroupedTemplate({
   const total = getTotal(invoice);
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = getBalanceDue(invoice);
-
-  // Use custom subject or fallback
-  const subject = invoice.notes
-    ? invoice.notes.split("\n")[0]
-    : subjectFallback;
+  const subject = getSubjectForDoc(invoice, documentType);
 
   let globalSlNo = 1;
 
@@ -122,11 +119,13 @@ export function RedClassicGroupedTemplate({
           )}
         </div>
 
-        <div className="mb-3">
-          <p className="font-bold text-xs">
-            <span className="font-bold">Subject:</span> {subject}
-          </p>
-        </div>
+        {subject && (
+          <div className="mb-3">
+            <p className="font-bold text-xs">
+              <span className="font-bold">Subject:</span> {subject}
+            </p>
+          </div>
+        )}
 
         {/* Table */}
         <div className="mb-4 w-full">

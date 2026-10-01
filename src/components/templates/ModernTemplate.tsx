@@ -11,6 +11,7 @@ import {
   getShippingCost,
   getTotal,
   getAmountPaid,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function ModernTemplate({
@@ -39,6 +40,7 @@ export function ModernTemplate({
   const tax = 0;
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -208,6 +210,14 @@ export function ModernTemplate({
                 </div>
               )}
             </div>
+
+            {/* Subject */}
+            {subject && (
+              <div className="mb-2 text-[11px] text-[#45464d] bg-[#f8faff] px-2.5 py-1.5 rounded border border-[#dce9ff]/70 flex items-center gap-2">
+                <span className="font-semibold text-[#1a2b3c] uppercase text-[10px]">Subject:</span>
+                <span className="font-medium text-[#2b303b]">{subject}</span>
+              </div>
+            )}
 
             {/* Items */}
             <div className="mb-2">

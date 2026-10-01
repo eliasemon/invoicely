@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function HighDensityFlatA4Template({
@@ -40,6 +41,7 @@ export function HighDensityFlatA4Template({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -126,6 +128,14 @@ export function HighDensityFlatA4Template({
               </div>
             )}
           </div>
+
+          {/* Subject */}
+          {subject && (
+            <div className="mb-2 px-2.5 py-1 bg-slate-100 border-l-2 border-slate-700 text-xs text-slate-800 flex items-center gap-1.5">
+              <span className="font-bold uppercase tracking-wider text-[9px] text-slate-500">Subject:</span>
+              <span className="font-semibold text-slate-900">{subject}</span>
+            </div>
+          )}
 
           {/* Items */}
           <div className="overflow-x-auto mb-3">

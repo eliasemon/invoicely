@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function CorporateTemplate({
@@ -42,6 +43,7 @@ export function CorporateTemplate({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -223,6 +225,14 @@ export function CorporateTemplate({
                   </div>
                 )}
               </div>
+
+              {/* Subject */}
+              {subject && (
+                <div className="mb-3 px-3.5 py-2 bg-[#f8fafc] border-l-4 border-[#0058be] text-xs text-black flex items-center gap-2 rounded-r">
+                  <span className="font-bold text-[#45464d] uppercase tracking-wider text-[11px]">Subject:</span>
+                  <span className="font-semibold text-black">{subject}</span>
+                </div>
+              )}
 
               {/* Items Table */}
               <div className="border border-[#c6c6cd] mb-4 overflow-x-auto rounded-sm">

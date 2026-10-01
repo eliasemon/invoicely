@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function HeritageA4Template({
@@ -40,6 +41,7 @@ export function HeritageA4Template({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -147,6 +149,14 @@ export function HeritageA4Template({
                 )}
               </div>
             </div>
+
+            {/* Subject */}
+            {subject && (
+              <div className="mb-3 px-3 py-1.5 bg-[#fef3c7]/50 border-l-4 border-[#b45309] text-xs text-[#78350f] flex items-center gap-2 rounded-r">
+                <span className="font-bold uppercase tracking-wider text-[10px] text-[#b45309]">Subject:</span>
+                <span className="font-semibold text-[#451a03]">{subject}</span>
+              </div>
+            )}
 
             {/* Items */}
             <div className="overflow-x-auto mb-4">

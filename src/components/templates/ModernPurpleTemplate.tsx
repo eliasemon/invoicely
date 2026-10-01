@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function ModernPurpleTemplate({
@@ -42,6 +43,7 @@ export function ModernPurpleTemplate({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -131,6 +133,14 @@ export function ModernPurpleTemplate({
                 )}
               </div>
             </div>
+
+            {/* Subject */}
+            {subject && (
+              <div className="mb-4 px-3 py-1.5 bg-purple-50/60 border-l-4 border-[#6b21a8] text-xs text-purple-950 flex items-center gap-2 rounded-r">
+                <span className="font-bold uppercase tracking-wider text-[10px] text-[#6b21a8]">Subject:</span>
+                <span className="font-semibold text-gray-900">{subject}</span>
+              </div>
+            )}
 
             {/* Line Items */}
             <div className="mb-6">

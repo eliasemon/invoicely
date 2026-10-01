@@ -11,6 +11,7 @@ import {
   getShippingCost,
   getTotal,
   getAmountPaid,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function GroupedFintechA4Template({
@@ -37,6 +38,7 @@ export function GroupedFintechA4Template({
   const total = getTotal(invoice);
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -138,6 +140,14 @@ export function GroupedFintechA4Template({
                 </div>
               )}
             </div>
+
+            {/* Subject */}
+            {subject && (
+              <div className="mb-3 px-3 py-1.5 bg-[#f8fafc] border-l-4 border-slate-700 text-xs text-slate-800 flex items-center gap-2 rounded-r">
+                <span className="font-bold uppercase tracking-wider text-[10px] text-slate-500">Subject:</span>
+                <span className="font-semibold text-slate-900">{subject}</span>
+              </div>
+            )}
 
             {/* Items */}
             <div className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] overflow-hidden mb-4">

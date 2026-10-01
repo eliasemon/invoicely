@@ -67,6 +67,18 @@ export interface Invoice {
   created_at: Date | string;
   updated_at: Date | string;
 
+  // Subject
+  subject_enabled?: boolean;
+  subject?: string | null;
+  subject_invoice?: string | null;
+  subject_challan?: string | null;
+  subject_quotation?: string | null;
+
+  // Modes
+  invoice_mode_enabled?: boolean;
+  challan_mode_enabled?: boolean;
+  quotation_mode_enabled?: boolean;
+
   // CamelCase aliases — set by the public invoice mapping layer for template compatibility
   invoiceNumber?: string;
   clientName?: string;

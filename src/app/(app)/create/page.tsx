@@ -7,6 +7,7 @@ import { InvoiceDates } from '@/components/create/InvoiceDates';
 import { DiscountShippingInputs } from '@/components/create/DiscountShippingInputs';
 import { InvoiceTotalFooter } from '@/components/create/InvoiceTotalFooter';
 import { ValidationModal, ValidationError } from '@/components/create/ValidationModal';
+import { SubjectAndModeSettings } from '@/components/create/SubjectAndModeSettings';
 import { useCreateInvoice } from '@/core/contexts/CreateInvoiceContext';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, Suspense, useState } from 'react';
@@ -30,7 +31,14 @@ function CreateInvoiceForm() {
     shippingCost, setShippingCost,
     amountPaid, setAmountPaid,
     issuedAt, setIssuedAt,
-    dueDate, setDueDate
+    dueDate, setDueDate,
+    subjectEnabled, setSubjectEnabled,
+    subjectInvoice, setSubjectInvoice,
+    subjectChallan, setSubjectChallan,
+    subjectQuotation, setSubjectQuotation,
+    invoiceModeEnabled, setInvoiceModeEnabled,
+    challanModeEnabled, setChallanModeEnabled,
+    quotationModeEnabled, setQuotationModeEnabled,
   } = useCreateInvoice();
 
   const searchParams = useSearchParams();
@@ -62,6 +70,13 @@ function CreateInvoiceForm() {
           setAmountPaid(Number(invoice.amount_paid) || 0);
           if (invoice.issued_at && invoice.status !== 'DRAFT') setIssuedAt(invoice.issued_at);
           if (invoice.due_date && invoice.status !== 'DRAFT') setDueDate(invoice.due_date);
+          if (invoice.subject_enabled !== undefined) setSubjectEnabled(invoice.subject_enabled);
+          if (invoice.subject_invoice || invoice.subject) setSubjectInvoice(invoice.subject_invoice || invoice.subject || 'Bill for Items/Services');
+          if (invoice.subject_challan || invoice.subject) setSubjectChallan(invoice.subject_challan || invoice.subject || 'Delivery Challan for Items/Services');
+          if (invoice.subject_quotation || invoice.subject) setSubjectQuotation(invoice.subject_quotation || invoice.subject || 'Quotation for Items/Services');
+          if (invoice.invoice_mode_enabled !== undefined) setInvoiceModeEnabled(invoice.invoice_mode_enabled);
+          if (invoice.challan_mode_enabled !== undefined) setChallanModeEnabled(invoice.challan_mode_enabled);
+          if (invoice.quotation_mode_enabled !== undefined) setQuotationModeEnabled(invoice.quotation_mode_enabled);
         } else if (invoice && invoice.status !== 'DRAFT') {
            console.warn('Invoice editing is disabled for non-draft invoices');
         }
@@ -181,6 +196,13 @@ function CreateInvoiceForm() {
         shippingCost,
         issuedAt: issuedAt || undefined,
         dueDate: dueDate || undefined,
+        subjectEnabled,
+        subjectInvoice,
+        subjectChallan,
+        subjectQuotation,
+        invoiceModeEnabled,
+        challanModeEnabled,
+        quotationModeEnabled,
       });
       
       router.push(`/invoices/${invoice.id}`);
@@ -209,6 +231,13 @@ function CreateInvoiceForm() {
         shippingCost,
         issuedAt: issuedAt || undefined,
         dueDate: dueDate || undefined,
+        subjectEnabled,
+        subjectInvoice,
+        subjectChallan,
+        subjectQuotation,
+        invoiceModeEnabled,
+        challanModeEnabled,
+        quotationModeEnabled,
       });
       
       router.push(`/invoices/${invoice.id}`);
@@ -240,6 +269,8 @@ function CreateInvoiceForm() {
       />
 
         <InvoiceDates />
+
+        <SubjectAndModeSettings />
       </div>
 
       {/* Step 2: Groups & Items */}

@@ -157,3 +157,16 @@ export function formatQuantity(item: any): string {
   if (item.isFlatRate) return '-';
   return `${item.quantity} ${item.unit || ''}`.trim();
 }
+
+export function getSubjectForDoc(invoice: Invoice, docType: DocumentType = 'invoice'): string | null {
+  if (invoice.subject_enabled === false) return null;
+
+  if (docType === 'quotation') {
+    return invoice.subject_quotation || invoice.subject || 'Quotation for Items/Services';
+  }
+  if (docType === 'challan') {
+    return invoice.subject_challan || invoice.subject || 'Delivery Challan for Items/Services';
+  }
+  return invoice.subject_invoice || invoice.subject || 'Bill for Items/Services';
+}
+

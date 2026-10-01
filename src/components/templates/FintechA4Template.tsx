@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function FintechA4Template({
@@ -40,6 +41,7 @@ export function FintechA4Template({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -151,6 +153,14 @@ export function FintechA4Template({
                 >
                   {invoice.status}
                 </div>
+              </div>
+            )}
+
+            {/* Subject */}
+            {subject && (
+              <div className="mb-3 px-3 py-1.5 bg-[#f8fafc] border-l-4 border-slate-700 text-xs text-slate-800 flex items-center gap-2 rounded-r">
+                <span className="font-bold uppercase tracking-wider text-[10px] text-slate-500">Subject:</span>
+                <span className="font-semibold text-slate-900">{subject}</span>
               </div>
             )}
 

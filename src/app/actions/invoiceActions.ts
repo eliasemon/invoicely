@@ -42,6 +42,14 @@ export async function createInvoice(data: {
   shippingCost?: number;
   issuedAt?: string;
   dueDate?: string;
+  subjectEnabled?: boolean;
+  subject?: string;
+  subjectInvoice?: string;
+  subjectChallan?: string;
+  subjectQuotation?: string;
+  invoiceModeEnabled?: boolean;
+  challanModeEnabled?: boolean;
+  quotationModeEnabled?: boolean;
 }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
@@ -179,6 +187,14 @@ export async function createInvoice(data: {
       terms_and_conditions: profile?.terms_and_conditions_enabled ? profile.terms_and_conditions : null,
       brand_voice_enabled: profile?.brand_voice_enabled ?? true,
       brand_voice: profile?.brand_voice_enabled ? profile.brand_voice : null,
+      subject_enabled: data.subjectEnabled ?? true,
+      subject: data.subject || null,
+      subject_invoice: data.subjectInvoice || 'Bill for Items/Services',
+      subject_challan: data.subjectChallan || 'Delivery Challan for Items/Services',
+      subject_quotation: data.subjectQuotation || 'Quotation for Items/Services',
+      invoice_mode_enabled: data.invoiceModeEnabled ?? true,
+      challan_mode_enabled: data.challanModeEnabled ?? true,
+      quotation_mode_enabled: data.quotationModeEnabled ?? true,
       updated_at: now.toISOString()
   } as any;
 
@@ -362,6 +378,14 @@ export async function saveDraftInvoice(data: {
   shippingCost?: number;
   issuedAt?: string;
   dueDate?: string;
+  subjectEnabled?: boolean;
+  subject?: string;
+  subjectInvoice?: string;
+  subjectChallan?: string;
+  subjectQuotation?: string;
+  invoiceModeEnabled?: boolean;
+  challanModeEnabled?: boolean;
+  quotationModeEnabled?: boolean;
 }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
@@ -447,6 +471,14 @@ export async function saveDraftInvoice(data: {
       bank_account_number: profile?.bank_enabled ? profile.bank_account_number : null,
       bank_swift: profile?.bank_enabled ? profile.bank_swift : null,
       terms_and_conditions: profile?.terms_and_conditions || null,
+      subject_enabled: data.subjectEnabled ?? true,
+      subject: data.subject || null,
+      subject_invoice: data.subjectInvoice || 'Bill for Items/Services',
+      subject_challan: data.subjectChallan || 'Delivery Challan for Items/Services',
+      subject_quotation: data.subjectQuotation || 'Quotation for Items/Services',
+      invoice_mode_enabled: data.invoiceModeEnabled ?? true,
+      challan_mode_enabled: data.challanModeEnabled ?? true,
+      quotation_mode_enabled: data.quotationModeEnabled ?? true,
       updated_at: new Date().toISOString()
   };
 
@@ -667,3 +699,52 @@ export async function deletePayment(invoiceId: string, paymentLogId: string) {
     throw new Error('Failed to delete payment');
   }
 }
+
+export async function updateInvoiceSettings(invoiceId: string, settings: {
+  subject_enabled?: boolean;
+  subject?: string | null;
+  subject_invoice?: string | null;
+  subject_challan?: string | null;
+  subject_quotation?: string | null;
+  invoice_mode_enabled?: boolean;
+  challan_mode_enabled?: boolean;
+  quotation_mode_enabled?: boolean;
+}) {
+  const userId = await getUserId();
+  if (!userId) {
+    throw new Error('Not authenticated');
+  }
+
+  // Security guard: verify that the caller is the owner of the invoice
+  const { data: inv, error: fetchErr } = await supabaseAdmin
+    .from('invoices')
+    .select('id, profile_id')
+    .eq('id', invoiceId)
+    .single();
+
+  if (fetchErr || !inv) {
+    throw new Error('Invoice not found');
+  }
+
+  if (inv.profile_id !== userId) {
+    throw new Error('Unauthorized: Only the invoice owner can modify settings');
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('invoices')
+    .update({
+      ...settings,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', invoiceId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating invoice settings:', error);
+    throw new Error('Failed to update invoice settings');
+  }
+
+  return data;
+}
+

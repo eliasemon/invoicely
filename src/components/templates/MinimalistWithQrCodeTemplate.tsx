@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function MinimalistWithQrCodeTemplate({
@@ -41,6 +42,7 @@ export function MinimalistWithQrCodeTemplate({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -119,6 +121,14 @@ export function MinimalistWithQrCodeTemplate({
               )}
             </div>
           </div>
+
+          {/* Subject */}
+          {subject && (
+            <div className="mb-4 px-3 py-1.5 border-l-2 border-black text-xs text-black flex items-center gap-2">
+              <span className="font-bold uppercase tracking-wider text-[10px]">Subject:</span>
+              <span className="font-medium text-gray-900">{subject}</span>
+            </div>
+          )}
 
           {/* Line Items */}
           <div className="mb-8">

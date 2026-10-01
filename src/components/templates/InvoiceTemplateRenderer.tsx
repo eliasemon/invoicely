@@ -61,6 +61,21 @@ export function InvoiceTemplateRenderer({
   const effectiveQuotation = Boolean(isQuotation || documentType === 'quotation');
   const effectiveDocType = effectiveQuotation ? 'quotation' : effectiveChallan ? 'challan' : 'invoice';
 
+  // Construct mode-specific QR URL so scanning each mode opens that exact document type
+  let qrUrl = publicUrl;
+  if (publicUrl) {
+    try {
+      const urlObj = new URL(publicUrl, 'http://localhost');
+      urlObj.searchParams.set('type', effectiveDocType);
+      qrUrl = publicUrl.startsWith('http') 
+        ? urlObj.toString() 
+        : `${urlObj.pathname}${urlObj.search}`;
+    } catch {
+      const sep = publicUrl.includes('?') ? '&' : '?';
+      qrUrl = `${publicUrl}${sep}type=${effectiveDocType}`;
+    }
+  }
+
   // Normalize profile to make sure company_address falls back to billing_address
   const normalizedProfile = profile
     ? {
@@ -78,7 +93,7 @@ export function InvoiceTemplateRenderer({
         isPreview={isPreview}
         showGroups={showGroups}
         showGroupTotals={showGroupTotals}
-        publicUrl={publicUrl}
+        publicUrl={qrUrl}
         isChallan={effectiveChallan}
         isQuotation={effectiveQuotation}
         documentType={effectiveDocType}

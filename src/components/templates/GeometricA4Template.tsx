@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function GeometricA4Template({
@@ -40,6 +41,7 @@ export function GeometricA4Template({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -147,12 +149,20 @@ export function GeometricA4Template({
                     Document Type
                   </p>
                   <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                    Delivery Challan
+                    {isQuotationDoc ? "Quotation" : "Delivery Challan"}
                   </span>
                 </div>
               )}
             </div>
           </div>
+
+          {/* Subject */}
+          {subject && (
+            <div className="mb-3 px-3 py-1.5 bg-[#f8fafc] border-l-4 border-slate-700 text-xs text-slate-800 flex items-center gap-2 rounded-r">
+              <span className="font-bold uppercase tracking-wider text-[10px] text-slate-500">Subject:</span>
+              <span className="font-semibold text-slate-900">{subject}</span>
+            </div>
+          )}
 
           {/* Items */}
           <div className="mb-4">

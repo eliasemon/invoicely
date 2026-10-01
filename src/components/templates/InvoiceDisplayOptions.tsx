@@ -16,6 +16,10 @@ interface InvoiceDisplayOptionsProps {
   setDocumentType?: (val: DocumentType) => void;
   textSize?: TextSize;
   setTextSize?: (val: TextSize) => void;
+  invoiceModeEnabled?: boolean;
+  challanModeEnabled?: boolean;
+  quotationModeEnabled?: boolean;
+  isOwner?: boolean;
 }
 
 export function InvoiceDisplayOptions({
@@ -32,6 +36,10 @@ export function InvoiceDisplayOptions({
   setDocumentType,
   textSize = "normal",
   setTextSize,
+  invoiceModeEnabled = true,
+  challanModeEnabled = true,
+  quotationModeEnabled = true,
+  isOwner = false,
 }: InvoiceDisplayOptionsProps) {
   // Determine current active document type
   const currentDocType: DocumentType =
@@ -86,176 +94,207 @@ export function InvoiceDisplayOptions({
           </span>
         </div>
 
-        {/* 3 Document Type Cards: Commercial Invoice, Delivery Challan, Quotation */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-          {/* Option 1: Commercial Invoice */}
-          <button
-            type="button"
-            onClick={() => handleSelectDocType("invoice")}
-            aria-pressed={currentDocType === "invoice"}
-            className={`group relative flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
-              currentDocType === "invoice"
-                ? "border-primary bg-surface-container-lowest shadow-sm ring-2 ring-primary/10"
-                : "border-outline-variant/60 bg-surface-container-lowest/70 hover:border-outline-variant hover:bg-surface-container-lowest"
-            }`}
-          >
-            <div
-              className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                currentDocType === "invoice"
-                  ? "bg-primary text-on-primary shadow-sm"
-                  : "bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high"
-              }`}
-            >
-              <MaterialIcon
-                icon="receipt_long"
-                filled={currentDocType === "invoice"}
-                className="text-[18px]"
-              />
-            </div>
+        {/* Document Type Cards */}
+        {(() => {
+          const canShowInvoice = isOwner || invoiceModeEnabled;
+          const canShowChallan = isOwner || challanModeEnabled;
+          const canShowQuotation = isOwner || quotationModeEnabled;
+          const visibleCount = [canShowInvoice, canShowChallan, canShowQuotation].filter(Boolean).length;
+          const gridCols = visibleCount === 1 ? 'grid-cols-1' : visibleCount === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-3';
 
-            <div className="flex-1 min-w-0 pr-4">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span
-                  className={`font-semibold text-xs transition-colors ${
+          return (
+            <div className={`grid ${gridCols} gap-2.5 sm:gap-3`}>
+              {/* Option 1: Commercial Invoice */}
+              {canShowInvoice && (
+                <button
+                  type="button"
+                  onClick={() => handleSelectDocType("invoice")}
+                  aria-pressed={currentDocType === "invoice"}
+                  className={`group relative flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
                     currentDocType === "invoice"
-                      ? "text-primary font-bold"
-                      : "text-on-surface"
+                      ? "border-primary bg-surface-container-lowest shadow-sm ring-2 ring-primary/10"
+                      : "border-outline-variant/60 bg-surface-container-lowest/70 hover:border-outline-variant hover:bg-surface-container-lowest"
                   }`}
                 >
-                  Commercial Invoice
-                </span>
-              </div>
-              <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
-                Standard invoice with unit rates & financial totals
-              </p>
-            </div>
+                  <div
+                    className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      currentDocType === "invoice"
+                        ? "bg-primary text-on-primary shadow-sm"
+                        : "bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high"
+                    }`}
+                  >
+                    <MaterialIcon
+                      icon="receipt_long"
+                      filled={currentDocType === "invoice"}
+                      className="text-[18px]"
+                    />
+                  </div>
 
-            {/* Checkmark Indicator */}
-            <div
-              className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-all ${
-                currentDocType === "invoice"
-                  ? "bg-primary text-on-primary opacity-100 scale-100 shadow-sm"
-                  : "border border-outline-variant/80 opacity-30 scale-90"
-              }`}
-            >
-              {currentDocType === "invoice" && (
-                <MaterialIcon icon="check" className="text-[12px]" />
+                  <div className="flex-1 min-w-0 pr-4">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span
+                        className={`font-semibold text-xs transition-colors ${
+                          currentDocType === "invoice"
+                            ? "text-primary font-bold"
+                            : "text-on-surface"
+                        }`}
+                      >
+                        Commercial Invoice
+                      </span>
+                      {isOwner && (
+                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${invoiceModeEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                          {invoiceModeEnabled ? 'Public: On' : 'Public: Off'}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
+                      Standard invoice with unit rates & financial totals
+                    </p>
+                  </div>
+
+                  {/* Checkmark Indicator */}
+                  <div
+                    className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-all ${
+                      currentDocType === "invoice"
+                        ? "bg-primary text-on-primary opacity-100 scale-100 shadow-sm"
+                        : "border border-outline-variant/80 opacity-30 scale-90"
+                    }`}
+                  >
+                    {currentDocType === "invoice" && (
+                      <MaterialIcon icon="check" className="text-[12px]" />
+                    )}
+                  </div>
+                </button>
               )}
-            </div>
-          </button>
 
-          {/* Option 2: Delivery Challan */}
-          <button
-            type="button"
-            onClick={() => handleSelectDocType("challan")}
-            aria-pressed={currentDocType === "challan"}
-            className={`group relative flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
-              currentDocType === "challan"
-                ? "border-primary bg-surface-container-lowest shadow-sm ring-2 ring-primary/10"
-                : "border-outline-variant/60 bg-surface-container-lowest/70 hover:border-outline-variant hover:bg-surface-container-lowest"
-            }`}
-          >
-            <div
-              className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                currentDocType === "challan"
-                  ? "bg-primary text-on-primary shadow-sm"
-                  : "bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high"
-              }`}
-            >
-              <MaterialIcon
-                icon="local_shipping"
-                filled={currentDocType === "challan"}
-                className="text-[18px]"
-              />
-            </div>
-
-            <div className="flex-1 min-w-0 pr-4">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span
-                  className={`font-semibold text-xs transition-colors ${
+              {/* Option 2: Delivery Challan */}
+              {canShowChallan && (
+                <button
+                  type="button"
+                  onClick={() => handleSelectDocType("challan")}
+                  aria-pressed={currentDocType === "challan"}
+                  className={`group relative flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
                     currentDocType === "challan"
-                      ? "text-primary font-bold"
-                      : "text-on-surface"
+                      ? "border-primary bg-surface-container-lowest shadow-sm ring-2 ring-primary/10"
+                      : "border-outline-variant/60 bg-surface-container-lowest/70 hover:border-outline-variant hover:bg-surface-container-lowest"
                   }`}
                 >
-                  Delivery Challan
-                </span>
-              </div>
-              <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
-                Consignment note with quantities only — hides prices
-              </p>
-            </div>
+                  <div
+                    className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      currentDocType === "challan"
+                        ? "bg-primary text-on-primary shadow-sm"
+                        : "bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high"
+                    }`}
+                  >
+                    <MaterialIcon
+                      icon="local_shipping"
+                      filled={currentDocType === "challan"}
+                      className="text-[18px]"
+                    />
+                  </div>
 
-            {/* Checkmark Indicator */}
-            <div
-              className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-all ${
-                currentDocType === "challan"
-                  ? "bg-primary text-on-primary opacity-100 scale-100 shadow-sm"
-                  : "border border-outline-variant/80 opacity-30 scale-90"
-              }`}
-            >
-              {currentDocType === "challan" && (
-                <MaterialIcon icon="check" className="text-[12px]" />
+                  <div className="flex-1 min-w-0 pr-4">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span
+                        className={`font-semibold text-xs transition-colors ${
+                          currentDocType === "challan"
+                            ? "text-primary font-bold"
+                            : "text-on-surface"
+                        }`}
+                      >
+                        Delivery Challan
+                      </span>
+                      {isOwner && (
+                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${challanModeEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                          {challanModeEnabled ? 'Public: On' : 'Public: Off'}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
+                      Consignment note with quantities only — hides prices
+                    </p>
+                  </div>
+
+                  {/* Checkmark Indicator */}
+                  <div
+                    className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-all ${
+                      currentDocType === "challan"
+                        ? "bg-primary text-on-primary opacity-100 scale-100 shadow-sm"
+                        : "border border-outline-variant/80 opacity-30 scale-90"
+                    }`}
+                  >
+                    {currentDocType === "challan" && (
+                      <MaterialIcon icon="check" className="text-[12px]" />
+                    )}
+                  </div>
+                </button>
               )}
-            </div>
-          </button>
 
-          {/* Option 3: Quotation */}
-          <button
-            type="button"
-            onClick={() => handleSelectDocType("quotation")}
-            aria-pressed={currentDocType === "quotation"}
-            className={`group relative flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
-              currentDocType === "quotation"
-                ? "border-primary bg-surface-container-lowest shadow-sm ring-2 ring-primary/10"
-                : "border-outline-variant/60 bg-surface-container-lowest/70 hover:border-outline-variant hover:bg-surface-container-lowest"
-            }`}
-          >
-            <div
-              className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                currentDocType === "quotation"
-                  ? "bg-primary text-on-primary shadow-sm"
-                  : "bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high"
-              }`}
-            >
-              <MaterialIcon
-                icon="request_quote"
-                filled={currentDocType === "quotation"}
-                className="text-[18px]"
-              />
-            </div>
-
-            <div className="flex-1 min-w-0 pr-4">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span
-                  className={`font-semibold text-xs transition-colors ${
+              {/* Option 3: Quotation */}
+              {canShowQuotation && (
+                <button
+                  type="button"
+                  onClick={() => handleSelectDocType("quotation")}
+                  aria-pressed={currentDocType === "quotation"}
+                  className={`group relative flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer active:scale-[0.99] ${
                     currentDocType === "quotation"
-                      ? "text-primary font-bold"
-                      : "text-on-surface"
+                      ? "border-primary bg-surface-container-lowest shadow-sm ring-2 ring-primary/10"
+                      : "border-outline-variant/60 bg-surface-container-lowest/70 hover:border-outline-variant hover:bg-surface-container-lowest"
                   }`}
                 >
-                  Quotation
-                </span>
-              </div>
-              <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
-                Item list with quantities only — hides all pricing details
-              </p>
-            </div>
+                  <div
+                    className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      currentDocType === "quotation"
+                        ? "bg-primary text-on-primary shadow-sm"
+                        : "bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high"
+                    }`}
+                  >
+                    <MaterialIcon
+                      icon="request_quote"
+                      filled={currentDocType === "quotation"}
+                      className="text-[18px]"
+                    />
+                  </div>
 
-            {/* Checkmark Indicator */}
-            <div
-              className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-all ${
-                currentDocType === "quotation"
-                  ? "bg-primary text-on-primary opacity-100 scale-100 shadow-sm"
-                  : "border border-outline-variant/80 opacity-30 scale-90"
-              }`}
-            >
-              {currentDocType === "quotation" && (
-                <MaterialIcon icon="check" className="text-[12px]" />
+                  <div className="flex-1 min-w-0 pr-4">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span
+                        className={`font-semibold text-xs transition-colors ${
+                          currentDocType === "quotation"
+                            ? "text-primary font-bold"
+                            : "text-on-surface"
+                        }`}
+                      >
+                        Quotation
+                      </span>
+                      {isOwner && (
+                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${quotationModeEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                          {quotationModeEnabled ? 'Public: On' : 'Public: Off'}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
+                      Item list with quantities only — hides all pricing details
+                    </p>
+                  </div>
+
+                  {/* Checkmark Indicator */}
+                  <div
+                    className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-all ${
+                      currentDocType === "quotation"
+                        ? "bg-primary text-on-primary opacity-100 scale-100 shadow-sm"
+                        : "border border-outline-variant/80 opacity-30 scale-90"
+                    }`}
+                  >
+                    {currentDocType === "quotation" && (
+                      <MaterialIcon icon="check" className="text-[12px]" />
+                    )}
+                  </div>
+                </button>
               )}
             </div>
-          </button>
-        </div>
+          );
+        })()}
       </div>
 
       {/* PDF Text Size & Density Controls (Ensuring 15 rows fit on single A4) */}

@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function EnterpriseA4Template({
@@ -42,6 +43,7 @@ export function EnterpriseA4Template({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   return (
     <div
@@ -152,6 +154,14 @@ export function EnterpriseA4Template({
                   </div>
                 )}
               </div>
+
+              {/* Subject */}
+              {subject && (
+                <div className="mb-3 px-3 py-1.5 bg-blue-50/60 border-l-4 border-[#1e40af] text-xs text-slate-800 flex items-center gap-2 rounded-r">
+                  <span className="font-bold uppercase tracking-wider text-[10px] text-[#1e40af]">Subject:</span>
+                  <span className="font-medium text-slate-900">{subject}</span>
+                </div>
+              )}
 
               {/* Items */}
               <div className="overflow-x-auto mb-4">

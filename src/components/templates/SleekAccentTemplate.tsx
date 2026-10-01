@@ -12,6 +12,7 @@ import {
   getTotal,
   getAmountPaid,
   getAllItems,
+  getSubjectForDoc,
 } from "./templateUtils";
 
 export function SleekAccentTemplate({
@@ -41,6 +42,7 @@ export function SleekAccentTemplate({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
+  const subject = getSubjectForDoc(invoice, documentType);
 
   const tax = 0; // Keeping tax as 0 as per other templates unless specified in invoice
 
@@ -148,6 +150,14 @@ export function SleekAccentTemplate({
               </p>
             </div>
           </section>
+
+          {/* Subject */}
+          {subject && (
+            <div className="mb-4 px-3.5 py-2 bg-orange-50/50 border-l-4 border-orange-500 text-xs text-[#0b1b3d] flex items-center gap-2 rounded-r">
+              <span className="font-bold uppercase tracking-wider text-[10px] text-orange-600">Subject:</span>
+              <span className="font-semibold text-[#0b1b3d]">{subject}</span>
+            </div>
+          )}
 
           {/* Line Items Table */}
           <section className="mb-8">
