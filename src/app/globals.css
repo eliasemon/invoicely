@@ -257,3 +257,105 @@
   font-size: 12.5px !important;
   line-height: 18px !important;
 }
+
+/* ==========================================================================
+   Overall Document Content Font Resizer
+   Scales overall document content (company info, client addresses, headers,
+   metadata, summary, totals, notes, bank info, and footer) WITHOUT affecting
+   the table or list item rows (which are governed by .pdf-density-*).
+   ========================================================================== */
+
+/* Compact Overall Content */
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-3xl {
+  font-size: 1.5rem !important;
+  line-height: 1.85rem !important;
+}
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-2xl {
+  font-size: 1.25rem !important;
+  line-height: 1.6rem !important;
+}
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-xl {
+  font-size: 1.05rem !important;
+  line-height: 1.4rem !important;
+}
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-lg {
+  font-size: 0.95rem !important;
+  line-height: 1.3rem !important;
+}
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-base {
+  font-size: 0.85rem !important;
+  line-height: 1.2rem !important;
+}
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-sm {
+  font-size: 0.75rem !important;
+  line-height: 1.05rem !important;
+}
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-xs {
+  font-size: 0.65rem !important;
+  line-height: 0.95rem !important;
+}
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-\[12px\] {
+  font-size: 10px !important;
+  line-height: 13px !important;
+}
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-\[11px\] {
+  font-size: 9.5px !important;
+  line-height: 12.5px !important;
+}
+.pdf-content-compact *:not(table, table *, .template-item-row, .template-item-row *).text-\[10px\] {
+  font-size: 8.5px !important;
+  line-height: 11px !important;
+}
+
+.pdf-content-compact h1:not(table, table *, .template-item-row, .template-item-row *) { font-size: 1.25rem !important; }
+.pdf-content-compact h2:not(table, table *, .template-item-row, .template-item-row *) { font-size: 1.1rem !important; }
+.pdf-content-compact h3:not(table, table *, .template-item-row, .template-item-row *) { font-size: 0.95rem !important; }
+.pdf-content-compact h4:not(table, table *, .template-item-row, .template-item-row *) { font-size: 0.85rem !important; }
+
+/* Large Overall Content */
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-3xl {
+  font-size: 2.1rem !important;
+  line-height: 2.5rem !important;
+}
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-2xl {
+  font-size: 1.75rem !important;
+  line-height: 2.2rem !important;
+}
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-xl {
+  font-size: 1.4rem !important;
+  line-height: 1.8rem !important;
+}
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-lg {
+  font-size: 1.25rem !important;
+  line-height: 1.6rem !important;
+}
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-base {
+  font-size: 1.125rem !important;
+  line-height: 1.5rem !important;
+}
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-sm {
+  font-size: 0.95rem !important;
+  line-height: 1.35rem !important;
+}
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-xs {
+  font-size: 0.85rem !important;
+  line-height: 1.2rem !important;
+}
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-\[12px\] {
+  font-size: 13.5px !important;
+  line-height: 18px !important;
+}
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-\[11px\] {
+  font-size: 12.5px !important;
+  line-height: 17px !important;
+}
+.pdf-content-large *:not(table, table *, .template-item-row, .template-item-row *).text-\[10px\] {
+  font-size: 11.5px !important;
+  line-height: 15px !important;
+}
+
+.pdf-content-large h1:not(table, table *, .template-item-row, .template-item-row *) { font-size: 1.75rem !important; }
+.pdf-content-large h2:not(table, table *, .template-item-row, .template-item-row *) { font-size: 1.45rem !important; }
+.pdf-content-large h3:not(table, table *, .template-item-row, .template-item-row *) { font-size: 1.25rem !important; }
+.pdf-content-large h4:not(table, table *, .template-item-row, .template-item-row *) { font-size: 1.1rem !important; }
+

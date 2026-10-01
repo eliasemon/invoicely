@@ -16,6 +16,8 @@ interface InvoiceDisplayOptionsProps {
   setDocumentType?: (val: DocumentType) => void;
   textSize?: TextSize;
   setTextSize?: (val: TextSize) => void;
+  overallTextSize?: TextSize;
+  setOverallTextSize?: (val: TextSize) => void;
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
@@ -36,6 +38,8 @@ export function InvoiceDisplayOptions({
   setDocumentType,
   textSize = "normal",
   setTextSize,
+  overallTextSize = "normal",
+  setOverallTextSize,
   invoiceModeEnabled = true,
   challanModeEnabled = true,
   quotationModeEnabled = true,
@@ -67,6 +71,18 @@ export function InvoiceDisplayOptions({
     if (!setTextSize) return;
     if (textSize === "compact") setTextSize("normal");
     else if (textSize === "normal") setTextSize("large");
+  };
+
+  const handleDecreaseOverallTextSize = () => {
+    if (!setOverallTextSize) return;
+    if (overallTextSize === "large") setOverallTextSize("normal");
+    else if (overallTextSize === "normal") setOverallTextSize("compact");
+  };
+
+  const handleIncreaseOverallTextSize = () => {
+    if (!setOverallTextSize) return;
+    if (overallTextSize === "compact") setOverallTextSize("normal");
+    else if (overallTextSize === "normal") setOverallTextSize("large");
   };
 
   const isPricingHidden = currentDocType !== "invoice";
@@ -297,7 +313,102 @@ export function InvoiceDisplayOptions({
         })()}
       </div>
 
-      {/* PDF Text Size & Density Controls (Ensuring 15 rows fit on single A4) */}
+      {/* Overall Document Font Size Controls (Excluding line items) */}
+      {setOverallTextSize && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface border border-outline-variant/70 rounded-xl px-4 py-3 shadow-sm text-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="material-symbols-outlined text-primary text-[20px] flex-shrink-0">
+              text_fields
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-xs sm:text-sm text-on-surface">
+                  Overall Document Font Size
+                </p>
+                <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400">
+                  Headers, Totals & Details
+                </span>
+              </div>
+              <p className="text-[11px] text-on-surface-variant">
+                Scales headers, addresses, dates, summary totals & notes (excluding list items)
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 self-end sm:self-auto bg-surface-container-high/60 p-1 rounded-lg border border-outline-variant/40">
+            {/* A- Stepper */}
+            <button
+              type="button"
+              onClick={handleDecreaseOverallTextSize}
+              disabled={overallTextSize === "compact"}
+              title="Decrease overall document font size"
+              className={`px-2 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                overallTextSize === "compact"
+                  ? "opacity-30 cursor-not-allowed text-on-surface-variant"
+                  : "hover:bg-surface-container-highest text-on-surface active:scale-95"
+              }`}
+            >
+              A-
+            </button>
+
+            {/* Compact Pill */}
+            <button
+              type="button"
+              onClick={() => setOverallTextSize("compact")}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all cursor-pointer ${
+                overallTextSize === "compact"
+                  ? "bg-primary text-on-primary font-bold shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface"
+              }`}
+            >
+              Compact
+            </button>
+
+            {/* Normal Pill */}
+            <button
+              type="button"
+              onClick={() => setOverallTextSize("normal")}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all cursor-pointer ${
+                overallTextSize === "normal"
+                  ? "bg-primary text-on-primary font-bold shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface"
+              }`}
+            >
+              Normal
+            </button>
+
+            {/* Large Pill */}
+            <button
+              type="button"
+              onClick={() => setOverallTextSize("large")}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all cursor-pointer ${
+                overallTextSize === "large"
+                  ? "bg-primary text-on-primary font-bold shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface"
+              }`}
+            >
+              Large
+            </button>
+
+            {/* A+ Stepper */}
+            <button
+              type="button"
+              onClick={handleIncreaseOverallTextSize}
+              disabled={overallTextSize === "large"}
+              title="Increase overall document font size"
+              className={`px-2 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                overallTextSize === "large"
+                  ? "opacity-30 cursor-not-allowed text-on-surface-variant"
+                  : "hover:bg-surface-container-highest text-on-surface active:scale-95"
+              }`}
+            >
+              A+
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* PDF Table Item Rows Text Size & Page Fit Controls (Ensuring 15 rows fit on single A4) */}
       {setTextSize && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface border border-outline-variant/70 rounded-xl px-4 py-3 shadow-sm text-sm">
           <div className="flex items-center gap-2.5">
@@ -307,14 +418,14 @@ export function InvoiceDisplayOptions({
             <div>
               <div className="flex items-center gap-2">
                 <p className="font-semibold text-xs sm:text-sm text-on-surface">
-                  PDF Text Size & Page Fit
+                  Table Items Font Size & Page Fit
                 </p>
                 <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
                   Fits 15+ Rows / Page
                 </span>
               </div>
               <p className="text-[11px] text-on-surface-variant">
-                Adjust font size and row padding to fit all content on a single A4 sheet
+                Adjust font size and row padding to fit all list items on a single A4 sheet
               </p>
             </div>
           </div>
@@ -325,7 +436,7 @@ export function InvoiceDisplayOptions({
               type="button"
               onClick={handleDecreaseTextSize}
               disabled={textSize === "compact"}
-              title="Decrease text size (more rows per page)"
+              title="Decrease table item rows text size (more rows per page)"
               className={`px-2 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
                 textSize === "compact"
                   ? "opacity-30 cursor-not-allowed text-on-surface-variant"
@@ -379,7 +490,7 @@ export function InvoiceDisplayOptions({
               type="button"
               onClick={handleIncreaseTextSize}
               disabled={textSize === "large"}
-              title="Increase text size"
+              title="Increase table item rows text size"
               className={`px-2 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
                 textSize === "large"
                   ? "opacity-30 cursor-not-allowed text-on-surface-variant"

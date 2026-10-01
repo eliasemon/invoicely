@@ -40,6 +40,7 @@ export interface TemplateProps {
   isQuotation?: boolean;
   documentType?: DocumentType;
   textSize?: TextSize;
+  overallTextSize?: TextSize;
 }
 
 export function formatDate(date: Date | string): string {

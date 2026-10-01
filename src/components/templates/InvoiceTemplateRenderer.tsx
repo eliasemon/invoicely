@@ -52,6 +52,7 @@ export function InvoiceTemplateRenderer({
   isQuotation = false,
   documentType = 'invoice',
   textSize = 'normal',
+  overallTextSize = 'normal',
 }: InvoiceTemplateRendererProps) {
   const TemplateComponent =
     TEMPLATE_MAP[templateId || "modern-template"] || ModernTemplate;
@@ -86,7 +87,7 @@ export function InvoiceTemplateRenderer({
     : null;
 
   return (
-    <div className={`flex flex-col w-full print:block print:w-[210mm] print:p-0 print:m-0 pdf-density-${textSize}`}>
+    <div className={`flex flex-col w-full print:block print:w-[210mm] print:p-0 print:m-0 pdf-density-${textSize} pdf-content-${overallTextSize}`}>
       <TemplateComponent
         invoice={invoice}
         profile={normalizedProfile}
@@ -98,6 +99,7 @@ export function InvoiceTemplateRenderer({
         isQuotation={effectiveQuotation}
         documentType={effectiveDocType}
         textSize={textSize}
+        overallTextSize={overallTextSize}
       />
     </div>
   );
