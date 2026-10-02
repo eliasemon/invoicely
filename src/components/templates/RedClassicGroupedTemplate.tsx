@@ -63,19 +63,19 @@ export function RedClassicGroupedTemplate({
       className="min-h-screen py-8 bg-gray-100 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
       style={{ fontFamily: "Arial, sans-serif" }}
     >
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-black shadow-xl overflow-hidden print:shadow-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 p-8 print:p-6 relative">
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-black shadow-xl overflow-hidden print:shadow-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 p-4 sm:p-5 print:p-4 relative">
         {/* Header section */}
-        <div className="flex flex-row items-start justify-between mb-4 pb-4 border-b-4 border-[#8b0000]">
+        <div className="flex flex-row items-start justify-between mb-2.5 pb-2.5 border-b-4 border-[#8b0000]">
           <div className="flex items-start gap-4">
             {profile?.company_logo && (
               <img
                 alt="Company Logo"
-                className="h-16 w-auto object-contain drop-shadow-sm"
+                className="h-12 w-auto object-contain drop-shadow-sm"
                 src={profile.company_logo}
               />
             )}
             <div className="text-left">
-              <h1 className="text-3xl font-extrabold text-[#8b0000] tracking-tight uppercase leading-none">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#8b0000] tracking-tight uppercase leading-none">
                 {profile?.company_name || "COMPANY NAME"}
               </h1>
               {((invoice.brand_voice_enabled ?? profile?.brand_voice_enabled ?? true) && (invoice.brand_voice || profile?.brand_voice)) && (
@@ -334,7 +334,7 @@ export function RedClassicGroupedTemplate({
 
         {/* N.B. Note */}
         {noteText ? (
-          <div className="mb-4 text-[11px]">
+          <div className="mb-3 text-[11px] break-inside-avoid template-nb-note">
             <p className="font-bold mb-0.5">N.B:</p>
             <p className="text-gray-800 whitespace-pre-line">{noteText}</p>
           </div>
@@ -342,7 +342,7 @@ export function RedClassicGroupedTemplate({
 
         {/* Terms & Conditions */}
         {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-          <div className="mb-4 text-[11px]">
+          <div className="mb-3 text-[11px] break-inside-avoid">
             <p className="font-bold mb-0.5">Terms & Conditions:</p>
             <p className="text-gray-800 whitespace-pre-line">
               {invoice.terms_and_conditions || profile?.terms_and_conditions}

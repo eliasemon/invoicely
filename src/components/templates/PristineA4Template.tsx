@@ -50,15 +50,15 @@ export function PristineA4Template({
       className="min-h-screen py-8 bg-[#f8fafc] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
       style={{ fontFamily: "Geist, sans-serif" }}
     >
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#0f172a] shadow-sm p-8 print:p-6 text-xs flex flex-col justify-between print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#0f172a] shadow-sm p-4 sm:p-5 print:p-4 text-xs flex flex-col justify-between print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         <div>
           {/* Header */}
-          <div className="flex flex-row print:flex-row justify-between items-start border-b border-gray-100 pb-6 mb-6">
+          <div className="flex flex-row print:flex-row justify-between items-start border-b border-gray-100 pb-2.5 mb-2.5">
             <div>
               {profile?.company_logo && (
                 <img
                   alt="Company Logo"
-                  className="max-h-14 max-w-[190px] mb-2 object-contain w-auto h-auto"
+                  className="max-h-12 max-w-[180px] mb-1.5 object-contain w-auto h-auto"
                   src={profile.company_logo}
                 />
               )}
@@ -85,14 +85,14 @@ export function PristineA4Template({
               </p>
               {profile?.qr_code_enabled && publicUrl && (
                 <div className="mt-3 flex justify-end print:justify-end">
-                  <QRCodeSVG value={publicUrl} size={48} />
+                  <QRCodeSVG value={publicUrl} size={44} />
                 </div>
               )}
             </div>
           </div>
 
           {/* Client & Meta */}
-          <div className="grid grid-cols-2 gap-6 mb-6 p-4 bg-[#f8fafc] rounded-xl border border-[#e2e8f0]">
+          <div className="grid grid-cols-2 gap-3 mb-2.5 p-3 bg-[#f8fafc] rounded-xl border border-[#e2e8f0]">
             <div>
               <p className="text-[10px] uppercase font-bold text-[#64748b] tracking-wider mb-1">
                 {clientLabel}
@@ -389,7 +389,7 @@ export function PristineA4Template({
 
           {/* Footer Terms */}
           {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-            <div className="mt-3 pt-2 border-t border-gray-100 text-[10px] text-[#64748b] whitespace-pre-wrap">
+            <div className="mt-3 pt-2 border-t border-gray-100 text-[10px] text-[#64748b] whitespace-pre-wrap break-inside-avoid">
               <span className="font-semibold text-[#0f172a]">Terms: </span>
               {invoice.terms_and_conditions || profile?.terms_and_conditions}
             </div>
@@ -397,7 +397,7 @@ export function PristineA4Template({
 
           {/* N.B. Note */}
           {noteText && (
-            <div className="mt-2 pt-2 border-t border-gray-100 text-[10px] text-[#64748b] whitespace-pre-line text-left">
+            <div className="mt-2 pt-2 border-t border-gray-100 text-[10px] text-[#64748b] whitespace-pre-line text-left break-inside-avoid template-nb-note">
               <strong className="text-[#0f172a]">N.B:</strong> {noteText}
             </div>
           )}

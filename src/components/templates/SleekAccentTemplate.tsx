@@ -70,9 +70,9 @@ export function SleekAccentTemplate({
       )}
       {/* Invoice Canvas */}
       <main className="w-full max-w-[210mm] min-h-[297mm] mx-auto bg-white shadow-[0_4px_40px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col relative print:shadow-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
-        <div className="flex-1 flex flex-col p-8 p-12 print:p-10 relative z-10">
+        <div className="flex-1 flex flex-col p-6 print:p-6 relative z-10">
           {/* Header */}
-          <header className="flex flex-row print:flex-row justify-between items-start mb-10">
+          <header className="flex flex-row print:flex-row justify-between items-start mb-5">
             <div className="flex items-center gap-4">
               {profile?.company_logo ? (
                 <img
@@ -123,7 +123,7 @@ export function SleekAccentTemplate({
           </header>
 
           {/* Addresses */}
-          <section className="flex flex-row print:flex-row justify-between mb-8">
+          <section className="flex flex-row print:flex-row justify-between mb-4">
             <div className="mb-0 print:mb-0">
               <h3 className="text-sm font-bold text-[#0b1b3d] mb-2 uppercase tracking-wide">
                 FROM
@@ -447,13 +447,13 @@ export function SleekAccentTemplate({
 
           {/* N.B. Note */}
           {noteText && (
-            <div className="mt-6 pt-3 border-t border-gray-200 text-[11px] text-gray-600 whitespace-pre-line text-left">
+            <div className="mt-3 pt-2 border-t border-gray-200 text-[11px] text-gray-600 whitespace-pre-line text-left break-inside-avoid template-nb-note">
               <strong className="text-[#0b1b3d]">N.B:</strong> {noteText}
             </div>
           )}
 
           {/* Footer Contact Info */}
-          <footer className="mt-10 pt-6 border-t border-gray-200 flex flex-wrap justify-between items-center text-xs font-semibold text-[#0b1b3d] gap-4">
+          <footer className="mt-4 pt-3 border-t border-gray-200 flex flex-wrap justify-between items-center text-xs font-semibold text-[#0b1b3d] gap-4">
             {profile?.email && <div>{profile.email}</div>}
             {profile?.phone && <div>{profile.phone}</div>}
             {profile?.website && <div>{profile.website}</div>}

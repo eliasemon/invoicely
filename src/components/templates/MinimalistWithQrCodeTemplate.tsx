@@ -51,16 +51,16 @@ export function MinimalistWithQrCodeTemplate({
       className="min-h-screen py-8 bg-[#fafafa] text-[#171717] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
       style={{ fontFamily: "Inter, sans-serif" }}
     >
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white border border-gray-200 p-8 print:p-6 text-sm flex flex-col justify-between print:shadow-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white border border-gray-200 p-4 sm:p-5 print:p-4 text-sm flex flex-col justify-between print:shadow-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         <div>
           {/* Header */}
-          <div className="flex flex-row print:flex-row justify-between items-start border-b border-gray-100 pb-6 mb-6">
+          <div className="flex flex-row print:flex-row justify-between items-start border-b border-gray-100 pb-2.5 mb-2.5">
             <div>
               {profile?.company_logo && (
                 <img
                   src={profile.company_logo}
                   alt="Company Logo"
-                  className="max-h-12 max-w-[180px] mb-3 object-contain w-auto h-auto"
+                  className="max-h-12 max-w-[180px] mb-1.5 object-contain w-auto h-auto"
                 />
               )}
               <h1 className="text-base font-bold text-black">
@@ -71,7 +71,7 @@ export function MinimalistWithQrCodeTemplate({
                   {invoice.brand_voice || profile?.brand_voice}
                 </p>
               )}
-              <p className="text-xs text-gray-500 whitespace-pre-line mt-1">
+              <p className="text-xs text-gray-500 whitespace-pre-line mt-0.5">
                 {profile?.company_address}
                 {profile?.email ? ` • ${profile.email}` : ""}
                 {profile?.phone ? ` • ${profile.phone}` : ""}
@@ -81,19 +81,19 @@ export function MinimalistWithQrCodeTemplate({
               <h2 className="text-2xl font-bold tracking-tight text-black uppercase">
                 {docTitleUpper}
               </h2>
-              <p className="font-mono text-xs text-gray-500 mt-1">
+              <p className="font-mono text-xs text-gray-500 mt-0.5">
                 #{invoice.invoiceNumber}
               </p>
               {profile?.qr_code_enabled && publicUrl && (
-                <div className="mt-3 flex justify-end print:justify-end">
-                  <QRCodeSVG value={publicUrl} size={50} />
+                <div className="mt-2 flex justify-end print:justify-end">
+                  <QRCodeSVG value={publicUrl} size={44} />
                 </div>
               )}
             </div>
           </div>
 
           {/* Client & Dates */}
-          <div className="grid grid-cols-2 gap-6 mb-8 text-xs">
+          <div className="grid grid-cols-2 gap-4 mb-3 text-xs">
             <div>
               <p className="text-gray-400 font-medium mb-1">
                 {clientLabel}
@@ -348,7 +348,7 @@ export function MinimalistWithQrCodeTemplate({
 
           {/* Footer Terms */}
           {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-            <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-500 whitespace-pre-wrap">
+            <div className="mt-2 pt-2 print:mt-1.5 print:pt-1 border-t border-gray-100 text-[11px] text-gray-500 whitespace-pre-wrap break-inside-avoid">
               <p className="font-bold text-black mb-0.5">Terms & Conditions</p>
               <p>{invoice.terms_and_conditions || profile?.terms_and_conditions}</p>
             </div>
@@ -356,7 +356,7 @@ export function MinimalistWithQrCodeTemplate({
 
           {/* N.B. Note */}
           {noteText && (
-            <div className="mt-3 pt-2.5 border-t border-gray-100 text-[11px] text-gray-500 whitespace-pre-line text-left">
+            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-gray-100 text-[11px] text-gray-500 whitespace-pre-line text-left break-inside-avoid template-nb-note">
               <strong className="text-black">N.B:</strong> {noteText}
             </div>
           )}

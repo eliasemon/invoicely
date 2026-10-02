@@ -56,19 +56,19 @@ export function GeometricA4Template({
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#e0e7ff] rounded-tr-[80px] opacity-40"></div>
         <div className="absolute top-1/3 left-0 w-2 h-24 bg-[#3b82f6]"></div>
 
-        <div className="relative z-10 p-6 print:p-6">
+        <div className="relative z-10 p-4 sm:p-5 print:p-4">
           {/* Header */}
-          <div className="flex flex-row print:flex-row justify-between items-start gap-3 mb-4">
+          <div className="flex flex-row print:flex-row justify-between items-start gap-3 mb-2.5">
             <div>
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-1.5">
                 {profile?.company_logo ? (
                   <img
                     src={profile.company_logo}
                     alt="Logo"
-                    className="max-h-16 max-w-[200px] object-contain w-auto h-auto"
+                    className="max-h-14 max-w-[180px] object-contain w-auto h-auto"
                   />
                 ) : (
-                  <div className="w-12 h-12 bg-[#3b82f6] rounded-xl flex items-center justify-center text-white text-sm font-bold">
+                  <div className="w-10 h-10 bg-[#3b82f6] rounded-xl flex items-center justify-center text-white text-sm font-bold">
                     {(profile?.company_name || "C")[0]}
                   </div>
                 )}
@@ -77,7 +77,7 @@ export function GeometricA4Template({
                 </h1>
               </div>
               {((invoice.brand_voice_enabled ?? profile?.brand_voice_enabled ?? true) && (invoice.brand_voice || profile?.brand_voice)) && (
-                <p className="text-[11px] text-[#64748b] italic mb-1">
+                <p className="text-[11px] text-[#64748b] italic mb-0.5">
                   {invoice.brand_voice || profile?.brand_voice}
                 </p>
               )}
@@ -85,33 +85,33 @@ export function GeometricA4Template({
                 {profile?.company_address || ""}
               </p>
               {(profile?.email || profile?.phone) && (
-                <p className="text-[11px] text-[#64748b] mt-1">
+                <p className="text-[11px] text-[#64748b] mt-0.5">
                   {profile.email}
                   {profile.email && profile.phone ? " • " : ""}
                   {profile.phone}
                 </p>
               )}
             </div>
-            <div className="text-right print:text-right w-auto print:w-auto bg-[#f8fafc] p-4 rounded-xl border border-[#e2e8f0]">
+            <div className="text-right print:text-right w-auto print:w-auto bg-[#f8fafc] p-2.5 sm:p-3 rounded-xl border border-[#e2e8f0]">
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-semibold">
                 {docTitle}
               </p>
               <p className="text-[11px] font-bold text-[#3b82f6] font-mono break-all">
                 {invoice.invoiceNumber}
               </p>
-              <p className="text-[11px] text-[#64748b] mt-2 font-mono">
+              <p className="text-[11px] text-[#64748b] mt-1 font-mono">
                 {formatDate(issueDate)}
               </p>
               {profile?.qr_code_enabled && publicUrl && (
-                <div className="mt-3 flex justify-end print:justify-end">
-                  <QRCodeSVG value={publicUrl} size={48} />
+                <div className="mt-2 flex justify-end print:justify-end">
+                  <QRCodeSVG value={publicUrl} size={44} />
                 </div>
               )}
             </div>
           </div>
 
           {/* Client & Dates */}
-          <div className="grid grid-cols-2 gap-4 mb-4 p-4 bg-[#f8fafc] rounded-xl border border-[#e2e8f0]">
+          <div className="grid grid-cols-2 gap-3 mb-2.5 p-2.5 sm:p-3 bg-[#f8fafc] rounded-xl border border-[#e2e8f0]">
             <div>
               <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider mb-1 font-semibold">
                 {clientLabel}
@@ -394,7 +394,7 @@ export function GeometricA4Template({
 
           {/* Footer Terms */}
           {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-            <div className="mt-4 pt-3 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-wrap">
+            <div className="mt-2 pt-2 print:mt-1.5 print:pt-1 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-wrap break-inside-avoid">
               <p className="font-semibold text-[#1e293b] mb-0.5">
                 Terms & Conditions
               </p>
@@ -404,7 +404,7 @@ export function GeometricA4Template({
 
           {/* N.B. Note */}
           {noteText && (
-            <div className="mt-3 pt-2.5 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left">
+            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left break-inside-avoid template-nb-note">
               <strong className="text-[#1e293b]">N.B:</strong> {noteText}
             </div>
           )}

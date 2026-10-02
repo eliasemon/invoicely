@@ -55,13 +55,13 @@ export function ModernPurpleTemplate({
       <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white rounded-3xl shadow-xl overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 flex flex-col justify-between">
         <div>
           {/* Header */}
-          <div className="bg-[#6b21a8] text-white p-8 print:p-6 relative overflow-hidden">
+          <div className="bg-[#6b21a8] text-white p-5 sm:p-6 print:p-4 relative overflow-hidden">
             <div className="flex flex-row print:flex-row justify-between items-start gap-4 relative z-10">
               <div>
                 {profile?.company_logo && (
                   <img
                     alt="Company Logo"
-                    className="max-h-16 max-w-[200px] mb-3 object-contain bg-white/10 p-1.5 rounded-xl w-auto h-auto"
+                    className="max-h-12 max-w-[180px] mb-2 object-contain bg-white/10 p-1.5 rounded-xl w-auto h-auto"
                     src={profile.company_logo}
                   />
                 )}
@@ -87,9 +87,9 @@ export function ModernPurpleTemplate({
                   #{invoice.invoiceNumber}
                 </p>
                 {profile?.qr_code_enabled && publicUrl && (
-                  <div className="mt-3 flex justify-end print:justify-end">
+                  <div className="mt-2 flex justify-end print:justify-end">
                     <div className="bg-white p-1 rounded-lg">
-                      <QRCodeSVG value={publicUrl} size={48} />
+                      <QRCodeSVG value={publicUrl} size={44} />
                     </div>
                   </div>
                 )}
@@ -98,8 +98,8 @@ export function ModernPurpleTemplate({
           </div>
 
           {/* Client & Dates */}
-          <div className="p-8 print:p-6 pb-0">
-            <div className="grid grid-cols-2 gap-6 mb-6 p-4 bg-purple-50/50 rounded-2xl border border-purple-100">
+          <div className="p-4 sm:p-5 print:p-4 pb-0">
+            <div className="grid grid-cols-2 gap-3 mb-2.5 p-3 bg-purple-50/50 rounded-2xl border border-purple-100">
               <div>
                 <p className="text-[10px] uppercase font-bold text-[#6b21a8] tracking-wider mb-1">
                   {clientLabel}
@@ -358,7 +358,7 @@ export function ModernPurpleTemplate({
 
           {/* Footer Terms */}
           {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-            <div className="mt-4 pt-3 border-t border-purple-100 text-[10px] text-gray-500 whitespace-pre-wrap">
+            <div className="mt-2 pt-2 print:mt-1.5 print:pt-1 border-t border-purple-100 text-[10px] text-gray-500 whitespace-pre-wrap break-inside-avoid">
               <p className="font-semibold text-gray-800 mb-0.5">Terms & Conditions</p>
               <p>{invoice.terms_and_conditions || profile?.terms_and_conditions}</p>
             </div>
@@ -366,7 +366,7 @@ export function ModernPurpleTemplate({
 
           {/* N.B. Note */}
           {noteText && (
-            <div className="mt-3 pt-2.5 border-t border-purple-100 text-[10px] text-gray-500 whitespace-pre-line text-left">
+            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-purple-100 text-[10px] text-gray-500 whitespace-pre-line text-left break-inside-avoid template-nb-note">
               <strong className="text-gray-800">N.B:</strong> {noteText}
             </div>
           )}

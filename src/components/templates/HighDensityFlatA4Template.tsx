@@ -50,7 +50,7 @@ export function HighDensityFlatA4Template({
       className="min-h-screen py-8 bg-[#f1f5f9] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
       style={{ fontFamily: "Geist, sans-serif" }}
     >
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#0f172a] shadow-sm p-6 print:p-6 text-xs flex flex-col justify-between print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-[#0f172a] shadow-sm p-4 sm:p-5 print:p-4 text-xs flex flex-col justify-between print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         <div>
           {/* Header */}
           <div className="flex flex-row print:flex-row justify-between items-start border-b border-[#cbd5e1] pb-3 mb-3">
@@ -394,7 +394,7 @@ export function HighDensityFlatA4Template({
 
           {/* Footer Terms */}
           {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-            <div className="mt-3 pt-2 border-t border-[#e2e8f0] text-[9px] text-[#64748b] whitespace-pre-wrap">
+            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#e2e8f0] text-[9px] text-[#64748b] whitespace-pre-wrap break-inside-avoid">
               <span className="font-semibold text-[#0f172a]">Terms: </span>
               {invoice.terms_and_conditions || profile?.terms_and_conditions}
             </div>
@@ -402,7 +402,7 @@ export function HighDensityFlatA4Template({
 
           {/* N.B. Note */}
           {noteText && (
-            <div className="mt-2 pt-1.5 border-t border-[#e2e8f0] text-[9px] text-[#64748b] whitespace-pre-line text-left">
+            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#e2e8f0] text-[9px] text-[#64748b] whitespace-pre-line text-left break-inside-avoid template-nb-note">
               <strong className="text-[#0f172a]">N.B:</strong> {noteText}
             </div>
           )}

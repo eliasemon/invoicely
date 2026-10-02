@@ -67,20 +67,20 @@ export function ElegantTemplate({
         </div>
       )}
       {/* Invoice Canvas */}
-      <main className="w-full max-w-[210mm] min-h-[297mm] mx-auto bg-white shadow-[0_4px_40px_rgba(11,28,48,0.06)] rounded-sm overflow-hidden p-6 print:p-6 relative print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 flex flex-col justify-between">
+      <main className="w-full max-w-[210mm] min-h-[297mm] mx-auto bg-white shadow-[0_4px_40px_rgba(11,28,48,0.06)] rounded-sm overflow-hidden p-4 sm:p-5 print:p-4 relative print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 flex flex-col justify-between">
         <div>
           {/* Header */}
-          <header className="flex flex-row print:flex-row justify-between items-end print:items-end gap-2 mb-4">
+          <header className="flex flex-row print:flex-row justify-between items-end print:items-end gap-2 mb-2.5">
             <div>
               {profile?.company_logo && (
                 <img
                   alt="Company Logo"
-                  className="max-h-24 max-w-[220px] mb-2 object-contain w-auto h-auto"
+                  className="max-h-12 max-w-[200px] mb-1.5 object-contain w-auto h-auto"
                   src={profile.company_logo}
                 />
               )}
               <h1
-                className="text-[36px] leading-[44px] font-bold text-black mb-1"
+                className="text-2xl sm:text-[28px] leading-tight font-bold text-black mb-0.5"
                 style={{
                   fontFamily: "Work Sans, sans-serif",
                   letterSpacing: "-0.02em",
@@ -141,16 +141,16 @@ export function ElegantTemplate({
                 )}
               </div>
               {profile?.qr_code_enabled && publicUrl && (
-                <div className="mt-4 flex justify-end print:justify-end">
-                  <QRCodeSVG value={publicUrl} size={54} />
+                <div className="mt-2 flex justify-end print:justify-end">
+                  <QRCodeSVG value={publicUrl} size={44} />
                 </div>
               )}
             </div>
           </header>
 
           {/* Bill To / Delivered To */}
-          <section className="mb-4 border-l-2 border-[#565e74] pl-4">
-            <h3 className="text-[12px] text-[#76777d] uppercase tracking-wider mb-1">
+          <section className="mb-2 border-l-2 border-[#565e74] pl-3 py-0.5">
+            <h3 className="text-[11px] text-[#76777d] uppercase tracking-wider mb-0.5">
               {clientLabel}
             </h3>
             <p
@@ -159,21 +159,21 @@ export function ElegantTemplate({
             >
               {invoice.clientName}
             </p>
-            <p className="text-[#565e74] text-[12px] whitespace-pre-line">
+            <p className="text-[#565e74] text-xs whitespace-pre-line">
               {invoice.clientAddress || invoice.clientPhone}
             </p>
           </section>
 
           {/* Subject */}
           {subject && (
-            <div className="mb-3 px-3 py-2 bg-slate-50 border-l-4 border-slate-700 text-xs text-slate-800 flex items-center gap-2 rounded-r">
+            <div className="mb-2 px-2.5 py-1.5 bg-slate-50 border-l-4 border-slate-700 text-xs text-slate-800 flex items-center gap-2 rounded-r">
               <span className="font-bold uppercase tracking-wider text-[10px] text-slate-500">Subject:</span>
               <span className="font-semibold text-slate-900">{subject}</span>
             </div>
           )}
 
           {/* Line Items Table */}
-          <section className="mb-4">
+          <section className="mb-2">
             <div className="w-full">
               <div className="grid grid-cols-12 gap-2 border-b border-[#c6c6cd] pb-2 mb-2">
                 <div className="col-span-1 text-center text-[12px] text-[#76777d] font-semibold uppercase">
@@ -391,7 +391,7 @@ export function ElegantTemplate({
         </div>
 
         {/* Footer */}
-        <footer className="flex flex-row print:flex-row justify-between items-end print:items-end gap-3 mt-auto w-full pt-4 border-t border-[#dce9ff]">
+        <footer className="flex flex-row print:flex-row justify-between items-end print:items-end gap-3 mt-2 w-full pt-2.5 print:mt-1.5 print:pt-2 border-t border-[#dce9ff] break-inside-avoid template-bottom-section">
           <div className="w-1/2 print:w-1/2 space-y-2">
             {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
               <div className="whitespace-pre-wrap">
@@ -486,7 +486,7 @@ export function ElegantTemplate({
 
         {/* N.B. Note */}
         {noteText && (
-          <div className="border-t border-[#c6c6cd] pt-3 mt-4 text-left">
+          <div className="border-t border-[#c6c6cd] pt-2 mt-2 text-left print:pt-1.5 print:mt-1.5 break-inside-avoid template-nb-note">
             <div className="text-[11px] text-[#565e74] whitespace-pre-line">
               <strong className="text-black">N.B:</strong> {noteText}
             </div>

@@ -449,7 +449,7 @@ export function CorporateTemplate({
               )}
 
               {/* Bank Details & Signature Section */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3 border-t border-[#c6c6cd] pt-4 items-start">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2 border-t border-[#c6c6cd] pt-2.5 print:gap-2 print:mb-1.5 print:pt-2 items-start break-inside-avoid template-bottom-section">
                 {/* Bank Details - Only in Invoice Mode */}
                 {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
                   <div>
@@ -528,7 +528,7 @@ export function CorporateTemplate({
 
               {/* Footer Terms */}
               {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-                <div className="border-t-2 border-[#c6c6cd] pt-3 text-left">
+                <div className="border-t border-[#c6c6cd] pt-2 mt-2 text-left print:pt-1.5 print:mt-1.5 break-inside-avoid">
                   <div
                     className="text-[11px] text-[#45464d] max-w-[500px] whitespace-pre-wrap"
                     style={{ fontFamily: "Geist, monospace" }}
@@ -542,7 +542,7 @@ export function CorporateTemplate({
 
               {/* N.B. Note */}
               {noteText && (
-                <div className="border-t border-[#c6c6cd] pt-3 mt-3 text-left">
+                <div className="border-t border-[#c6c6cd] pt-2 mt-2 text-left print:pt-1.5 print:mt-1.5 break-inside-avoid template-nb-note">
                   <div className="text-[11px] text-[#45464d] whitespace-pre-line" style={{ fontFamily: "Geist, monospace" }}>
                     <strong className="text-black">N.B:</strong> {noteText}
                   </div>

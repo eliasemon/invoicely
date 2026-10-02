@@ -50,17 +50,17 @@ export function HeritageA4Template({
       className="min-h-screen py-8 bg-[#fdfaf5] text-[#451a03] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
       style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
     >
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-[#fffefb] border-2 border-[#b45309] shadow-xl p-6 print:p-6 relative overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 flex flex-col justify-between">
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-[#fffefb] border-2 border-[#b45309] shadow-xl p-4 sm:p-5 print:p-4 relative overflow-hidden print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 flex flex-col justify-between">
         <div>
           {/* Vintage border inner */}
-          <div className="border border-[#d97706]/40 p-5 mb-4">
+          <div className="border border-[#d97706]/40 p-3 sm:p-4 mb-2.5">
             {/* Header */}
-            <div className="flex flex-row print:flex-row justify-between items-start border-b-2 border-[#b45309] pb-4 mb-4">
+            <div className="flex flex-row print:flex-row justify-between items-start border-b-2 border-[#b45309] pb-2.5 mb-2.5">
               <div>
                 {profile?.company_logo && (
                   <img
                     alt="Logo"
-                    className="max-h-16 max-w-[200px] mb-2 object-contain w-auto h-auto"
+                    className="max-h-14 max-w-[180px] mb-1.5 object-contain w-auto h-auto"
                     src={profile.company_logo}
                   />
                 )}
@@ -73,7 +73,7 @@ export function HeritageA4Template({
                   </p>
                 )}
                 <div
-                  className="text-[11px] text-[#92400e] whitespace-pre-line mt-1"
+                  className="text-[11px] text-[#92400e] whitespace-pre-line mt-0.5"
                   style={{ fontFamily: "Geist, serif" }}
                 >
                   {profile?.company_address || ""}
@@ -86,21 +86,21 @@ export function HeritageA4Template({
                   {docTitleUpper}
                 </h2>
                 <p
-                  className="text-xs text-[#92400e] font-mono mt-1"
+                  className="text-xs text-[#92400e] font-mono mt-0.5"
                   style={{ fontFamily: "Geist, monospace" }}
                 >
                   N° {invoice.invoiceNumber}
                 </p>
                 {profile?.qr_code_enabled && publicUrl && (
-                  <div className="mt-3 flex justify-end print:justify-end">
-                    <QRCodeSVG value={publicUrl} size={48} />
+                  <div className="mt-2 flex justify-end print:justify-end">
+                    <QRCodeSVG value={publicUrl} size={44} />
                   </div>
                 )}
               </div>
             </div>
 
             {/* Bill To & Dates */}
-            <div className="grid grid-cols-2 gap-4 mb-4 pb-3 border-b border-[#d97706]/30">
+            <div className="grid grid-cols-2 gap-3 mb-2.5 pb-2 border-b border-[#d97706]/30">
               <div>
                 <p className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
                   {clientLabel}
@@ -426,7 +426,7 @@ export function HeritageA4Template({
 
         {/* Footer Terms */}
         {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-          <div className="mt-4 pt-3 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-wrap">
+          <div className="mt-2 pt-2 print:mt-1.5 print:pt-1 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-wrap break-inside-avoid">
             <p className="font-semibold text-[#78350f] mb-0.5">
               Terms & Conditions
             </p>
@@ -436,7 +436,7 @@ export function HeritageA4Template({
 
         {/* N.B. Note */}
         {noteText && (
-          <div className="mt-3 pt-2.5 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-line text-left">
+          <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-line text-left break-inside-avoid template-nb-note">
             <strong className="text-[#78350f]">N.B:</strong> {noteText}
           </div>
         )}

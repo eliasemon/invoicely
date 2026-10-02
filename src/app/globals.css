@@ -146,13 +146,14 @@
 
 @media print {
   @page {
-    size: A4;
+    size: A4 portrait;
     margin: 0;
   }
   html,
   body {
     width: 210mm;
-    height: 297mm;
+    min-height: 297mm;
+    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     background-color: #ffffff !important;
@@ -175,7 +176,13 @@
   }
 
   /* Prevent awkward page breaks on table rows and sections */
-  tr, .template-item-row {
+  tr,
+  .template-item-row,
+  .template-footer,
+  .template-nb-note,
+  .template-signature-block,
+  .template-totals-block,
+  .template-bottom-section {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }

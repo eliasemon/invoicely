@@ -51,14 +51,14 @@ export function MixedGroupsA4Template({
         <div>
           {/* Top accent */}
           <div className="h-1 bg-[#2563eb]"></div>
-          <div className="p-6 print:p-6">
+          <div className="p-4 sm:p-5 print:p-4">
             {/* Header */}
-            <div className="flex flex-row print:flex-row justify-between items-start gap-3 border-b border-[#e2e8f0] pb-4 mb-4">
+            <div className="flex flex-row print:flex-row justify-between items-start gap-3 border-b border-[#e2e8f0] pb-2.5 mb-2.5">
               <div>
                 {profile?.company_logo && (
                   <img
                     alt="Company Logo"
-                    className="max-h-16 max-w-[200px] mb-2 object-contain w-auto h-auto"
+                    className="max-h-12 max-w-[180px] mb-1.5 object-contain w-auto h-auto"
                     src={profile.company_logo}
                   />
                 )}
@@ -95,14 +95,14 @@ export function MixedGroupsA4Template({
                 </p>
                 {profile?.qr_code_enabled && publicUrl && (
                   <div className="mt-3 flex justify-end print:justify-end">
-                    <QRCodeSVG value={publicUrl} size={48} />
+                    <QRCodeSVG value={publicUrl} size={44} />
                   </div>
                 )}
               </div>
             </div>
 
             {/* Bill To & Meta */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-[#f8fafc] rounded-xl border border-[#e2e8f0] mb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-2.5 sm:p-3 bg-[#f8fafc] rounded-xl border border-[#e2e8f0] mb-2.5">
               <div className="col-span-2">
                 <p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">
                   {clientLabel}
@@ -342,7 +342,7 @@ export function MixedGroupsA4Template({
 
           {/* Footer Terms */}
           {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-            <div className="mt-4 pt-3 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-wrap">
+            <div className="mt-2 pt-2 print:mt-1.5 print:pt-1 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-wrap break-inside-avoid">
               <p className="font-semibold text-[#0f172a] mb-0.5">
                 Terms & Conditions
               </p>
@@ -352,7 +352,7 @@ export function MixedGroupsA4Template({
 
           {/* N.B. Note */}
           {noteText && (
-            <div className="mt-3 pt-2.5 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left">
+            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left break-inside-avoid template-nb-note">
               <strong className="text-[#0f172a]">N.B:</strong> {noteText}
             </div>
           )}

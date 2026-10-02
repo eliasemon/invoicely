@@ -72,7 +72,7 @@ export function ModernTemplate({
       {/* Invoice Paper */}
       <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-row print:flex-row print:shadow-none print:rounded-none print:border-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0">
         {/* Sidebar */}
-        <div className="bg-[#0058be] text-white w-[25%] print:w-[25%] p-6 flex flex-col justify-between shrink-0">
+        <div className="bg-[#0058be] text-white w-[25%] print:w-[25%] p-4 sm:p-5 print:p-3.5 flex flex-col justify-between shrink-0">
           <div>
             <div className="mb-3">
               {profile?.company_logo && (
@@ -183,7 +183,7 @@ export function ModernTemplate({
           )}
         </div>
         {/* Main Content */}
-        <div className="w-[75%] print:w-[75%] p-6 print:p-6 flex flex-col justify-between">
+        <div className="w-[75%] print:w-[75%] p-4 sm:p-5 print:p-3.5 flex flex-col justify-between">
           <div>
             <div className="flex flex-row print:flex-row justify-between items-start gap-2 mb-2">
               <div>
@@ -294,7 +294,7 @@ export function ModernTemplate({
 
             {/* Totals - Only in Invoice mode */}
             {!isPricingHidden && (
-              <div className="border-t border-[#dce9ff] pt-4">
+              <div className="border-t border-[#dce9ff] pt-2 mt-2 print:pt-1.5 print:mt-1.5 break-inside-avoid template-totals-block">
                 <div className="flex justify-end mb-1.5">
                   <div className="w-1/2 print:w-1/2 flex justify-between text-xs">
                     <p className="text-[10px] text-[#76777d]">Subtotal</p>
@@ -384,11 +384,11 @@ export function ModernTemplate({
           </div>
 
           {/* Notes and Signature */}
-          <div className="mt-6 pt-3 border-t border-[#dce9ff] flex flex-row print:flex-row justify-between items-start gap-2">
-            <div className="flex-1 flex flex-col gap-3">
+          <div className="mt-3 pt-2 print:mt-2 print:pt-1.5 border-t border-[#dce9ff] flex flex-row print:flex-row justify-between items-start gap-2 break-inside-avoid template-bottom-section">
+            <div className="flex-1 flex flex-col gap-2">
               {invoice.notes && (
                 <div>
-                  <p className="text-[10px] uppercase text-[#76777d] mb-1">
+                  <p className="text-[10px] uppercase text-[#76777d] mb-0.5">
                     Notes
                   </p>
                   <p className="text-[11px] text-[#45464d]">
@@ -398,7 +398,7 @@ export function ModernTemplate({
               )}
               {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
                 <div>
-                  <p className="text-[10px] uppercase text-[#76777d] mb-1">
+                  <p className="text-[10px] uppercase text-[#76777d] mb-0.5">
                     Terms & Conditions
                   </p>
                   <p className="text-[11px] text-[#45464d] whitespace-pre-wrap">
@@ -439,7 +439,7 @@ export function ModernTemplate({
 
           {/* N.B. Note */}
           {noteText && (
-            <div className="mt-4 pt-3 border-t border-[#c6c6cd] text-[10px] text-[#45464d] whitespace-pre-line text-left">
+            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#c6c6cd] text-[10px] text-[#45464d] whitespace-pre-line text-left break-inside-avoid template-nb-note">
               <strong className="text-black">N.B:</strong> {noteText}
             </div>
           )}
