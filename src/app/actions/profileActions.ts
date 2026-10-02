@@ -198,10 +198,15 @@ export async function uploadSignature(base64Data: string) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
 
-  // Validate it's a data URL
-  if (!base64Data.startsWith('data:image/png;base64,')) {
-    throw new Error('Invalid signature format');
+  // Validate it's a supported image data URL
+  const match = base64Data.match(/^data:(image\/(png|jpeg|jpg|webp));base64,/);
+  if (!match) {
+    throw new Error('Invalid signature format. Only PNG, JPEG, and WebP images are allowed.');
   }
+
+  const rawMime = match[1];
+  const mimeType = rawMime === 'image/jpg' ? 'image/jpeg' : rawMime;
+  const ext = mimeType === 'image/jpeg' ? 'jpg' : mimeType === 'image/webp' ? 'webp' : 'png';
 
   // Convert base64 to buffer safely using an ArrayBuffer
   const base64String = base64Data.split(',')[1];
@@ -213,7 +218,7 @@ export async function uploadSignature(base64Data: string) {
   }
   
   const sanitizedUserId = userId.replace(/[^a-zA-Z0-9-]/g, '_');
-  const fileName = `signature-${Date.now()}.png`;
+  const fileName = `signature-${Date.now()}.${ext}`;
   const filePath = `${sanitizedUserId}/${fileName}`;
 
   // 1. Upload to storage bucket using the ArrayBuffer from Uint8Array
@@ -221,7 +226,7 @@ export async function uploadSignature(base64Data: string) {
     .from('signatures')
     .upload(filePath, bytes.buffer, {
       upsert: true,
-      contentType: 'image/png',
+      contentType: mimeType,
     });
 
   if (uploadError) {

@@ -82,12 +82,12 @@ export function CorporateTemplate({
           {/* Invoice Document */}
           <article className="bg-white w-full shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-[#c6c6cd] overflow-hidden print:shadow-none print:rounded-none print:border-none">
             <div className="h-2 w-full bg-[#0058be]"></div>
-            <div className="p-6 print:p-6">
+            <div className="p-4 sm:p-5 print:p-4">
               {/* Header */}
-              <div className="border-2 border-[#c6c6cd] p-4 mb-2 flex flex-col gap-3 relative">
+              <div className="border-2 border-[#c6c6cd] p-2.5 sm:p-3 mb-2 flex flex-col gap-2 relative">
                 {!isPricingHidden && (
                   <div
-                    className={`absolute -top-3 -right-3 px-4 py-1 rounded text-[12px] font-bold uppercase flex items-center gap-1 shadow-sm ${
+                    className={`absolute -top-3 -right-3 px-3 py-0.5 rounded text-[11px] font-bold uppercase flex items-center gap-1 shadow-sm ${
                       invoice.status === "PAID"
                         ? "bg-[#e8f5e9] border border-[#a5d6a7] text-[#2e7d32]"
                         : "bg-[#fff3e0] border border-[#ffcc80] text-[#e65100]"
@@ -103,17 +103,17 @@ export function CorporateTemplate({
                     {profile?.company_logo ? (
                       <img
                         alt="Logo"
-                        className="max-h-16 max-w-[220px] object-contain w-auto h-auto"
+                        className="max-h-11 max-w-[180px] object-contain w-auto h-auto"
                         src={profile.company_logo}
                       />
                     ) : (
-                      <div className="text-[12px] text-[#45464d] uppercase tracking-widest font-bold mb-1">
+                      <div className="text-[10px] text-[#45464d] uppercase tracking-widest font-bold mb-0.5">
                         From
                       </div>
                     )}
                   </div>
                   <h1
-                    className="text-3xl text-[40px] leading-tight font-bold text-black uppercase"
+                    className="text-2xl sm:text-[28px] leading-tight font-bold text-black uppercase"
                     style={{
                       fontFamily: "Work Sans, sans-serif",
                       letterSpacing: "-0.02em",
@@ -129,22 +129,22 @@ export function CorporateTemplate({
                 {/* Row 2: Details Columns */}
                 <div className="flex flex-row print:flex-row justify-between items-start gap-3 w-full">
                   {/* Left Column: From */}
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-0.5">
                     {profile?.company_logo && (
-                      <div className="text-[12px] text-[#45464d] uppercase tracking-widest font-bold mb-1">
+                      <div className="text-[10px] text-[#45464d] uppercase tracking-widest font-bold mb-0.5">
                         From
                       </div>
                     )}
-                    <div className="font-bold text-black">
+                    <div className="font-bold text-black text-sm">
                       {profile?.company_name || "Your Company"}
                     </div>
                     {((invoice.brand_voice_enabled ?? profile?.brand_voice_enabled ?? true) && (invoice.brand_voice || profile?.brand_voice)) && (
-                      <div className="text-[11px] italic text-[#45464d] mt-0.5 mb-1">
+                      <div className="text-[10px] italic text-[#45464d] mt-0.5 mb-0.5">
                         {invoice.brand_voice || profile?.brand_voice}
                       </div>
                     )}
                     <div
-                      className="text-sm text-[#45464d] whitespace-pre-line"
+                      className="text-xs text-[#45464d] whitespace-pre-line leading-relaxed"
                       style={{ fontFamily: "Geist, monospace" }}
                     >
                       {profile?.company_address || ""}
@@ -154,38 +154,38 @@ export function CorporateTemplate({
                   </div>
 
                   {/* Right Column: Meta */}
-                  <div className="flex flex-col gap-1 text-right print:text-right w-auto print:w-auto">
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-right print:text-right">
-                      <div className="text-[12px] text-[#45464d] uppercase font-bold">
+                  <div className="flex flex-col gap-0.5 text-right print:text-right w-auto print:w-auto">
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-right print:text-right">
+                      <div className="text-[11px] text-[#45464d] uppercase font-bold">
                         {docNumberLabel}
                       </div>
                       <div
-                        className="text-sm font-semibold text-black break-all"
+                        className="text-xs font-semibold text-black break-all"
                         style={{ fontFamily: "Geist, monospace" }}
                       >
                         {invoice.invoiceNumber}
                       </div>
                       {profile?.qr_code_enabled && publicUrl && (
-                        <div className="col-span-2 flex justify-end print:justify-end mt-4">
-                          <QRCodeSVG value={publicUrl} size={64} />
+                        <div className="col-span-2 flex justify-end print:justify-end mt-1">
+                          <QRCodeSVG value={publicUrl} size={44} />
                         </div>
                       )}
-                      <div className="text-[12px] text-[#45464d] uppercase font-bold">
+                      <div className="text-[11px] text-[#45464d] uppercase font-bold">
                         Date Issued:
                       </div>
                       <div
-                        className="text-sm text-black"
+                        className="text-xs text-black"
                         style={{ fontFamily: "Geist, monospace" }}
                       >
                         {formatDate(issueDate)}
                       </div>
                       {!isPricingHidden && (
                         <>
-                          <div className="text-[12px] text-[#45464d] uppercase font-bold">
+                          <div className="text-[11px] text-[#45464d] uppercase font-bold">
                             Date Due:
                           </div>
                           <div
-                            className="text-sm text-black"
+                            className="text-xs text-black"
                             style={{ fontFamily: "Geist, monospace" }}
                           >
                             {formatDate(dueDate)}
@@ -198,28 +198,28 @@ export function CorporateTemplate({
               </div>
 
               {/* Bill To / Consignee */}
-              <div className="mb-3 p-4 bg-[#eff4ff] border border-[#c6c6cd] flex flex-row print:flex-row justify-between items-center gap-2">
+              <div className="mb-2 p-2.5 sm:p-3 bg-[#eff4ff] border border-[#c6c6cd] flex flex-row print:flex-row justify-between items-center gap-2">
                 <div>
-                  <div className="text-[12px] text-[#45464d] uppercase tracking-widest font-bold mb-2 border-b border-[#c6c6cd] pb-2 inline-block">
+                  <div className="text-[10px] sm:text-[11px] text-[#45464d] uppercase tracking-widest font-bold mb-1 border-b border-[#c6c6cd] pb-1 inline-block">
                     {clientLabel}
                   </div>
-                  <div className="font-bold text-black mt-2">
+                  <div className="font-bold text-black text-sm mt-1">
                     {invoice.clientName}
                   </div>
                   <div
-                    className="text-sm text-[#45464d] mt-1 whitespace-pre-line"
+                    className="text-xs text-[#45464d] mt-0.5 whitespace-pre-line"
                     style={{ fontFamily: "Geist, monospace" }}
                   >
                     {invoice.clientAddress || invoice.clientPhone}
                   </div>
                 </div>
                 {!isPricingHidden && (
-                  <div className="flex-shrink-0">
-                    <div className="text-[12px] text-[#45464d] uppercase tracking-widest font-bold mb-2 border-b border-[#c6c6cd] pb-2 inline-block">
+                  <div className="flex-shrink-0 text-right">
+                    <div className="text-[10px] sm:text-[11px] text-[#45464d] uppercase tracking-widest font-bold mb-1 border-b border-[#c6c6cd] pb-1 inline-block">
                       Amount Due
                     </div>
                     <div
-                      className="text-2xl text-[32px] leading-tight font-bold text-[#0058be] mt-2"
+                      className="text-xl sm:text-2xl leading-tight font-bold text-[#0058be] mt-1"
                       style={{ fontFamily: "Work Sans, sans-serif" }}
                     >
                       {formatMoney(subtotal, sym)}
@@ -230,14 +230,14 @@ export function CorporateTemplate({
 
               {/* Subject */}
               {subject && (
-                <div className="mb-3 px-3.5 py-2 bg-[#f8fafc] border-l-4 border-[#0058be] text-xs text-black flex items-center gap-2 rounded-r">
-                  <span className="font-bold text-[#45464d] uppercase tracking-wider text-[11px]">Subject:</span>
-                  <span className="font-semibold text-black">{subject}</span>
+                <div className="mb-2 px-3 py-1.5 bg-[#f8fafc] border-l-4 border-[#0058be] text-xs text-black flex items-center gap-2 rounded-r">
+                  <span className="font-bold text-[#45464d] uppercase tracking-wider text-[10px]">Subject:</span>
+                  <span className="font-semibold text-black text-xs">{subject}</span>
                 </div>
               )}
 
               {/* Items Table */}
-              <div className="border border-[#c6c6cd] mb-4 overflow-x-auto rounded-sm">
+              <div className="border border-[#c6c6cd] mb-3 overflow-x-auto rounded-sm">
                 <table className="w-full text-left border-collapse min-w-[500px]">
                   <thead>
                     <tr className="bg-[#f1f5f9] border-b border-[#c6c6cd]">

@@ -190,14 +190,20 @@ import { useRef, useState } from 'react';
 export function SignatureSection({ profile, onChange }: SectionProps) {
   const enabled = profile.signature_enabled ?? true;
   const sigCanvas = useRef<SignatureCanvas>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const clearSignature = () => {
     if (sigCanvas.current) {
       sigCanvas.current.clear();
     }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     onChange({ signature_url: null });
     setIsEditing(true);
+    setUploadError(null);
   };
 
   const handleSignatureEnd = () => {
@@ -205,6 +211,33 @@ export function SignatureSection({ profile, onChange }: SectionProps) {
       const dataURL = sigCanvas.current.toDataURL('image/png');
       onChange({ signature_url: dataURL });
     }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image size must be under 5MB');
+      return;
+    }
+
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      setUploadError('Only PNG, JPG, or WebP images are allowed');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        onChange({ signature_url: result });
+        setIsEditing(false);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const showCanvas = isEditing || !profile.signature_url;
@@ -227,33 +260,69 @@ export function SignatureSection({ profile, onChange }: SectionProps) {
         </label>
       </div>
       <div className="transition-opacity duration-300 ease-in-out" style={{ opacity: enabled ? 1 : 0.4, pointerEvents: enabled ? 'auto' : 'none' }}>
-        <div className="border border-outline-variant rounded-lg bg-surface relative overflow-hidden">
-          <div className="absolute top-2 right-2 flex gap-2 z-20">
+        {/* Controls Bar */}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
             <button 
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                showCanvas
+                  ? 'bg-secondary/15 text-secondary border border-secondary/30 font-semibold'
+                  : 'bg-surface-container hover:bg-surface-container-high text-on-surface-variant'
+              }`}
+            >
+              <MaterialIcon icon="draw" className="text-base" />
+              Draw Signature
+            </button>
+            <button 
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                !showCanvas && profile.signature_url
+                  ? 'bg-secondary/15 text-secondary border border-secondary/30 font-semibold'
+                  : 'bg-surface-container hover:bg-surface-container-high text-on-surface-variant'
+              }`}
+            >
+              <MaterialIcon icon="upload" className="text-base" />
+              Upload Image
+            </button>
+            <input 
+              ref={fileInputRef} 
+              type="file" 
+              accept="image/png,image/jpeg,image/webp" 
+              className="hidden" 
+              onChange={handleImageUpload} 
+            />
+          </div>
+          {profile.signature_url && (
+            <button 
+              type="button"
               onClick={clearSignature}
-              className="text-on-surface-variant hover:text-on-surface p-1 rounded transition-colors bg-surface/50 backdrop-blur-sm" 
-              title="Clear"
+              className="flex items-center gap-1 text-xs text-error hover:bg-error-container/30 px-2 py-1.5 rounded-lg transition-colors"
+              title="Clear Signature"
             >
               <MaterialIcon icon="delete" className="text-sm" />
+              Clear
             </button>
-            <button 
-              onClick={() => setIsEditing(true)}
-              className="text-on-surface-variant hover:text-on-surface p-1 rounded transition-colors bg-surface/50 backdrop-blur-sm" 
-              title="Draw New"
-            >
-              <MaterialIcon icon="draw" className="text-sm" />
-            </button>
-          </div>
+          )}
+        </div>
+
+        {uploadError && (
+          <p className="text-xs text-error mb-2">{uploadError}</p>
+        )}
+
+        <div className="border border-outline-variant rounded-lg bg-surface relative overflow-hidden">
           <div className="h-40 w-full relative">
             {!profile.signature_url && isEditing && (
               <span className="font-label-sm text-label-sm text-outline absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none z-0">
-                Sign Here
+                Sign Here or Click &quot;Upload Image&quot;
               </span>
             )}
             
             {!showCanvas && profile.signature_url ? (
                // eslint-disable-next-line @next/next/no-img-element
-               <img src={profile.signature_url} alt="Saved signature" className="w-full h-full object-contain z-10 relative" />
+               <img src={profile.signature_url} alt="Saved signature" className="w-full h-full object-contain p-2 z-10 relative" />
             ) : (
               <div className="absolute inset-0 z-10 cursor-crosshair">
                 <SignatureCanvas 
@@ -267,15 +336,19 @@ export function SignatureSection({ profile, onChange }: SectionProps) {
             <div className="absolute bottom-4 left-6 right-6 border-b border-surface-container-high border-dashed z-0"></div>
           </div>
         </div>
-        <div className="mt-3 flex justify-between items-center">
+
+        <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <input 
-            className="bg-transparent border-b border-outline-variant px-2 py-1 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-0 transition-colors w-1/2 hover:border-outline" 
+            className="bg-transparent border-b border-outline-variant px-2 py-1 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-0 transition-colors w-full sm:w-1/2 hover:border-outline" 
             placeholder="Signatory Name (e.g. John Doe)" 
             type="text" 
             maxLength={50}
             value={profile.signatory_name || ''}
             onChange={(e) => onChange({ signatory_name: e.target.value })}
           />
+          <p className="text-[11px] text-on-surface-variant">
+            PNG (transparent recommended) or JPG / WebP up to 5MB
+          </p>
         </div>
       </div>
     </div>
