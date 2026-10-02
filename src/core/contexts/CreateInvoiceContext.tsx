@@ -145,6 +145,13 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     // Only auto-save DRAFT invoices
     if (data.invoiceStatus && data.invoiceStatus !== 'DRAFT') return;
 
+    // If the URL has an id parameter but draftIdRef is not set yet, don't create a new draft
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlId = urlParams.get('id');
+      if (urlId && !draftIdRef.current) return;
+    }
+
     // Check if there is anything to save
     const hasClientName = data.clientName.trim().length > 0;
     const hasItems = data.groups.some((g: GroupData) => g.items.length > 0);
@@ -154,7 +161,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     setAutoSaveStatus('saving');
 
     try {
-      const invoice = await saveDraftInvoice({
+      const res = await saveDraftInvoice({
         invoiceId: draftIdRef.current || undefined,
         clientId: data.clientId,
         clientName: data.clientName,
@@ -178,6 +185,13 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
         template: data.selectedTemplate,
       });
 
+      if (!res.success || !res.data) {
+        console.error('Auto-save error:', res.error);
+        setAutoSaveStatus('error');
+        return;
+      }
+
+      const invoice = res.data;
       if (invoice?.id) {
         if (!draftIdRef.current) {
           draftIdRef.current = invoice.id;

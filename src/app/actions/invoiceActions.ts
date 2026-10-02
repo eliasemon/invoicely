@@ -36,6 +36,64 @@ async function resolveClientId(userId: string, data: { clientId?: string, client
   }
 }
 
+async function getNextInvoiceNumber(userId: string) {
+  const currentYear = new Date().getFullYear();
+  const prefix = `INV-${currentYear}-`;
+  
+  try {
+    const { data: existingInvoices } = await supabaseAdmin
+      .from('invoices')
+      .select('invoice_number')
+      .eq('profile_id', userId)
+      .ilike('invoice_number', `${prefix}%`);
+
+    let maxNum = 0;
+    if (existingInvoices && existingInvoices.length > 0) {
+      for (const inv of existingInvoices) {
+        if (inv.invoice_number && inv.invoice_number.startsWith(prefix)) {
+          const suffix = inv.invoice_number.substring(prefix.length);
+          const parsed = parseInt(suffix, 10);
+          if (!isNaN(parsed) && parsed > maxNum) {
+            maxNum = parsed;
+          }
+        }
+      }
+    }
+    return `${prefix}${String(maxNum + 1).padStart(3, '0')}`;
+  } catch (e) {
+    console.warn('Error computing next invoice number:', e);
+    return `${prefix}${Date.now().toString().slice(-4)}`;
+  }
+}
+
+async function ensureProfile(userId: string) {
+  try {
+    const { data: profileData } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (profileData) return profileData;
+
+    const { data: newProfile } = await supabaseAdmin
+      .from('profiles')
+      .upsert({
+        id: userId,
+        default_currency: 'USD',
+        invoice_edit_enabled: true,
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .maybeSingle();
+
+    return newProfile;
+  } catch (err) {
+    console.warn('Error ensuring user profile:', err);
+    return null;
+  }
+}
+
 export async function createInvoice(data: {
   invoiceId?: string;
   clientId?: string;
@@ -59,38 +117,30 @@ export async function createInvoice(data: {
   noteEnabled?: boolean;
   noteText?: string;
   template?: string;
-}) {
-  const userId = await getUserId();
-  if (!userId) throw new Error('Not authenticated');
+}): Promise<{ success: boolean; data?: any; error?: string }> {
+  try {
+    const userId = await getUserId();
+    if (!userId) {
+      return { success: false, error: 'You are not logged in. Please sign in to save invoices.' };
+    }
 
-  // 1. Generate Invoice Number (simple format for now)
-  const { count } = await supabaseAdmin
-    .from('invoices')
-    .select('*', { count: 'exact', head: true })
-    .eq('profile_id', userId);
-  
-  const nextNum = (count || 0) + 1;
-  const invoiceNumber = `INV-${new Date().getFullYear()}-${String(nextNum).padStart(3, '0')}`;
+    // 1. Generate Invoice Number if new invoice
+    const invoiceNumber = data.invoiceId ? undefined : await getNextInvoiceNumber(userId);
 
-  // 2. Calculate Total
-  const subtotal = data.groups.reduce((acc, g) => 
-    acc + g.items.reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0), 
-  0);
+    // 2. Calculate Total
+    const subtotal = data.groups.reduce((acc, g) => 
+      acc + g.items.reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0), 
+    0);
 
-  const discountAmount = data.discountType === 'percentage' 
-    ? subtotal * ((data.discountValue || 0) / 100) 
-    : (data.discountValue || 0);
+    const discountAmount = data.discountType === 'percentage' 
+      ? subtotal * ((data.discountValue || 0) / 100) 
+      : (data.discountValue || 0);
 
-  const totalAmount = Math.max(0, subtotal - discountAmount) + (data.shippingCost || 0);
+    const totalAmount = Math.max(0, subtotal - discountAmount) + (data.shippingCost || 0);
 
-  // 3. Fetch user profile to snapshot settings
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single();
-
-  const itemCurrency = profile?.default_currency || 'USD';
+    // 3. Ensure user profile exists to satisfy foreign key constraints
+    const profile = await ensureProfile(userId);
+    const itemCurrency = profile?.default_currency || 'USD';
 
   // 4. Upsert unique line items to global catalog safely
   try {
@@ -263,12 +313,16 @@ export async function createInvoice(data: {
     error = res.error;
   }
 
-  if (error) {
-    console.error('Error creating invoice:', error);
-    throw new Error(error.message || 'Failed to create invoice');
-  }
+    if (error) {
+      console.error('Error creating invoice:', error);
+      return { success: false, error: error.message || 'Failed to create invoice' };
+    }
 
-  return invoice;
+    return { success: true, data: invoice };
+  } catch (err: any) {
+    console.error('Exception creating invoice:', err);
+    return { success: false, error: err?.message || 'Unexpected error creating invoice' };
+  }
 }
 
 export async function getInvoices(filters?: { search?: string, status?: string, clientName?: string, clientId?: string }) {
@@ -418,70 +472,66 @@ export async function saveDraftInvoice(data: {
   noteEnabled?: boolean;
   noteText?: string;
   template?: string;
-}) {
-  const userId = await getUserId();
-  if (!userId) throw new Error('Not authenticated');
-
-  const resolvedClientName = data.clientName?.trim() || 'Draft Client';
-  const resolvedClientPhone = data.clientPhone?.trim() || '';
-
-  const { count } = await supabaseAdmin
-    .from('invoices')
-    .select('*', { count: 'exact', head: true })
-    .eq('profile_id', userId);
-  
-  const nextNum = (count || 0) + 1;
-  const invoiceNumber = `INV-${new Date().getFullYear()}-${String(nextNum).padStart(3, '0')}`;
-
-  const subtotal = (data.groups || []).reduce((acc, g) => 
-    acc + (g.items || []).reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * (item.unitPrice || 0)), 0), 
-  0);
-
-  const discountAmount = data.discountType === 'percentage' 
-    ? subtotal * ((data.discountValue || 0) / 100) 
-    : (data.discountValue || 0);
-
-  const totalAmount = Math.max(0, subtotal - discountAmount) + (data.shippingCost || 0);
-
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single();
-    
-  const resolvedClientId = await resolveClientId(userId, {
-    clientId: data.clientId,
-    clientName: resolvedClientName,
-    clientPhone: resolvedClientPhone,
-    clientAddress: data.clientAddress
-  });
-
-  let existingInvoice = null;
-  if (data.invoiceId) {
-    const { data: inv } = await supabaseAdmin
-      .from('invoices')
-      .select('status, amount_paid')
-      .eq('id', data.invoiceId)
-      .eq('profile_id', userId)
-      .single();
-    existingInvoice = inv;
-  }
-
-  const currentAmountPaid = existingInvoice ? Number(existingInvoice.amount_paid || 0) : 0;
-  const currentStatus = existingInvoice ? existingInvoice.status : 'DRAFT';
-
-  let newStatus = currentStatus;
-  if (currentStatus !== 'DRAFT') {
-    if (currentAmountPaid >= totalAmount && totalAmount > 0) {
-      newStatus = 'PAID';
-    } else if (currentAmountPaid > 0) {
-      newStatus = 'PARTIAL';
-    } else {
-      newStatus = 'UNPAID';
+}): Promise<{ success: boolean; data?: any; error?: string }> {
+  try {
+    const userId = await getUserId();
+    if (!userId) {
+      return { success: false, error: 'You are not logged in. Please sign in to save drafts.' };
     }
-  }
 
-  const payload: any = {
+    const resolvedClientName = data.clientName?.trim() || 'Draft Client';
+    const resolvedClientPhone = data.clientPhone?.trim() || '';
+
+    let invoiceNumber: string | undefined = undefined;
+    if (!data.invoiceId) {
+      invoiceNumber = await getNextInvoiceNumber(userId);
+    }
+
+    const subtotal = (data.groups || []).reduce((acc, g) => 
+      acc + (g.items || []).reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * (item.unitPrice || 0)), 0), 
+    0);
+
+    const discountAmount = data.discountType === 'percentage' 
+      ? subtotal * ((data.discountValue || 0) / 100) 
+      : (data.discountValue || 0);
+
+    const totalAmount = Math.max(0, subtotal - discountAmount) + (data.shippingCost || 0);
+
+    const profile = await ensureProfile(userId);
+      
+    const resolvedClientId = await resolveClientId(userId, {
+      clientId: data.clientId,
+      clientName: resolvedClientName,
+      clientPhone: resolvedClientPhone,
+      clientAddress: data.clientAddress
+    });
+
+    let existingInvoice = null;
+    if (data.invoiceId) {
+      const { data: inv } = await supabaseAdmin
+        .from('invoices')
+        .select('*')
+        .eq('id', data.invoiceId)
+        .eq('profile_id', userId)
+        .maybeSingle();
+      existingInvoice = inv;
+    }
+
+    const currentAmountPaid = existingInvoice ? Number(existingInvoice.amount_paid || 0) : 0;
+    const currentStatus = existingInvoice ? existingInvoice.status : 'DRAFT';
+
+    let newStatus = currentStatus;
+    if (currentStatus !== 'DRAFT') {
+      if (currentAmountPaid >= totalAmount && totalAmount > 0) {
+        newStatus = 'PAID';
+      } else if (currentAmountPaid > 0) {
+        newStatus = 'PARTIAL';
+      } else {
+        newStatus = 'UNPAID';
+      }
+    }
+
+    const payload: any = {
       client_id: resolvedClientId,
       client_name: resolvedClientName,
       client_phone: resolvedClientPhone,
@@ -526,56 +576,60 @@ export async function saveDraftInvoice(data: {
       note_text: data.noteText || null,
       template: data.template || 'sleek-accent',
       updated_at: new Date().toISOString()
-  };
+    };
 
-  if (data.issuedAt) {
-    payload.issued_at = data.issuedAt;
-  } else if (!existingInvoice || existingInvoice.status === 'DRAFT') {
-    // Keep draft fresh
-    payload.issued_at = new Date().toISOString();
+    if (data.issuedAt) {
+      payload.issued_at = data.issuedAt;
+    } else if (!existingInvoice || existingInvoice.status === 'DRAFT') {
+      // Keep draft fresh
+      payload.issued_at = new Date().toISOString();
+    }
+    
+    if (data.dueDate) {
+      payload.due_date = data.dueDate;
+    } else if (!existingInvoice || existingInvoice.status === 'DRAFT') {
+      const defaultDueDate = new Date();
+      defaultDueDate.setDate(defaultDueDate.getDate() + 30);
+      payload.due_date = defaultDueDate.toISOString();
+    }
+
+    let invoice;
+    let error;
+
+    if (data.invoiceId) {
+      const res = await supabaseAdmin
+        .from('invoices')
+        .update(payload)
+        .eq('id', data.invoiceId)
+        .eq('profile_id', userId)
+        .select()
+        .single();
+      invoice = res.data;
+      error = res.error;
+    } else {
+      const res = await supabaseAdmin
+        .from('invoices')
+        .insert({
+          profile_id: userId,
+          invoice_number: invoiceNumber,
+          ...payload
+        })
+        .select()
+        .single();
+      invoice = res.data;
+      error = res.error;
+    }
+
+    if (error) {
+      console.error('Error saving draft:', error);
+      return { success: false, error: error.message || 'Failed to save draft' };
+    }
+
+    return { success: true, data: invoice };
+  } catch (err: any) {
+    console.error('Exception saving draft:', err);
+    return { success: false, error: err?.message || 'Unexpected error saving draft' };
   }
-  
-  if (data.dueDate) {
-    payload.due_date = data.dueDate;
-  } else if (!existingInvoice || existingInvoice.status === 'DRAFT') {
-    const defaultDueDate = new Date();
-    defaultDueDate.setDate(defaultDueDate.getDate() + 30);
-    payload.due_date = defaultDueDate.toISOString();
-  }
-
-  let invoice;
-  let error;
-
-  if (data.invoiceId) {
-    const res = await supabaseAdmin
-      .from('invoices')
-      .update(payload)
-      .eq('id', data.invoiceId)
-      .eq('profile_id', userId)
-      .select()
-      .single();
-    invoice = res.data;
-    error = res.error;
-  } else {
-    const res = await supabaseAdmin
-      .from('invoices')
-      .insert({
-        profile_id: userId,
-        invoice_number: invoiceNumber,
-        ...payload
-      })
-      .select()
-      .single();
-    invoice = res.data;
-    error = res.error;
-  }
-
-  if (error) {
-    console.error('Error saving draft:', error);
-    throw new Error(error.message || 'Failed to save draft');
-  }
-
-  return invoice;
 }
 
 export async function recordPayment(id: string, amount: number, note?: string) {

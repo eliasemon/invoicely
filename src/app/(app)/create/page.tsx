@@ -192,7 +192,7 @@ function CreateInvoiceForm() {
     setIsSubmitting(true);
     setErrorMessage(null);
     try {
-      const invoice = await createInvoice({
+      const res = await createInvoice({
         invoiceId: draftInvoiceId || undefined,
         clientId,
         clientName,
@@ -216,7 +216,13 @@ function CreateInvoiceForm() {
         template: selectedTemplate,
       });
       
-      router.push(`/invoices/${invoice.id}`);
+      if (!res.success || !res.data) {
+        setErrorMessage(res.error || 'Failed to create invoice.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      router.push(`/invoices/${res.data.id}`);
     } catch (error: any) {
       console.error('Error creating invoice:', error);
       setErrorMessage(error?.message || 'Failed to create invoice. Please check your connection or login status.');
@@ -234,7 +240,7 @@ function CreateInvoiceForm() {
     setIsSubmitting(true);
     setErrorMessage(null);
     try {
-      const invoice = await saveDraftInvoice({
+      const res = await saveDraftInvoice({
         invoiceId: draftInvoiceId || undefined,
         clientId,
         clientName,
@@ -258,8 +264,14 @@ function CreateInvoiceForm() {
         template: selectedTemplate,
       });
       
-      setDraftInvoiceId(invoice.id);
-      router.push(`/invoices/${invoice.id}`);
+      if (!res.success || !res.data) {
+        setErrorMessage(res.error || 'Failed to save draft.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      setDraftInvoiceId(res.data.id);
+      router.push(`/invoices/${res.data.id}`);
     } catch (error: any) {
       console.error('Error saving draft:', error);
       setErrorMessage(error?.message || 'Failed to save draft. Please check your connection or login status.');
