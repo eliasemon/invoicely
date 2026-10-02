@@ -3,31 +3,37 @@
 import { supabaseAdmin, getUserId } from '@/lib/supabase/admin';
 import { GroupData } from '@/components/create/LineItemGroup';
 
-async function resolveClientId(userId: string, data: { clientId?: string, clientName: string, clientPhone?: string, clientAddress?: string }) {
+async function resolveClientId(userId: string, data: { clientId?: string, clientName?: string, clientPhone?: string, clientAddress?: string }) {
   if (data.clientId) return data.clientId;
-  if (!data.clientName) return null;
+  const trimmedName = data.clientName?.trim();
+  if (!trimmedName) return null;
   
-  const { data: existing } = await supabaseAdmin
-    .from('clients')
-    .select('id')
-    .eq('profile_id', userId)
-    .ilike('name', data.clientName.trim())
-    .maybeSingle();
+  try {
+    const { data: existing } = await supabaseAdmin
+      .from('clients')
+      .select('id')
+      .eq('profile_id', userId)
+      .ilike('name', trimmedName)
+      .limit(1);
+      
+    if (existing && existing.length > 0) return existing[0].id;
     
-  if (existing) return existing.id;
-  
-  const { data: newClient } = await supabaseAdmin
-    .from('clients')
-    .insert({
-      profile_id: userId,
-      name: data.clientName.trim(),
-      phone: data.clientPhone || null,
-      address: data.clientAddress || null
-    })
-    .select('id')
-    .single();
-    
-  return newClient?.id || null;
+    const { data: newClient } = await supabaseAdmin
+      .from('clients')
+      .insert({
+        profile_id: userId,
+        name: trimmedName,
+        phone: data.clientPhone?.trim() || null,
+        address: data.clientAddress?.trim() || null
+      })
+      .select('id')
+      .single();
+      
+    return newClient?.id || null;
+  } catch (err) {
+    console.warn('Error resolving client ID:', err);
+    return null;
+  }
 }
 
 export async function createInvoice(data: {
@@ -77,32 +83,49 @@ export async function createInvoice(data: {
 
   const totalAmount = Math.max(0, subtotal - discountAmount) + (data.shippingCost || 0);
 
-  // 3. Upsert all unique line items to global catalog
-  const uniqueItems = new Map<string, number>();
-  data.groups.forEach(g => {
-    g.items.forEach(item => {
-      if (item.name.trim()) {
-        uniqueItems.set(item.name.trim(), item.unitPrice);
-      }
-    });
-  });
-
-  const upsertPromises = Array.from(uniqueItems.entries()).map(([name, price]) => 
-    supabaseAdmin.from('global_items').upsert({
-      name,
-      unit_price: price,
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'name' })
-  );
-
-  await Promise.all(upsertPromises);
-
-  // 4. Fetch user profile to snapshot settings
+  // 3. Fetch user profile to snapshot settings
   const { data: profile } = await supabaseAdmin
     .from('profiles')
     .select('*')
     .eq('id', userId)
     .single();
+
+  const itemCurrency = profile?.default_currency || 'USD';
+
+  // 4. Upsert unique line items to global catalog safely
+  try {
+    const uniqueItems = new Map<string, number>();
+    data.groups.forEach(g => {
+      g.items.forEach(item => {
+        if (item.name && item.name.trim()) {
+          uniqueItems.set(item.name.trim(), item.unitPrice || 0);
+        }
+      });
+    });
+
+    const upsertPromises = Array.from(uniqueItems.entries()).map(async ([name, price]) => {
+      const { data: existingItem } = await supabaseAdmin
+        .from('global_items')
+        .select('unit_price')
+        .eq('name', name)
+        .maybeSingle();
+
+      const existingPrices = (existingItem?.unit_price && typeof existingItem.unit_price === 'object')
+        ? existingItem.unit_price
+        : {};
+      const updatedPrices = { ...existingPrices, [itemCurrency]: price };
+
+      return supabaseAdmin.from('global_items').upsert({
+        name,
+        unit_price: updatedPrices,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'name' });
+    });
+
+    await Promise.all(upsertPromises);
+  } catch (syncErr) {
+    console.warn('Could not sync items with global catalog:', syncErr);
+  }
 
   let existingInvoice = null;
   if (data.invoiceId) {
@@ -242,7 +265,7 @@ export async function createInvoice(data: {
 
   if (error) {
     console.error('Error creating invoice:', error);
-    throw new Error('Failed to create invoice');
+    throw new Error(error.message || 'Failed to create invoice');
   }
 
   return invoice;
@@ -375,8 +398,8 @@ export async function searchClients(query: string) {
 export async function saveDraftInvoice(data: {
   invoiceId?: string;
   clientId?: string;
-  clientName: string;
-  clientPhone: string;
+  clientName?: string;
+  clientPhone?: string;
   clientAddress?: string;
   groups: GroupData[];
   discountType?: 'amount' | 'percentage';
@@ -399,6 +422,9 @@ export async function saveDraftInvoice(data: {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
 
+  const resolvedClientName = data.clientName?.trim() || 'Draft Client';
+  const resolvedClientPhone = data.clientPhone?.trim() || '';
+
   const { count } = await supabaseAdmin
     .from('invoices')
     .select('*', { count: 'exact', head: true })
@@ -407,8 +433,8 @@ export async function saveDraftInvoice(data: {
   const nextNum = (count || 0) + 1;
   const invoiceNumber = `INV-${new Date().getFullYear()}-${String(nextNum).padStart(3, '0')}`;
 
-  const subtotal = data.groups.reduce((acc, g) => 
-    acc + g.items.reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * item.unitPrice), 0), 
+  const subtotal = (data.groups || []).reduce((acc, g) => 
+    acc + (g.items || []).reduce((itemAcc, item) => itemAcc + ((item.isFlatRate ? 1 : item.quantity) * (item.unitPrice || 0)), 0), 
   0);
 
   const discountAmount = data.discountType === 'percentage' 
@@ -423,7 +449,12 @@ export async function saveDraftInvoice(data: {
     .eq('id', userId)
     .single();
     
-  const resolvedClientId = await resolveClientId(userId, data);
+  const resolvedClientId = await resolveClientId(userId, {
+    clientId: data.clientId,
+    clientName: resolvedClientName,
+    clientPhone: resolvedClientPhone,
+    clientAddress: data.clientAddress
+  });
 
   let existingInvoice = null;
   if (data.invoiceId) {
@@ -452,12 +483,12 @@ export async function saveDraftInvoice(data: {
 
   const payload: any = {
       client_id: resolvedClientId,
-      client_name: data.clientName,
-      client_phone: data.clientPhone,
+      client_name: resolvedClientName,
+      client_phone: resolvedClientPhone,
       client_address: data.clientAddress || null,
       status: newStatus,
       total_amount: totalAmount,
-      line_items_snapshot: data.groups,
+      line_items_snapshot: data.groups || [],
       discount_type: data.discountType || null,
       discount_value: data.discountValue || null,
       shipping_cost: data.shippingCost || null,
@@ -479,7 +510,10 @@ export async function saveDraftInvoice(data: {
       bank_account_holder: profile?.bank_enabled ? profile.bank_account_holder : null,
       bank_account_number: profile?.bank_enabled ? profile.bank_account_number : null,
       bank_swift: profile?.bank_enabled ? profile.bank_swift : null,
-      terms_and_conditions: profile?.terms_and_conditions || null,
+      terms_and_conditions_enabled: profile?.terms_and_conditions_enabled ?? true,
+      terms_and_conditions: profile?.terms_and_conditions_enabled ? profile.terms_and_conditions : null,
+      brand_voice_enabled: profile?.brand_voice_enabled ?? true,
+      brand_voice: profile?.brand_voice_enabled ? profile.brand_voice : null,
       subject_enabled: data.subjectEnabled ?? true,
       subject: data.subject || null,
       subject_invoice: data.subjectInvoice || 'Bill for Items/Services',
@@ -497,8 +531,7 @@ export async function saveDraftInvoice(data: {
   if (data.issuedAt) {
     payload.issued_at = data.issuedAt;
   } else if (!existingInvoice || existingInvoice.status === 'DRAFT') {
-    // Optionally update to now on every draft auto-save, or just let DB handle default for inserts.
-    // We'll update to now to keep draft fresh.
+    // Keep draft fresh
     payload.issued_at = new Date().toISOString();
   }
   
@@ -539,7 +572,7 @@ export async function saveDraftInvoice(data: {
 
   if (error) {
     console.error('Error saving draft:', error);
-    throw new Error('Failed to save draft');
+    throw new Error(error.message || 'Failed to save draft');
   }
 
   return invoice;

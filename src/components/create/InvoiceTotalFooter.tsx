@@ -76,11 +76,8 @@ export function InvoiceTotalFooter({
         </div>
         <div className="flex justify-center gap-2 w-full md:w-auto">
           <button 
+            type="button"
             onClick={() => {
-              if (!isValid && onValidationFailed) {
-                onValidationFailed();
-                return;
-              }
               if (onSaveDraft) onSaveDraft();
             }}
             disabled={isSubmitting}

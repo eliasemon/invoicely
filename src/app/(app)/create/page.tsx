@@ -19,6 +19,8 @@ function CreateInvoiceForm() {
   const { 
     draftInvoiceId, setDraftInvoiceId,
     invoiceStatus, setInvoiceStatus,
+    autoSaveStatus,
+    lastSavedAt,
     clientId, setClientId,
     clientName, setClientName,
     mobileNumber, setMobileNumber,
@@ -48,6 +50,7 @@ function CreateInvoiceForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { profile } = useProfile();
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -187,6 +190,7 @@ function CreateInvoiceForm() {
       return;
     }
     setIsSubmitting(true);
+    setErrorMessage(null);
     try {
       const invoice = await createInvoice({
         invoiceId: draftInvoiceId || undefined,
@@ -213,18 +217,22 @@ function CreateInvoiceForm() {
       });
       
       router.push(`/invoices/${invoice.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating invoice:', error);
+      setErrorMessage(error?.message || 'Failed to create invoice. Please check your connection or login status.');
       setIsSubmitting(false);
     }
   };
 
   const handleSaveDraft = async () => {
-    if (!isValid) {
-      handleValidationFailed();
+    const hasContent = clientName.trim().length > 0 || groups.some(g => g.items.length > 0);
+    if (!hasContent) {
+      setErrorMessage('Please enter a customer name or add at least one line item before saving a draft.');
       return;
     }
+
     setIsSubmitting(true);
+    setErrorMessage(null);
     try {
       const invoice = await saveDraftInvoice({
         invoiceId: draftInvoiceId || undefined,
@@ -250,9 +258,11 @@ function CreateInvoiceForm() {
         template: selectedTemplate,
       });
       
+      setDraftInvoiceId(invoice.id);
       router.push(`/invoices/${invoice.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving draft:', error);
+      setErrorMessage(error?.message || 'Failed to save draft. Please check your connection or login status.');
       setIsSubmitting(false);
     }
   };
@@ -260,10 +270,69 @@ function CreateInvoiceForm() {
   return (
     <div className="w-full max-w-3xl mx-auto space-y-lg pt-sm md:pt-0 pb-[100px]">
       {/* Header Section */}
-      <section>
-        <h2 className="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary mb-xs">Create Invoice</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant">New Invoice</p>
+      <section className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+          <h2 className="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary mb-xs">
+            {invoiceStatus === 'DRAFT' || !draftInvoiceId ? 'Create Invoice' : 'Edit Invoice'}
+          </h2>
+          <p className="font-body-md text-body-md text-on-surface-variant">
+            {draftInvoiceId ? `Draft ID: ${draftInvoiceId.slice(0, 8)}...` : 'New Invoice'}
+          </p>
+        </div>
+
+        {/* Auto-save status and mobile quick action */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {autoSaveStatus === 'saving' && (
+            <span className="inline-flex items-center gap-1.5 text-xs text-primary font-medium bg-primary/10 px-3 py-1 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              Saving draft...
+            </span>
+          )}
+          {autoSaveStatus === 'saved' && (
+            <span className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-500/10 px-3 py-1 rounded-full">
+              <MaterialIcon icon="check_circle" className="text-[14px]" />
+              Draft saved {lastSavedAt ? `at ${new Date(lastSavedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}
+            </span>
+          )}
+          {autoSaveStatus === 'error' && (
+            <span className="inline-flex items-center gap-1 text-xs text-error font-medium bg-error/10 px-3 py-1 rounded-full">
+              <MaterialIcon icon="error" className="text-[14px]" />
+              Auto-save failed
+            </span>
+          )}
+
+          {/* Quick Save Draft button on Mobile (accessible without navigating to Step 4) */}
+          <button 
+            type="button"
+            onClick={handleSaveDraft}
+            disabled={isSubmitting}
+            className="md:hidden inline-flex items-center gap-1 text-xs font-medium text-primary border border-outline-variant bg-surface-container-lowest px-3 py-1.5 rounded-full shadow-sm active:scale-95 disabled:opacity-50"
+          >
+            <MaterialIcon icon="save" className="text-[16px]" />
+            Save Draft
+          </button>
+        </div>
       </section>
+
+      {/* Error Banner */}
+      {errorMessage && (
+        <div className="p-4 rounded-xl bg-error/10 border border-error/20 text-error flex items-start justify-between gap-3 text-sm">
+          <div className="flex items-start gap-2">
+            <MaterialIcon icon="error" className="text-[20px] flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold">Unable to save</p>
+              <p className="text-xs opacity-90">{errorMessage}</p>
+            </div>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => setErrorMessage(null)} 
+            className="text-error/70 hover:text-error p-1 rounded-full hover:bg-error/10 transition-colors"
+          >
+            <MaterialIcon icon="close" className="text-[18px]" />
+          </button>
+        </div>
+      )}
 
       {/* Step 1: Customer Details & Dates */}
       <div className={`${currentStep === 1 ? 'block' : 'hidden md:block'} space-y-lg`}>
