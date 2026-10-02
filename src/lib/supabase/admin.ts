@@ -26,10 +26,21 @@ const supabaseAdmin = createClient(
   }
 );
 
-export async function getUserId() {
-  const supabase = await createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  return user?.id;
+export async function getUserId(): Promise<string | null> {
+  try {
+    const supabase = await createServerClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      return null;
+    }
+    return user.id;
+  } catch (err: any) {
+    if (err && typeof err === 'object' && 'digest' in err && (err.digest === 'DYNAMIC_SERVER_USAGE' || String(err.digest).startsWith('NEXT_'))) {
+      throw err;
+    }
+    console.warn('Error fetching auth user in getUserId:', err);
+    return null;
+  }
 }
 
 export async function getAuthenticatedSupabaseClient() {

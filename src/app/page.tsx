@@ -4,6 +4,8 @@ import { getProfile } from '@/app/actions/profileActions';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import { QRCodeSVG } from 'qrcode.react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function LandingPage() {
   let defaultCurrency = 'USD';
   let defaultCurrencySymbol: string | undefined = undefined;

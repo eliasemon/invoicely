@@ -326,89 +326,104 @@ export async function createInvoice(data: {
 }
 
 export async function getInvoices(filters?: { search?: string, status?: string, clientName?: string, clientId?: string }) {
-  const userId = await getUserId();
-  if (!userId) throw new Error('Not authenticated');
+  try {
+    const userId = await getUserId();
+    if (!userId) return [];
 
-  let query = supabaseAdmin
-    .from('invoices')
-    .select('*')
-    .eq('profile_id', userId)
-    .order('created_at', { ascending: false });
+    let query = supabaseAdmin
+      .from('invoices')
+      .select('*')
+      .eq('profile_id', userId)
+      .order('created_at', { ascending: false });
 
-  if (filters?.status && filters.status !== 'All') {
-    query = query.eq('status', filters.status.toUpperCase());
-  }
+    if (filters?.status && filters.status !== 'All') {
+      query = query.eq('status', filters.status.toUpperCase());
+    }
 
-  if (filters?.clientId) {
-    query = query.eq('client_id', filters.clientId);
-  } else if (filters?.clientName) {
-    query = query.eq('client_name', filters.clientName);
-  }
+    if (filters?.clientId) {
+      query = query.eq('client_id', filters.clientId);
+    } else if (filters?.clientName) {
+      query = query.eq('client_name', filters.clientName);
+    }
 
-  if (filters?.search) {
-    const searchLower = filters.search.toLowerCase();
-    query = query.or(`client_name.ilike.%${searchLower}%,client_phone.ilike.%${searchLower}%,invoice_number.ilike.%${searchLower}%`);
-  }
+    if (filters?.search) {
+      const searchLower = filters.search.toLowerCase();
+      query = query.or(`client_name.ilike.%${searchLower}%,client_phone.ilike.%${searchLower}%,invoice_number.ilike.%${searchLower}%`);
+    }
 
-  const { data, error } = await query;
+    const { data, error } = await query;
 
-  if (error) {
-    console.error('Error fetching invoices:', error);
+    if (error) {
+      console.error('Error fetching invoices:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error('Exception fetching invoices:', err);
     return [];
   }
-
-  return data;
 }
 
 export async function getInvoice(id: string) {
-  const userId = await getUserId();
-  if (!userId) throw new Error('Not authenticated');
+  try {
+    const userId = await getUserId();
+    if (!userId) return null;
 
-  // Validate UUID to prevent Supabase error 22P02
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) return null;
+    // Validate UUID to prevent Supabase error 22P02
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) return null;
 
-  const { data, error } = await supabaseAdmin
-    .from('invoices')
-    .select('*')
-    .eq('id', id)
-    .eq('profile_id', userId)
-    .single();
+    const { data, error } = await supabaseAdmin
+      .from('invoices')
+      .select('*')
+      .eq('id', id)
+      .eq('profile_id', userId)
+      .maybeSingle();
 
-  if (error) {
-    console.error('Error fetching invoice:', error.message || error);
+    if (error) {
+      console.error('Error fetching invoice:', error.message || error);
+      return null;
+    }
+
+    return data;
+  } catch (err) {
+    console.error('Exception fetching invoice:', err);
     return null;
   }
-
-  return data;
 }
 
 export async function getPublicInvoice(id: string) {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) return null;
+  try {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) return null;
 
-  const { data: invoice, error: invoiceError } = await supabaseAdmin
-    .from('invoices')
-    .select('*')
-    .eq('id', id)
-    .single();
+    const { data: invoice, error: invoiceError } = await supabaseAdmin
+      .from('invoices')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
 
-  if (invoiceError || !invoice) {
-    console.error('Error fetching public invoice:', invoiceError?.message || invoiceError);
+    if (invoiceError || !invoice) {
+      console.error('Error fetching public invoice:', invoiceError?.message || invoiceError);
+      return null;
+    }
+
+    let profile = null;
+    if (invoice.profile_id) {
+      const { data: profileData } = await supabaseAdmin
+        .from('profiles')
+        .select('*')
+        .eq('id', invoice.profile_id)
+        .maybeSingle();
+      profile = profileData;
+    }
+
+    return { ...invoice, profile };
+  } catch (err) {
+    console.error('Exception fetching public invoice:', err);
     return null;
   }
-
-  let profile = null;
-  if (invoice.profile_id) {
-    const { data: profileData } = await supabaseAdmin
-      .from('profiles')
-      .select('*')
-      .eq('id', invoice.profile_id)
-      .single();
-    profile = profileData;
-  }
-
-  return { ...invoice, profile };
 }
 
 export async function updateInvoiceStatus(id: string, status: string) {
@@ -428,25 +443,30 @@ export async function updateInvoiceStatus(id: string, status: string) {
 }
 
 export async function searchClients(query: string) {
-  const userId = await getUserId();
-  if (!userId) return [];
+  try {
+    const userId = await getUserId();
+    if (!userId) return [];
 
-  if (!query || query.trim().length < 2) return [];
+    if (!query || query.trim().length < 2) return [];
 
-  const { data, error } = await supabaseAdmin
-    .from('clients')
-    .select('id, name, phone, address')
-    .eq('profile_id', userId)
-    .ilike('name', `%${query}%`)
-    .order('name', { ascending: true })
-    .limit(20);
+    const { data, error } = await supabaseAdmin
+      .from('clients')
+      .select('id, name, phone, address')
+      .eq('profile_id', userId)
+      .ilike('name', `%${query}%`)
+      .order('name', { ascending: true })
+      .limit(20);
 
-  if (error) {
-    console.error('Error searching clients:', error);
+    if (error) {
+      console.error('Error searching clients:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error('Exception searching clients:', err);
     return [];
   }
-
-  return data || [];
 }
 
 export async function saveDraftInvoice(data: {

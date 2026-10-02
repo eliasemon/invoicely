@@ -18,6 +18,7 @@ import {
 } from '@/components/profile/ProfileSections';
 import { getProfile, updateProfile, uploadCompanyLogo, deleteCompanyLogo, uploadSignature } from '@/app/actions/profileActions';
 import { UserProfile } from '@/hooks/useProfile';
+import { useAuth } from '@/hooks/useAuth';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '@/lib/cropImage';
 import { driver } from 'driver.js';
@@ -25,6 +26,7 @@ import 'driver.js/dist/driver.css';
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<Partial<UserProfile>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -43,6 +45,11 @@ export default function ProfilePage() {
 
   useEffect(() => {
     async function loadProfile() {
+      if (authLoading) return;
+      if (!user?.uid) {
+        setLoading(false);
+        return;
+      }
       try {
         const data = await getProfile();
         if (data) {
@@ -50,13 +57,12 @@ export default function ProfilePage() {
         }
       } catch (err: any) {
         console.error('Failed to load profile:', err);
-        setError('Failed to load profile data.');
       } finally {
         setLoading(false);
       }
     }
     loadProfile();
-  }, []);
+  }, [user?.uid, authLoading]);
 
   // Initialize tour if user hasn't onboarded
   useEffect(() => {

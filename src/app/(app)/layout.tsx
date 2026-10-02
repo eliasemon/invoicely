@@ -3,6 +3,8 @@ import { BottomNavBar } from '@/components/layout/BottomNavBar';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { OnboardingGuard } from '@/components/auth/OnboardingGuard';
 
+export const dynamic = 'force-dynamic';
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard>

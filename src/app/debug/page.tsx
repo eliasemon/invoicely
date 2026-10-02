@@ -1,5 +1,7 @@
 import { getClientSummary } from '@/app/actions/clientActions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DebugPage() {
   let res: any;
   try {

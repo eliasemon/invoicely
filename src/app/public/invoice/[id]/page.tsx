@@ -22,7 +22,7 @@ export default async function PublicInvoicePage({
   if (!invoice) return notFound();
 
   // Ownership check
-  let currentUserId: string | undefined = undefined;
+  let currentUserId: string | null | undefined = undefined;
   try {
     currentUserId = await getUserId();
   } catch {

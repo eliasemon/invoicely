@@ -57,7 +57,7 @@ export interface UserProfile {
 }
 
 export function useProfile() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -66,6 +66,8 @@ export function useProfile() {
     let mounted = true;
 
     async function fetchProfile() {
+      if (authLoading) return;
+
       if (!user?.uid) {
         if (mounted) {
           setProfile(null);
@@ -98,7 +100,7 @@ export function useProfile() {
     return () => {
       mounted = false;
     };
-  }, [user?.uid]);
+  }, [user?.uid, authLoading]);
 
-  return { profile, loading, error };
+  return { profile, loading: loading || authLoading, error };
 }

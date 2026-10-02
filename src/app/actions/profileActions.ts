@@ -3,47 +3,82 @@
 import { supabaseAdmin, getUserId } from '@/lib/supabase/admin';
 import { UserProfile } from '@/core/ports/database.types';
 
-export async function getProfile() {
-  const userId = await getUserId();
-  if (!userId) throw new Error('Not authenticated');
+export async function getProfile(): Promise<UserProfile | null> {
+  try {
+    const userId = await getUserId();
+    if (!userId) {
+      return null;
+    }
 
-  const { data, error } = await supabaseAdmin
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single();
+    const { data, error } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
 
-  if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned", which is fine for first time
-    console.error('Error fetching profile:', error);
-    throw new Error('Failed to fetch profile');
+    if (error) {
+      console.warn('Error fetching profile from database:', error.message || error);
+      return null;
+    }
+
+    if (!data) {
+      // Auto-create/ensure profile exists if missing
+      const { data: newProfile, error: upsertErr } = await supabaseAdmin
+        .from('profiles')
+        .upsert({
+          id: userId,
+          default_currency: 'USD',
+          invoice_edit_enabled: true,
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .maybeSingle();
+
+      if (upsertErr) {
+        console.warn('Error creating default profile:', upsertErr);
+        return null;
+      }
+      return newProfile as UserProfile | null;
+    }
+
+    return data as UserProfile | null;
+  } catch (err: any) {
+    if (err && typeof err === 'object' && 'digest' in err && (err.digest === 'DYNAMIC_SERVER_USAGE' || String(err.digest).startsWith('NEXT_'))) {
+      throw err;
+    }
+    console.error('Exception in getProfile:', err);
+    return null;
   }
-
-  return data as UserProfile | null;
 }
 
-export async function updateProfile(profileData: Partial<UserProfile>) {
-  const userId = await getUserId();
-  if (!userId) throw new Error('Not authenticated');
+export async function updateProfile(profileData: Partial<UserProfile>): Promise<UserProfile | null> {
+  try {
+    const userId = await getUserId();
+    if (!userId) throw new Error('Not authenticated');
 
-  // Strip metadata fields that should not be sent from the client
-  const { id: _id, created_at: _ca, updated_at: _ua, ...cleanData } = profileData as any;
+    // Strip metadata fields that should not be sent from the client
+    const { id: _id, created_at: _ca, updated_at: _ua, ...cleanData } = profileData as any;
 
-  const { data, error } = await supabaseAdmin
-    .from('profiles')
-    .upsert({
-      id: userId,
-      ...cleanData,
-      updated_at: new Date().toISOString()
-    })
-    .select()
-    .single();
+    const { data, error } = await supabaseAdmin
+      .from('profiles')
+      .upsert({
+        id: userId,
+        ...cleanData,
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .maybeSingle();
 
-  if (error) {
-    console.error('Error updating profile:', error);
-    throw new Error('Failed to update profile');
+    if (error) {
+      console.error('Error updating profile:', error);
+      throw new Error(error.message || 'Failed to update profile');
+    }
+
+    return data as UserProfile;
+  } catch (err: any) {
+    console.error('Exception in updateProfile:', err);
+    throw new Error(err?.message || 'Failed to update profile');
   }
-
-  return data as UserProfile;
 }
 
 export async function uploadCompanyLogo(formData: FormData) {
