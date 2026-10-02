@@ -1,11 +1,11 @@
 import { getPublicInvoice } from '@/app/actions/invoiceActions';
-import { getProfile } from '@/app/actions/profileActions';
-import { getUserId } from '@/lib/supabase/admin';
+import { getUserId, getLinkedUserIds } from '@/lib/supabase/admin';
 import { PublicInvoiceViewer } from '@/components/invoices/PublicInvoiceViewer';
-import { PublicInvoiceHeader } from '@/components/invoices/PublicInvoiceHeader';
 import { notFound } from 'next/navigation';
 
 import { DocumentType } from '@/components/templates/templateUtils';
+
+export const dynamic = 'force-dynamic';
 
 export default async function PublicInvoicePage({ 
   params, 
@@ -21,14 +21,18 @@ export default async function PublicInvoicePage({
   const invoice = await getPublicInvoice(id);
   if (!invoice) return notFound();
 
-  // Ownership check
+  // Ownership check supporting linked accounts
   let currentUserId: string | null | undefined = undefined;
   try {
     currentUserId = await getUserId();
   } catch {
     // Not authenticated
   }
-  const isOwner = Boolean(currentUserId && invoice.profile_id && currentUserId === invoice.profile_id);
+  const isOwner = Boolean(
+    currentUserId &&
+    invoice.profile_id &&
+    getLinkedUserIds(currentUserId).includes(invoice.profile_id)
+  );
 
   // Check mode permissions: if public user, fallback to allowed mode
   const invoiceModeEnabled = invoice.invoice_mode_enabled ?? true;
@@ -49,8 +53,6 @@ export default async function PublicInvoicePage({
     else if (quotationModeEnabled) initialDocumentType = 'quotation';
     else initialDocumentType = 'invoice';
   }
-
-
 
   // Set default values if needed
   const fullInvoice = {
@@ -78,8 +80,7 @@ export default async function PublicInvoicePage({
 
   return (
     <div className="bg-surface-container-lowest min-h-screen flex flex-col print:block print:bg-white print:min-h-0 print:p-0 print:m-0 print:w-[210mm]">
-      <PublicInvoiceHeader invoiceNumber={invoice.invoice_number} />
-      <div className="flex-1 pt-3 pb-24 md:py-12 print:py-0 print:px-0 print:m-0 print:block print:w-full">
+      <div className="flex-1 pb-24 md:pb-12 print:py-0 print:px-0 print:m-0 print:block print:w-full">
         <PublicInvoiceViewer 
           templateId={invoice.template} 
           invoice={fullInvoice as any} 

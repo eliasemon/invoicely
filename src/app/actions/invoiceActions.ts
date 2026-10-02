@@ -2,6 +2,7 @@
 
 import { supabaseAdmin, getUserId, getLinkedUserIds } from '@/lib/supabase/admin';
 import { GroupData } from '@/components/create/LineItemGroup';
+import { revalidatePath } from 'next/cache';
 
 async function resolveClientId(userId: string, data: { clientId?: string, clientName?: string, clientPhone?: string, clientAddress?: string }) {
   if (data.clientId) return data.clientId;
@@ -864,7 +865,7 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
   // Security guard: verify that the caller is the owner of the invoice
   const { data: inv, error: fetchErr } = await supabaseAdmin
     .from('invoices')
-    .select('id, profile_id')
+    .select('id, profile_id, invoice_mode_enabled, challan_mode_enabled, quotation_mode_enabled')
     .eq('id', invoiceId)
     .single();
 
@@ -874,6 +875,15 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
 
   if (!linkedIds.includes(inv.profile_id)) {
     throw new Error('Unauthorized: Only the invoice owner can modify settings');
+  }
+
+  // Ensure at least one mode remains enabled
+  const finalInvoiceMode = settings.invoice_mode_enabled !== undefined ? settings.invoice_mode_enabled : (inv.invoice_mode_enabled ?? true);
+  const finalChallanMode = settings.challan_mode_enabled !== undefined ? settings.challan_mode_enabled : (inv.challan_mode_enabled ?? true);
+  const finalQuotationMode = settings.quotation_mode_enabled !== undefined ? settings.quotation_mode_enabled : (inv.quotation_mode_enabled ?? true);
+
+  if (!finalInvoiceMode && !finalChallanMode && !finalQuotationMode) {
+    throw new Error('At least one document format must remain enabled for public view.');
   }
 
   const { data, error } = await supabaseAdmin
@@ -891,7 +901,31 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
     throw new Error('Failed to update invoice settings');
   }
 
+  try {
+    revalidatePath(`/public/invoice/${invoiceId}`);
+    revalidatePath(`/invoices/${invoiceId}`);
+  } catch (revErr) {
+    console.warn('Revalidation warning:', revErr);
+  }
+
   return data;
+}
+
+export async function checkIsInvoiceOwner(invoiceId: string): Promise<boolean> {
+  try {
+    const userId = await getUserId();
+    if (!userId) return false;
+    const linkedIds = getLinkedUserIds(userId);
+    const { data: inv } = await supabaseAdmin
+      .from('invoices')
+      .select('profile_id')
+      .eq('id', invoiceId)
+      .maybeSingle();
+    if (!inv || !inv.profile_id) return false;
+    return linkedIds.includes(inv.profile_id);
+  } catch {
+    return false;
+  }
 }
 
 

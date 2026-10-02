@@ -5,7 +5,9 @@ import { InvoiceDisplayOptions } from '@/components/templates/InvoiceDisplayOpti
 import { TemplateSelector } from '@/components/templates/TemplateSelector';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { DocumentType, TextSize, DEFAULT_NOTE_TEXT } from '@/components/templates/templateUtils';
-import { updateInvoiceSettings } from '@/app/actions/invoiceActions';
+import { updateInvoiceSettings, checkIsInvoiceOwner } from '@/app/actions/invoiceActions';
+import { useAuth } from '@/hooks/useAuth';
+import { PublicInvoiceHeader } from './PublicInvoiceHeader';
 
 interface PublicInvoiceViewerProps {
   invoice: any;
@@ -24,6 +26,24 @@ export function PublicInvoiceViewer({
   initialDocumentType = 'invoice',
   isOwner = false,
 }: PublicInvoiceViewerProps) {
+  const { user } = useAuth();
+  const [effectiveIsOwner, setEffectiveIsOwner] = useState(isOwner);
+
+  useEffect(() => {
+    setEffectiveIsOwner(isOwner);
+  }, [isOwner]);
+
+  // Client-side verification fallback in case session wasn't hydrated during SSR
+  useEffect(() => {
+    if (!effectiveIsOwner && user?.uid && invoice?.id) {
+      checkIsInvoiceOwner(invoice.id).then((verified) => {
+        if (verified) {
+          setEffectiveIsOwner(true);
+        }
+      }).catch(() => {});
+    }
+  }, [effectiveIsOwner, user?.uid, invoice?.id]);
+
   const [showGroups, setShowGroups] = useState(false);
   const [showGroupTotals, setShowGroupTotals] = useState(false);
   const [documentType, setDocumentType] = useState<DocumentType>(initialDocumentType);
@@ -33,9 +53,16 @@ export function PublicInvoiceViewer({
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const [templateSavedNotification, setTemplateSavedNotification] = useState<string | null>(null);
 
+  // Sync initialDocumentType if prop changes
+  useEffect(() => {
+    if (initialDocumentType) {
+      setDocumentType(initialDocumentType);
+    }
+  }, [initialDocumentType]);
+
   const handleTemplateChange = async (newTemplate: string) => {
     setCurrentTemplate(newTemplate);
-    if (isOwner && invoice?.id) {
+    if (effectiveIsOwner && invoice?.id) {
       try {
         await updateInvoiceSettings(invoice.id, {
           template: newTemplate,
@@ -64,8 +91,73 @@ export function PublicInvoiceViewer({
   const [settingsSavedMessage, setSettingsSavedMessage] = useState<string | null>(null);
   const [showOwnerDrawer, setShowOwnerDrawer] = useState(false);
 
+  // Dedicated Print handler ensuring correct PDF name
+  const handlePrint = () => {
+    const docTitle =
+      documentType === 'challan'
+        ? 'Delivery-Challan'
+        : documentType === 'quotation'
+        ? 'Quotation'
+        : 'Invoice';
+    const num = invoice.invoiceNumber || invoice.invoice_number || 'document';
+    const prevTitle = document.title;
+    document.title = `${docTitle}-${num}`;
+    window.print();
+    setTimeout(() => {
+      document.title = prevTitle;
+    }, 1500);
+  };
+
+  const handleToggleModeAvailability = async (
+    mode: 'invoice' | 'challan' | 'quotation',
+    newEnabled: boolean
+  ) => {
+    if (!effectiveIsOwner || !invoice?.id) return;
+
+    const nextInvoice = mode === 'invoice' ? newEnabled : invoiceModeEnabled;
+    const nextChallan = mode === 'challan' ? newEnabled : challanModeEnabled;
+    const nextQuotation = mode === 'quotation' ? newEnabled : quotationModeEnabled;
+
+    if (!nextInvoice && !nextChallan && !nextQuotation) {
+      setSettingsSavedMessage('At least one document format must remain enabled for public view.');
+      setTimeout(() => setSettingsSavedMessage(null), 3500);
+      return;
+    }
+
+    if (mode === 'invoice') setInvoiceModeEnabled(newEnabled);
+    if (mode === 'challan') setChallanModeEnabled(newEnabled);
+    if (mode === 'quotation') setQuotationModeEnabled(newEnabled);
+
+    setIsSavingSettings(true);
+    setSettingsSavedMessage(null);
+    try {
+      await updateInvoiceSettings(invoice.id, {
+        invoice_mode_enabled: nextInvoice,
+        challan_mode_enabled: nextChallan,
+        quotation_mode_enabled: nextQuotation,
+      });
+      const modeLabel =
+        mode === 'invoice'
+          ? 'Commercial Invoice'
+          : mode === 'challan'
+          ? 'Delivery Challan'
+          : 'Quotation';
+      setSettingsSavedMessage(`Public view for ${modeLabel} ${newEnabled ? 'enabled' : 'disabled'}.`);
+      setTimeout(() => setSettingsSavedMessage(null), 3000);
+    } catch (err: any) {
+      console.error('Failed to update mode visibility:', err);
+      if (mode === 'invoice') setInvoiceModeEnabled(!newEnabled);
+      if (mode === 'challan') setChallanModeEnabled(!newEnabled);
+      if (mode === 'quotation') setQuotationModeEnabled(!newEnabled);
+      setSettingsSavedMessage('Failed to save mode change. Please try again.');
+      setTimeout(() => setSettingsSavedMessage(null), 3500);
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
   const handleSaveSettings = async () => {
-    if (!isOwner || !invoice?.id) return;
+    if (!effectiveIsOwner || !invoice?.id) return;
     setIsSavingSettings(true);
     setSettingsSavedMessage(null);
     try {
@@ -180,7 +272,7 @@ export function PublicInvoiceViewer({
 
   // Render owner settings card
   const renderOwnerControls = () => {
-    if (!isOwner) return null;
+    if (!effectiveIsOwner) return null;
     return (
       <div className="mb-4 bg-surface-container-low border border-primary/25 rounded-2xl p-4 shadow-sm print:hidden">
         <div className="flex items-center justify-between mb-3">
@@ -266,39 +358,33 @@ export function PublicInvoiceViewer({
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <label className="flex items-center justify-between p-2 rounded-lg bg-surface border border-outline-variant/40 cursor-pointer text-xs">
-                  <span className="font-medium text-on-surface">Invoice Mode</span>
+                  <span className="font-medium text-on-surface">Commercial Invoice</span>
                   <input
                     type="checkbox"
                     checked={invoiceModeEnabled}
-                    onChange={(e) => {
-                      if (invoiceModeEnabled && !challanModeEnabled && !quotationModeEnabled) return;
-                      setInvoiceModeEnabled(e.target.checked);
-                    }}
-                    className="w-4 h-4 rounded text-primary"
+                    onChange={(e) => handleToggleModeAvailability('invoice', e.target.checked)}
+                    disabled={isSavingSettings}
+                    className="w-4 h-4 rounded text-primary cursor-pointer"
                   />
                 </label>
                 <label className="flex items-center justify-between p-2 rounded-lg bg-surface border border-outline-variant/40 cursor-pointer text-xs">
-                  <span className="font-medium text-on-surface">Challan Mode</span>
+                  <span className="font-medium text-on-surface">Delivery Challan</span>
                   <input
                     type="checkbox"
                     checked={challanModeEnabled}
-                    onChange={(e) => {
-                      if (challanModeEnabled && !invoiceModeEnabled && !quotationModeEnabled) return;
-                      setChallanModeEnabled(e.target.checked);
-                    }}
-                    className="w-4 h-4 rounded text-primary"
+                    onChange={(e) => handleToggleModeAvailability('challan', e.target.checked)}
+                    disabled={isSavingSettings}
+                    className="w-4 h-4 rounded text-primary cursor-pointer"
                   />
                 </label>
                 <label className="flex items-center justify-between p-2 rounded-lg bg-surface border border-outline-variant/40 cursor-pointer text-xs">
-                  <span className="font-medium text-on-surface">Quotation Mode</span>
+                  <span className="font-medium text-on-surface">Quotation</span>
                   <input
                     type="checkbox"
                     checked={quotationModeEnabled}
-                    onChange={(e) => {
-                      if (quotationModeEnabled && !invoiceModeEnabled && !challanModeEnabled) return;
-                      setQuotationModeEnabled(e.target.checked);
-                    }}
-                    className="w-4 h-4 rounded text-primary"
+                    onChange={(e) => handleToggleModeAvailability('quotation', e.target.checked)}
+                    disabled={isSavingSettings}
+                    className="w-4 h-4 rounded text-primary cursor-pointer"
                   />
                 </label>
               </div>
@@ -398,165 +484,172 @@ export function PublicInvoiceViewer({
 
   return (
     <div className="w-full flex flex-col items-center">
-      
-      {/* Sticky Action Toolbar for Desktop (Zoom, Doc Text Resizer, Row Text Resizer, Print) */}
-      <div className="hidden md:flex sticky top-4 z-40 mb-4 items-center gap-2 bg-surface-container shadow-md p-1.5 rounded-xl border border-outline-variant/30 print:hidden flex-wrap justify-center">
-        {/* Zoom Controls */}
-        <div className="flex items-center gap-1">
-          <button 
-            onClick={previewZoomOut} 
-            className="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 cursor-pointer" 
-            title="Zoom Out"
-          >
-            <MaterialIcon icon="remove" className="text-[18px]" />
-          </button>
-          
-          <span className="font-label-sm text-on-surface-variant px-1.5 min-w-[46px] text-center font-semibold text-xs">
-            {Math.round(previewZoom * 100)}%
-          </span>
-          
-          <button 
-            onClick={previewZoomIn} 
-            className="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 cursor-pointer" 
-            title="Zoom In"
-          >
-            <MaterialIcon icon="add" className="text-[18px]" />
-          </button>
-          
-          <button 
-            onClick={previewFitToWidth} 
-            className="px-2 h-8 flex items-center gap-1 hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 text-[11px] font-medium cursor-pointer" 
-            title="Fit to Width"
-          >
-            <MaterialIcon icon="fit_width" className="text-[15px]" />
-            <span>Fit</span>
-          </button>
-        </div>
+      <PublicInvoiceHeader
+        invoiceNumber={invoice.invoiceNumber || invoice.invoice_number}
+        documentType={documentType}
+        isOwner={effectiveIsOwner}
+        onPrint={handlePrint}
+      />
 
-        <div className="w-px bg-outline-variant/50 h-5"></div>
+      <div className="w-full flex flex-col items-center pt-3">
+        {/* Sticky Action Toolbar for Desktop (Zoom, Doc Text Resizer, Row Text Resizer, Print) */}
+        <div className="hidden md:flex sticky top-4 z-40 mb-4 items-center gap-2 bg-surface-container shadow-md p-1.5 rounded-xl border border-outline-variant/30 print:hidden flex-wrap justify-center">
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={previewZoomOut} 
+              className="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 cursor-pointer" 
+              title="Zoom Out"
+            >
+              <MaterialIcon icon="remove" className="text-[18px]" />
+            </button>
+            
+            <span className="font-label-sm text-on-surface-variant px-1.5 min-w-[46px] text-center font-semibold text-xs">
+              {Math.round(previewZoom * 100)}%
+            </span>
+            
+            <button 
+              onClick={previewZoomIn} 
+              className="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 cursor-pointer" 
+              title="Zoom In"
+            >
+              <MaterialIcon icon="add" className="text-[18px]" />
+            </button>
+            
+            <button 
+              onClick={previewFitToWidth} 
+              className="px-2 h-8 flex items-center gap-1 hover:bg-surface-container-high rounded-md text-on-surface-variant transition-colors active:scale-95 text-[11px] font-medium cursor-pointer" 
+              title="Fit to Width"
+            >
+              <MaterialIcon icon="fit_width" className="text-[15px]" />
+              <span>Fit</span>
+            </button>
+          </div>
 
-        {/* Overall Document Text Size Controls */}
-        <div className="flex items-center gap-1">
-          <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider px-1">
-            Doc Text:
-          </span>
+          <div className="w-px bg-outline-variant/50 h-5"></div>
+
+          {/* Overall Document Text Size Controls */}
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider px-1">
+              Doc Text:
+            </span>
+            <button
+              onClick={handleDecreaseOverallTextSize}
+              disabled={overallTextSize === 'compact'}
+              className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
+                overallTextSize === 'compact'
+                  ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
+                  : 'hover:bg-surface-container-high text-on-surface active:scale-95'
+              }`}
+              title="Decrease overall document font size"
+            >
+              A-
+            </button>
+            <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-surface-container-high text-primary min-w-[58px] text-center capitalize">
+              {overallTextSize}
+            </span>
+            <button
+              onClick={handleIncreaseOverallTextSize}
+              disabled={overallTextSize === 'large'}
+              className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
+                overallTextSize === 'large'
+                  ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
+                  : 'hover:bg-surface-container-high text-on-surface active:scale-95'
+              }`}
+              title="Increase overall document font size"
+            >
+              A+
+            </button>
+          </div>
+
+          <div className="w-px bg-outline-variant/50 h-5"></div>
+
+          {/* Table Item Rows Font Size Controls */}
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider px-1">
+              Items:
+            </span>
+            <button
+              onClick={handleDecreaseTextSize}
+              disabled={textSize === 'compact'}
+              className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
+                textSize === 'compact'
+                  ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
+                  : 'hover:bg-surface-container-high text-on-surface active:scale-95'
+              }`}
+              title="Decrease items rows text size (fit more rows)"
+            >
+              A-
+            </button>
+            <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-surface-container-high text-primary min-w-[58px] text-center capitalize">
+              {textSize}
+            </span>
+            <button
+              onClick={handleIncreaseTextSize}
+              disabled={textSize === 'large'}
+              className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
+                textSize === 'large'
+                  ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
+                  : 'hover:bg-surface-container-high text-on-surface active:scale-95'
+              }`}
+              title="Increase items rows text size"
+            >
+              A+
+            </button>
+          </div>
+
+          <div className="w-px bg-outline-variant/50 h-5"></div>
+
+          {/* Print / Download Button */}
           <button
-            onClick={handleDecreaseOverallTextSize}
-            disabled={overallTextSize === 'compact'}
-            className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
-              overallTextSize === 'compact'
-                ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
-                : 'hover:bg-surface-container-high text-on-surface active:scale-95'
-            }`}
-            title="Decrease overall document font size"
+            onClick={handlePrint}
+            className="px-3 h-8 bg-primary text-on-primary rounded-lg text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 active:scale-95 transition-all shadow-sm cursor-pointer"
           >
-            A-
-          </button>
-          <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-surface-container-high text-primary min-w-[58px] text-center capitalize">
-            {overallTextSize}
-          </span>
-          <button
-            onClick={handleIncreaseOverallTextSize}
-            disabled={overallTextSize === 'large'}
-            className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
-              overallTextSize === 'large'
-                ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
-                : 'hover:bg-surface-container-high text-on-surface active:scale-95'
-            }`}
-            title="Increase overall document font size"
-          >
-            A+
+            <MaterialIcon icon="download" className="text-[16px]" />
+            <span>Print / PDF</span>
           </button>
         </div>
 
-        <div className="w-px bg-outline-variant/50 h-5"></div>
+        {/* Desktop Configuration & Display Options Panel (Hidden on mobile so invoice is 1st!) */}
+        <div className="hidden md:block w-full max-w-3xl px-4 md:px-0 mx-auto mb-4">
+          {renderOwnerControls()}
 
-        {/* Table Item Rows Font Size Controls */}
-        <div className="flex items-center gap-1">
-          <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider px-1">
-            Items:
-          </span>
-          <button
-            onClick={handleDecreaseTextSize}
-            disabled={textSize === 'compact'}
-            className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
-              textSize === 'compact'
-                ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
-                : 'hover:bg-surface-container-high text-on-surface active:scale-95'
-            }`}
-            title="Decrease items rows text size (fit more rows)"
-          >
-            A-
-          </button>
-          <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-surface-container-high text-primary min-w-[58px] text-center capitalize">
-            {textSize}
-          </span>
-          <button
-            onClick={handleIncreaseTextSize}
-            disabled={textSize === 'large'}
-            className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-all cursor-pointer ${
-              textSize === 'large'
-                ? 'opacity-30 cursor-not-allowed text-on-surface-variant'
-                : 'hover:bg-surface-container-high text-on-surface active:scale-95'
-            }`}
-            title="Increase items rows text size"
-          >
-            A+
-          </button>
+          <div className="print:hidden">
+            <TemplateSelector 
+              selectedTemplate={currentTemplate} 
+              onSelect={handleTemplateChange} 
+            />
+            {templateSavedNotification && (
+              <div className="mt-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg flex items-center gap-1.5 w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                {templateSavedNotification}
+              </div>
+            )}
+          </div>
+          <div className="mt-4">
+            <InvoiceDisplayOptions 
+              showGroups={showGroups}
+              setShowGroups={setShowGroups}
+              showGroupTotals={showGroupTotals}
+              setShowGroupTotals={setShowGroupTotals}
+              hasGroups={hasGroups}
+              isChallan={documentType === 'challan'}
+              isQuotation={documentType === 'quotation'}
+              documentType={documentType}
+              setDocumentType={setDocumentType}
+              textSize={textSize}
+              setTextSize={setTextSize}
+              overallTextSize={overallTextSize}
+              setOverallTextSize={setOverallTextSize}
+              invoiceModeEnabled={invoiceModeEnabled}
+              challanModeEnabled={challanModeEnabled}
+              quotationModeEnabled={quotationModeEnabled}
+              isOwner={effectiveIsOwner}
+              onToggleModeAvailability={handleToggleModeAvailability}
+              isUpdatingMode={isSavingSettings}
+            />
+          </div>
         </div>
-
-        <div className="w-px bg-outline-variant/50 h-5"></div>
-
-        {/* Print / Download Button */}
-        <button
-          onClick={() => window.print()}
-          className="px-3 h-8 bg-primary text-on-primary rounded-lg text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 active:scale-95 transition-all shadow-sm cursor-pointer"
-        >
-          <MaterialIcon icon="download" className="text-[16px]" />
-          <span>Print / PDF</span>
-        </button>
-      </div>
-
-      {/* Desktop Configuration & Display Options Panel (Hidden on mobile so invoice is 1st!) */}
-      <div className="hidden md:block w-full max-w-3xl px-4 md:px-0 mx-auto mb-4">
-        {renderOwnerControls()}
-
-        <div className="print:hidden">
-          <TemplateSelector 
-            selectedTemplate={currentTemplate} 
-            onSelect={handleTemplateChange} 
-          />
-          {templateSavedNotification && (
-            <div className="mt-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg flex items-center gap-1.5 w-fit">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              {templateSavedNotification}
-            </div>
-          )}
-        </div>
-        <div className="mt-4">
-          <InvoiceDisplayOptions 
-            showGroups={showGroups}
-            setShowGroups={setShowGroups}
-            showGroupTotals={showGroupTotals}
-            setShowGroupTotals={setShowGroupTotals}
-            hasGroups={hasGroups}
-            isChallan={isChallan}
-            setIsChallan={(val) => setDocumentType(val ? 'challan' : 'invoice')}
-            isQuotation={isQuotation}
-            setIsQuotation={(val) => setDocumentType(val ? 'quotation' : 'invoice')}
-            documentType={documentType}
-            setDocumentType={setDocumentType}
-            textSize={textSize}
-            setTextSize={setTextSize}
-            overallTextSize={overallTextSize}
-            setOverallTextSize={setOverallTextSize}
-            invoiceModeEnabled={invoiceModeEnabled}
-            challanModeEnabled={challanModeEnabled}
-            quotationModeEnabled={quotationModeEnabled}
-            isOwner={isOwner}
-          />
-        </div>
-      </div>
 
       {/* Scrollable Document Canvas Viewport (On mobile this appears 1st right at the top!) */}
       <div 
@@ -628,7 +721,7 @@ export function PublicInvoiceViewer({
 
         <button
           type="button"
-          onClick={() => window.print()}
+          onClick={handlePrint}
           className="pointer-events-auto bg-primary text-on-primary shadow-xl rounded-2xl px-4 py-3 flex items-center gap-1.5 font-bold text-xs cursor-pointer active:scale-95 transition-all hover:opacity-90"
           title="Print or Save as PDF"
         >
@@ -724,10 +817,8 @@ export function PublicInvoiceViewer({
                 showGroupTotals={showGroupTotals}
                 setShowGroupTotals={setShowGroupTotals}
                 hasGroups={hasGroups}
-                isChallan={isChallan}
-                setIsChallan={(val) => setDocumentType(val ? 'challan' : 'invoice')}
-                isQuotation={isQuotation}
-                setIsQuotation={(val) => setDocumentType(val ? 'quotation' : 'invoice')}
+                isChallan={documentType === 'challan'}
+                isQuotation={documentType === 'quotation'}
                 documentType={documentType}
                 setDocumentType={setDocumentType}
                 textSize={textSize}
@@ -737,7 +828,9 @@ export function PublicInvoiceViewer({
                 invoiceModeEnabled={invoiceModeEnabled}
                 challanModeEnabled={challanModeEnabled}
                 quotationModeEnabled={quotationModeEnabled}
-                isOwner={isOwner}
+                isOwner={effectiveIsOwner}
+                onToggleModeAvailability={handleToggleModeAvailability}
+                isUpdatingMode={isSavingSettings}
               />
 
               {/* Primary Download / Print PDF Button */}
@@ -745,17 +838,19 @@ export function PublicInvoiceViewer({
                 type="button"
                 onClick={() => {
                   setShowMobileDrawer(false);
-                  setTimeout(() => window.print(), 150);
+                  setTimeout(() => handlePrint(), 150);
                 }}
                 className="w-full py-3 bg-primary text-on-primary rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md hover:opacity-90 active:scale-98 transition-all cursor-pointer mt-2"
               >
                 <MaterialIcon icon="download" className="text-[20px]" />
-                <span>Download / Print PDF</span>
+                <span>Download / Print {documentType === 'challan' ? 'Challan' : documentType === 'quotation' ? 'Quotation' : 'Invoice'} PDF</span>
               </button>
             </div>
           </div>
         </div>
       )}
+
+      </div>
 
       {/* Dedicated Print Container */}
       <div className="hidden print:block w-[210mm] mx-auto bg-white border-none shadow-none m-0 p-0">

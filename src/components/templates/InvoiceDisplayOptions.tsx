@@ -8,8 +8,8 @@ interface InvoiceDisplayOptionsProps {
   showGroupTotals: boolean;
   setShowGroupTotals: (val: boolean) => void;
   hasGroups: boolean;
-  isChallan: boolean;
-  setIsChallan: (val: boolean) => void;
+  isChallan?: boolean;
+  setIsChallan?: (val: boolean) => void;
   isQuotation?: boolean;
   setIsQuotation?: (val: boolean) => void;
   documentType?: DocumentType;
@@ -22,6 +22,8 @@ interface InvoiceDisplayOptionsProps {
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
   isOwner?: boolean;
+  onToggleModeAvailability?: (mode: 'invoice' | 'challan' | 'quotation', enabled: boolean) => void;
+  isUpdatingMode?: boolean;
 }
 
 export function InvoiceDisplayOptions({
@@ -30,7 +32,7 @@ export function InvoiceDisplayOptions({
   showGroupTotals,
   setShowGroupTotals,
   hasGroups,
-  isChallan,
+  isChallan = false,
   setIsChallan,
   isQuotation = false,
   setIsQuotation,
@@ -44,20 +46,28 @@ export function InvoiceDisplayOptions({
   challanModeEnabled = true,
   quotationModeEnabled = true,
   isOwner = false,
+  onToggleModeAvailability,
+  isUpdatingMode = false,
 }: InvoiceDisplayOptionsProps) {
   // Determine current active document type
   const currentDocType: DocumentType =
     documentType || (isQuotation ? "quotation" : isChallan ? "challan" : "invoice");
 
   const handleSelectDocType = (type: DocumentType) => {
+    if (!isOwner) {
+      if (type === "invoice" && !invoiceModeEnabled) return;
+      if (type === "challan" && !challanModeEnabled) return;
+      if (type === "quotation" && !quotationModeEnabled) return;
+    }
     if (setDocumentType) {
       setDocumentType(type);
-    }
-    if (setIsChallan) {
-      setIsChallan(type === "challan");
-    }
-    if (setIsQuotation) {
-      setIsQuotation(type === "quotation");
+    } else {
+      if (setIsChallan) {
+        setIsChallan(type === "challan");
+      }
+      if (setIsQuotation) {
+        setIsQuotation(type === "quotation");
+      }
     }
   };
 
@@ -89,37 +99,37 @@ export function InvoiceDisplayOptions({
 
   return (
     <div className="w-full flex flex-col gap-4 print:hidden mb-4">
-      {/* Document Type Section - Only available to the owner of the document */}
-      {isOwner && (
-        <div>
-          <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-2">
-            <MaterialIcon
-              icon="swap_horiz"
-              className="text-primary text-[20px]"
-            />
-            <h3 className="font-body-lg text-sm sm:text-base font-semibold text-on-surface">
-              Document Format
-            </h3>
-          </div>
-          <span className="text-[11px] sm:text-xs font-medium px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
-            {currentDocType === "quotation"
-              ? "Quotation Mode"
-              : currentDocType === "challan"
-              ? "Consignment Mode"
-              : "Commercial Mode"}
-          </span>
-        </div>
+      {/* Document Type Section - available to owner or when multiple public modes are available */}
+      {(() => {
+        const canShowInvoice = isOwner || invoiceModeEnabled;
+        const canShowChallan = isOwner || challanModeEnabled;
+        const canShowQuotation = isOwner || quotationModeEnabled;
+        const visibleCount = [canShowInvoice, canShowChallan, canShowQuotation].filter(Boolean).length;
+        if (!isOwner && visibleCount <= 1) return null;
 
-        {/* Document Type Cards */}
-        {(() => {
-          const canShowInvoice = isOwner || invoiceModeEnabled;
-          const canShowChallan = isOwner || challanModeEnabled;
-          const canShowQuotation = isOwner || quotationModeEnabled;
-          const visibleCount = [canShowInvoice, canShowChallan, canShowQuotation].filter(Boolean).length;
-          const gridCols = visibleCount === 1 ? 'grid-cols-1' : visibleCount === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-3';
+        const gridCols = visibleCount === 1 ? 'grid-cols-1' : visibleCount === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-3';
 
-          return (
+        return (
+          <div>
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="flex items-center gap-2">
+                <MaterialIcon
+                  icon="swap_horiz"
+                  className="text-primary text-[20px]"
+                />
+                <h3 className="font-body-lg text-sm sm:text-base font-semibold text-on-surface">
+                  Document Format
+                </h3>
+              </div>
+              <span className="text-[11px] sm:text-xs font-medium px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
+                {currentDocType === "quotation"
+                  ? "Quotation Mode"
+                  : currentDocType === "challan"
+                  ? "Consignment Mode"
+                  : "Commercial Mode"}
+              </span>
+            </div>
+
             <div className={`grid ${gridCols} gap-2.5 sm:gap-3`}>
               {/* Option 1: Commercial Invoice */}
               {canShowInvoice && (
@@ -158,10 +168,25 @@ export function InvoiceDisplayOptions({
                       >
                         Commercial Invoice
                       </span>
-                      {isOwner && (
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${invoiceModeEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
-                          {invoiceModeEnabled ? 'Public: On' : 'Public: Off'}
-                        </span>
+                      {isOwner && onToggleModeAvailability && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleModeAvailability('invoice', !invoiceModeEnabled);
+                          }}
+                          disabled={isUpdatingMode}
+                          title={invoiceModeEnabled ? 'Click to disable public view of Invoice' : 'Click to enable public view of Invoice'}
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 border transition-all cursor-pointer hover:shadow-xs active:scale-95 ${
+                            invoiceModeEnabled
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400'
+                              : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-400'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${invoiceModeEnabled ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                          <span>{invoiceModeEnabled ? 'Public: On' : 'Public: Off'}</span>
+                          <MaterialIcon icon={invoiceModeEnabled ? 'visibility' : 'visibility_off'} className="text-[12px]" />
+                        </button>
                       )}
                     </div>
                     <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
@@ -221,10 +246,25 @@ export function InvoiceDisplayOptions({
                       >
                         Delivery Challan
                       </span>
-                      {isOwner && (
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${challanModeEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
-                          {challanModeEnabled ? 'Public: On' : 'Public: Off'}
-                        </span>
+                      {isOwner && onToggleModeAvailability && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleModeAvailability('challan', !challanModeEnabled);
+                          }}
+                          disabled={isUpdatingMode}
+                          title={challanModeEnabled ? 'Click to disable public view of Challan' : 'Click to enable public view of Challan'}
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 border transition-all cursor-pointer hover:shadow-xs active:scale-95 ${
+                            challanModeEnabled
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400'
+                              : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-400'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${challanModeEnabled ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                          <span>{challanModeEnabled ? 'Public: On' : 'Public: Off'}</span>
+                          <MaterialIcon icon={challanModeEnabled ? 'visibility' : 'visibility_off'} className="text-[12px]" />
+                        </button>
                       )}
                     </div>
                     <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
@@ -284,10 +324,25 @@ export function InvoiceDisplayOptions({
                       >
                         Quotation
                       </span>
-                      {isOwner && (
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${quotationModeEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
-                          {quotationModeEnabled ? 'Public: On' : 'Public: Off'}
-                        </span>
+                      {isOwner && onToggleModeAvailability && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleModeAvailability('quotation', !quotationModeEnabled);
+                          }}
+                          disabled={isUpdatingMode}
+                          title={quotationModeEnabled ? 'Click to disable public view of Quotation' : 'Click to enable public view of Quotation'}
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 border transition-all cursor-pointer hover:shadow-xs active:scale-95 ${
+                            quotationModeEnabled
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400'
+                              : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-400'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${quotationModeEnabled ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                          <span>{quotationModeEnabled ? 'Public: On' : 'Public: Off'}</span>
+                          <MaterialIcon icon={quotationModeEnabled ? 'visibility' : 'visibility_off'} className="text-[12px]" />
+                        </button>
                       )}
                     </div>
                     <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
@@ -310,10 +365,9 @@ export function InvoiceDisplayOptions({
                 </button>
               )}
             </div>
-          );
-        })()}
-      </div>
-      )}
+          </div>
+        );
+      })()}
 
       {/* Overall Document Font Size Controls (Excluding line items) */}
       {setOverallTextSize && (
