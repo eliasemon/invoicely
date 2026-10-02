@@ -4,7 +4,7 @@ import { InvoiceTemplateRenderer } from '@/components/templates/InvoiceTemplateR
 import { InvoiceDisplayOptions } from '@/components/templates/InvoiceDisplayOptions';
 import { TemplateSelector } from '@/components/templates/TemplateSelector';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { DocumentType, TextSize } from '@/components/templates/templateUtils';
+import { DocumentType, TextSize, DEFAULT_NOTE_TEXT } from '@/components/templates/templateUtils';
 import { updateInvoiceSettings } from '@/app/actions/invoiceActions';
 
 interface PublicInvoiceViewerProps {
@@ -58,7 +58,7 @@ export function PublicInvoiceViewer({
   const [challanModeEnabled, setChallanModeEnabled] = useState<boolean>(invoice.challan_mode_enabled ?? true);
   const [quotationModeEnabled, setQuotationModeEnabled] = useState<boolean>(invoice.quotation_mode_enabled ?? true);
   const [noteEnabled, setNoteEnabled] = useState<boolean>(invoice.note_enabled ?? true);
-  const [noteText, setNoteText] = useState<string>(invoice.note_text || '');
+  const [noteText, setNoteText] = useState<string>(invoice.note_text !== undefined && invoice.note_text !== null ? invoice.note_text : DEFAULT_NOTE_TEXT);
 
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsSavedMessage, setSettingsSavedMessage] = useState<string | null>(null);

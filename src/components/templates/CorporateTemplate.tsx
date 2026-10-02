@@ -539,6 +539,15 @@ export function CorporateTemplate({
                   </div>
                 </div>
               )}
+
+              {/* N.B. Note */}
+              {noteText && (
+                <div className="border-t border-[#c6c6cd] pt-3 mt-3 text-left">
+                  <div className="text-[11px] text-[#45464d] whitespace-pre-line" style={{ fontFamily: "Geist, monospace" }}>
+                    <strong className="text-black">N.B:</strong> {noteText}
+                  </div>
+                </div>
+              )}
             </div>
           </article>
         </div>

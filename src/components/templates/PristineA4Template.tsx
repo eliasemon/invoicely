@@ -43,6 +43,7 @@ export function PristineA4Template({
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   return (
     <div
@@ -391,6 +392,13 @@ export function PristineA4Template({
             <div className="mt-3 pt-2 border-t border-gray-100 text-[10px] text-[#64748b] whitespace-pre-wrap">
               <span className="font-semibold text-[#0f172a]">Terms: </span>
               {invoice.terms_and_conditions || profile?.terms_and_conditions}
+            </div>
+          )}
+
+          {/* N.B. Note */}
+          {noteText && (
+            <div className="mt-2 pt-2 border-t border-gray-100 text-[10px] text-[#64748b] whitespace-pre-line text-left">
+              <strong className="text-[#0f172a]">N.B:</strong> {noteText}
             </div>
           )}
         </div>

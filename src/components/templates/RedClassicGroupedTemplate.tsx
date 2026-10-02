@@ -46,6 +46,7 @@ export function RedClassicGroupedTemplate({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = getBalanceDue(invoice);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   let globalSlNo = 1;
 
@@ -331,18 +332,11 @@ export function RedClassicGroupedTemplate({
           </div>
         )}
 
-        {/* Notes */}
-        {!isPricingHidden && ((invoice as any).tax_amount || 0) === 0 ? (
+        {/* N.B. Note */}
+        {noteText ? (
           <div className="mb-4 text-[11px]">
             <p className="font-bold mb-0.5">N.B:</p>
-            <p className="text-gray-800 whitespace-pre-line">
-              * This Bill is without Vat, Tax & Ait.
-            </p>
-          </div>
-        ) : invoice.notes ? (
-          <div className="mb-4 text-[11px]">
-            <p className="font-bold mb-0.5">N.B:</p>
-            <p className="text-gray-800 whitespace-pre-line">{invoice.notes}</p>
+            <p className="text-gray-800 whitespace-pre-line">{noteText}</p>
           </div>
         ) : null}
 

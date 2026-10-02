@@ -44,6 +44,7 @@ export function SleekAccentTemplate({
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   const tax = 0; // Keeping tax as 0 as per other templates unless specified in invoice
 
@@ -443,6 +444,13 @@ export function SleekAccentTemplate({
                 )}
             </div>
           </section>
+
+          {/* N.B. Note */}
+          {noteText && (
+            <div className="mt-6 pt-3 border-t border-gray-200 text-[11px] text-gray-600 whitespace-pre-line text-left">
+              <strong className="text-[#0b1b3d]">N.B:</strong> {noteText}
+            </div>
+          )}
 
           {/* Footer Contact Info */}
           <footer className="mt-10 pt-6 border-t border-gray-200 flex flex-wrap justify-between items-center text-xs font-semibold text-[#0b1b3d] gap-4">

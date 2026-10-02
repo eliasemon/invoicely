@@ -44,6 +44,7 @@ export function MinimalistWithQrCodeTemplate({
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   return (
     <div
@@ -350,6 +351,13 @@ export function MinimalistWithQrCodeTemplate({
             <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-500 whitespace-pre-wrap">
               <p className="font-bold text-black mb-0.5">Terms & Conditions</p>
               <p>{invoice.terms_and_conditions || profile?.terms_and_conditions}</p>
+            </div>
+          )}
+
+          {/* N.B. Note */}
+          {noteText && (
+            <div className="mt-3 pt-2.5 border-t border-gray-100 text-[11px] text-gray-500 whitespace-pre-line text-left">
+              <strong className="text-black">N.B:</strong> {noteText}
             </div>
           )}
         </div>

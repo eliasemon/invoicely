@@ -43,9 +43,15 @@ export interface TemplateProps {
   overallTextSize?: TextSize;
 }
 
+export const DEFAULT_NOTE_TEXT = 'Thank you for your business. Please make payment within the due date.';
+
 export function getNoteText(invoice: Invoice): string | null {
   if (invoice.note_enabled === false) return null;
-  return invoice.note_text || null;
+  if (invoice.note_text !== undefined && invoice.note_text !== null) {
+    const trimmed = invoice.note_text.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+  return DEFAULT_NOTE_TEXT;
 }
 
 export function formatDate(date: Date | string): string {

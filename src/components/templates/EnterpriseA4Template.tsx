@@ -461,6 +461,13 @@ export function EnterpriseA4Template({
                   </p>
                 </div>
               )}
+
+              {/* N.B. Note */}
+              {noteText && (
+                <div className="mt-3 pt-2.5 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left">
+                  <strong className="text-[#1e293b]">N.B:</strong> {noteText}
+                </div>
+              )}
             </div>
           </div>
         </div>

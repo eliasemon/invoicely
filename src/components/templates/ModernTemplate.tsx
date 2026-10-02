@@ -42,6 +42,7 @@ export function ModernTemplate({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   return (
     <div
@@ -435,6 +436,13 @@ export function ModernTemplate({
                 )}
             </div>
           </div>
+
+          {/* N.B. Note */}
+          {noteText && (
+            <div className="mt-4 pt-3 border-t border-[#c6c6cd] text-[10px] text-[#45464d] whitespace-pre-line text-left">
+              <strong className="text-black">N.B:</strong> {noteText}
+            </div>
+          )}
         </div>
       </div>
     </div>

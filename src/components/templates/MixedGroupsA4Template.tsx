@@ -40,6 +40,7 @@ export function MixedGroupsA4Template({
   const amountPaid = getAmountPaid(invoice);
   const balanceDue = Math.max(0, total - amountPaid);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   return (
     <div
@@ -346,6 +347,13 @@ export function MixedGroupsA4Template({
                 Terms & Conditions
               </p>
               <p>{invoice.terms_and_conditions || profile?.terms_and_conditions}</p>
+            </div>
+          )}
+
+          {/* N.B. Note */}
+          {noteText && (
+            <div className="mt-3 pt-2.5 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left">
+              <strong className="text-[#0f172a]">N.B:</strong> {noteText}
             </div>
           )}
         </div>

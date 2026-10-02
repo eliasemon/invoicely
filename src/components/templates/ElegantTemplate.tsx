@@ -483,6 +483,15 @@ export function ElegantTemplate({
             </div>
           </div>
         </footer>
+
+        {/* N.B. Note */}
+        {noteText && (
+          <div className="border-t border-[#c6c6cd] pt-3 mt-4 text-left">
+            <div className="text-[11px] text-[#565e74] whitespace-pre-line">
+              <strong className="text-black">N.B:</strong> {noteText}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

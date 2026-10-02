@@ -43,6 +43,7 @@ export function HeritageA4Template({
   const balanceDue = Math.max(0, total - amountPaid);
   const items = getAllItems(invoice);
   const subject = getSubjectForDoc(invoice, documentType);
+  const noteText = getNoteText(invoice);
 
   return (
     <div
@@ -430,6 +431,13 @@ export function HeritageA4Template({
               Terms & Conditions
             </p>
             <p>{invoice.terms_and_conditions || profile?.terms_and_conditions}</p>
+          </div>
+        )}
+
+        {/* N.B. Note */}
+        {noteText && (
+          <div className="mt-3 pt-2.5 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-line text-left">
+            <strong className="text-[#78350f]">N.B:</strong> {noteText}
           </div>
         )}
       </div>
