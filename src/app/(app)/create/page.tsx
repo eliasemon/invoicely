@@ -10,7 +10,7 @@ import { ValidationModal, ValidationError } from '@/components/create/Validation
 import { SubjectAndModeSettings } from '@/components/create/SubjectAndModeSettings';
 import { useCreateInvoice } from '@/core/contexts/CreateInvoiceContext';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, Suspense, useState } from 'react';
+import { useEffect, Suspense, useState, useRef } from 'react';
 import { getInvoice, createInvoice, saveDraftInvoice } from '@/app/actions/invoiceActions';
 import { useProfile } from '@/hooks/useProfile';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
@@ -96,9 +96,10 @@ function CreateInvoiceForm() {
   }, [searchParams, profile]);
 
   // Pre-fill client details when navigating from the clients list
+  const prefilledRef = useRef(false);
   useEffect(() => {
     const id = searchParams.get('id');
-    if (id) return; // skip if editing existing invoice
+    if (id || prefilledRef.current) return; // skip if editing existing invoice or already prefilled
 
     const prefillClientId = searchParams.get('clientId');
     const prefillClientName = searchParams.get('clientName');
@@ -106,13 +107,13 @@ function CreateInvoiceForm() {
     const prefillClientAddress = searchParams.get('clientAddress');
 
     if (prefillClientName) {
+      prefilledRef.current = true;
       if (prefillClientId) setClientId(prefillClientId);
       setClientName(prefillClientName);
       if (prefillClientPhone) setMobileNumber(prefillClientPhone);
       if (prefillClientAddress) setClientAddress(prefillClientAddress);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams, setClientId, setClientName, setMobileNumber, setClientAddress]);
 
   if (isLoading) {
     return (

@@ -26,7 +26,8 @@ export function ClientHeader({
 }: Readonly<ClientHeaderProps>) {
   const [isEditing, setIsEditing] = useState(false);
   
-  const currencyList = Object.values(currencies);
+  const currencyList = Object.values(currencies || {});
+  const createInvoiceUrl = `/create?clientId=${encodeURIComponent(id)}&clientName=${encodeURIComponent(name)}${phone ? `&clientPhone=${encodeURIComponent(phone)}` : ''}${address ? `&clientAddress=${encodeURIComponent(address)}` : ''}`;
 
   return (
     <div className="bg-surface-container-lowest rounded-3xl p-lg md:p-xl border border-outline-variant shadow-sm flex flex-col gap-lg mb-lg">
@@ -41,11 +42,18 @@ export function ClientHeader({
             <h1 className="font-display-sm text-display-sm md:font-display-md md:text-display-md text-primary">{name}</h1>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full flex items-center gap-2">
             <MaterialIcon icon="receipt_long" className="text-[18px]" />
             <span className="font-label-lg text-label-lg font-semibold">{invoiceCount} Invoices</span>
           </div>
+          <Link 
+            href={createInvoiceUrl}
+            className="flex items-center gap-1.5 bg-primary text-on-primary hover:bg-primary/90 px-4 py-2 rounded-full transition-colors font-label-lg font-semibold shadow-sm active:scale-95"
+          >
+            <MaterialIcon icon="add_circle" className="text-[18px]" />
+            Create Invoice
+          </Link>
           <button 
             onClick={() => setIsEditing(true)}
             className="flex items-center gap-2 bg-surface-container-high hover:bg-surface-variant text-primary px-4 py-2 rounded-full transition-colors font-label-lg font-semibold shadow-sm"

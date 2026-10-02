@@ -31,7 +31,7 @@ export default async function ClientsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
-        {clients.map((client) => (
+        {(clients || []).map((client) => (
           <ClientCard 
             key={client.id}
             id={client.id}
@@ -44,7 +44,7 @@ export default async function ClientsPage() {
         ))}
       </div>
       
-      {clients.length === 0 && (
+      {(!clients || clients.length === 0) && (
         <div className="flex flex-col items-center justify-center py-24 px-4 bg-surface-container-lowest rounded-3xl border border-outline-variant shadow-sm text-center">
           <div className="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mb-4">
             <span className="material-symbols-outlined text-[32px]">group</span>

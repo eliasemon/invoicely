@@ -6,37 +6,44 @@ import { CurrencySummary } from '@/app/actions/clientActions';
 interface ClientCardProps {
   id: string;
   name: string;
-  phone: string;
-  address: string;
-  invoiceCount: number;
-  currencies: Record<string, CurrencySummary>;
+  phone?: string | null;
+  address?: string | null;
+  invoiceCount?: number;
+  currencies?: Record<string, CurrencySummary> | null;
 }
 
 export function ClientCard({
   id,
   name,
-  phone,
-  address,
-  invoiceCount,
-  currencies
+  phone = '',
+  address = '',
+  invoiceCount = 0,
+  currencies = {}
 }: Readonly<ClientCardProps>) {
-  
-  const currencyList = Object.values(currencies);
+  const safeCurrencies = currencies || {};
+  const currencyList = Object.values(safeCurrencies);
+  const safePhone = phone || '';
+  const safeAddress = address || '';
+  const safeName = name || 'Unnamed Client';
+  const safeId = id || '';
 
-  const createInvoiceUrl = `/create?clientId=${encodeURIComponent(id)}&clientName=${encodeURIComponent(name)}${phone ? `&clientPhone=${encodeURIComponent(phone)}` : ''}${address ? `&clientAddress=${encodeURIComponent(address)}` : ''}`;
+  const createInvoiceUrl = `/create?clientId=${encodeURIComponent(safeId)}&clientName=${encodeURIComponent(safeName)}${safePhone ? `&clientPhone=${encodeURIComponent(safePhone)}` : ''}${safeAddress ? `&clientAddress=${encodeURIComponent(safeAddress)}` : ''}`;
 
   return (
-    <Link href={`/clients/${encodeURIComponent(id)}`} className="block group">
-      <div className="bg-surface-container-lowest rounded-2xl p-lg border border-outline-variant shadow-[0_4px_12px_rgba(26,43,60,0.03)] hover:shadow-[0_8px_24px_rgba(26,43,60,0.08)] flex flex-col gap-md transition-all duration-300 hover:-translate-y-1 h-full">
-        
+    <div className="bg-surface-container-lowest rounded-2xl p-lg border border-outline-variant shadow-[0_4px_12px_rgba(26,43,60,0.03)] hover:shadow-[0_8px_24px_rgba(26,43,60,0.08)] flex flex-col gap-md transition-all duration-300 hover:-translate-y-1 h-full">
+      
+      {/* Clickable Card Body linking to Client Details */}
+      <Link href={`/clients/${encodeURIComponent(safeId)}`} className="block group flex-1 flex flex-col gap-md focus:outline-none">
         {/* Header: Name and Badge */}
         <div className="flex justify-between items-start">
           <div className="flex flex-col gap-xs">
-            <h3 className="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">{name}</h3>
-            {phone && (
+            <h3 className="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">
+              {safeName}
+            </h3>
+            {safePhone && (
               <div className="flex items-center gap-1.5 text-on-surface-variant">
                 <MaterialIcon icon="call" className="text-[16px]" />
-                <span className="font-body-md text-body-md">{phone}</span>
+                <span className="font-body-md text-body-md">{safePhone}</span>
               </div>
             )}
           </div>
@@ -51,7 +58,10 @@ export function ClientCard({
         {/* Financial Summary per currency */}
         <div className="flex flex-col gap-md">
           {currencyList.map((cur) => {
-            const paidPercentage = cur.totalBilled > 0 ? (cur.totalPaid / cur.totalBilled) * 100 : 0;
+            const totalBilled = Number(cur.totalBilled) || 0;
+            const totalPaid = Number(cur.totalPaid) || 0;
+            const totalOutstanding = Number(cur.totalOutstanding) || 0;
+            const paidPercentage = totalBilled > 0 ? (totalPaid / totalBilled) * 100 : 0;
             const resolvedCurrency = cur.currency || 'USD';
             const resolvedCurrencySymbol = cur.currencySymbol || (() => {
               try {
@@ -70,15 +80,15 @@ export function ClientCard({
                 <div className="grid grid-cols-2 gap-md">
                   <div className="flex flex-col gap-0.5">
                     <span className="font-label-sm text-label-sm text-on-surface-variant">Total Billed</span>
-                    <CurrencyDisplay amount={cur.totalBilled} currency={resolvedCurrency} currencySymbol={resolvedCurrencySymbol} className="font-title-md text-title-md text-on-surface font-medium" />
+                    <CurrencyDisplay amount={totalBilled} currency={resolvedCurrency} currencySymbol={resolvedCurrencySymbol} className="font-title-md text-title-md text-on-surface font-medium" />
                   </div>
                   <div className="flex flex-col gap-0.5 items-end">
                     <span className="font-label-sm text-label-sm text-on-surface-variant">Outstanding</span>
-                    <CurrencyDisplay amount={cur.totalOutstanding} currency={resolvedCurrency} currencySymbol={resolvedCurrencySymbol} className={`font-title-md text-title-md font-medium ${cur.totalOutstanding > 0 ? 'text-error' : 'text-primary'}`} />
+                    <CurrencyDisplay amount={totalOutstanding} currency={resolvedCurrency} currencySymbol={resolvedCurrencySymbol} className={`font-title-md text-title-md font-medium ${totalOutstanding > 0 ? 'text-error' : 'text-primary'}`} />
                   </div>
                 </div>
 
-                {cur.totalBilled > 0 && (
+                {totalBilled > 0 && (
                   <div className="flex flex-col gap-xs">
                     <div className="flex justify-between items-center text-xs text-on-surface-variant font-medium">
                       <span>Amount Paid</span>
@@ -100,19 +110,18 @@ export function ClientCard({
              <div className="text-on-surface-variant font-body-sm italic">No billing data.</div>
           )}
         </div>
+      </Link>
 
-        {/* Create Invoice CTA */}
-        <div className="h-px w-full bg-surface-variant"></div>
-        <Link
-          href={createInvoiceUrl}
-          onClick={(e) => e.stopPropagation()}
-          className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-primary/8 hover:bg-primary/15 text-primary font-label-md text-label-md transition-colors active:scale-95"
-        >
-          <MaterialIcon icon="add_circle" className="text-[18px]" />
-          Create Invoice
-        </Link>
+      {/* Create Invoice CTA - Sibling to detail link, NO nested <a> tags */}
+      <div className="h-px w-full bg-surface-variant"></div>
+      <Link
+        href={createInvoiceUrl}
+        className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-primary/8 hover:bg-primary/15 text-primary font-label-md text-label-md transition-colors active:scale-95"
+      >
+        <MaterialIcon icon="add_circle" className="text-[18px]" />
+        Create Invoice
+      </Link>
 
-      </div>
-    </Link>
+    </div>
   );
 }
