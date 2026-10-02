@@ -7,6 +7,7 @@ interface ClientCardProps {
   id: string;
   name: string;
   phone: string;
+  address: string;
   invoiceCount: number;
   currencies: Record<string, CurrencySummary>;
 }
@@ -15,11 +16,14 @@ export function ClientCard({
   id,
   name,
   phone,
+  address,
   invoiceCount,
   currencies
 }: Readonly<ClientCardProps>) {
   
   const currencyList = Object.values(currencies);
+
+  const createInvoiceUrl = `/create?clientId=${encodeURIComponent(id)}&clientName=${encodeURIComponent(name)}${phone ? `&clientPhone=${encodeURIComponent(phone)}` : ''}${address ? `&clientAddress=${encodeURIComponent(address)}` : ''}`;
 
   return (
     <Link href={`/clients/${encodeURIComponent(id)}`} className="block group">
@@ -96,6 +100,17 @@ export function ClientCard({
              <div className="text-on-surface-variant font-body-sm italic">No billing data.</div>
           )}
         </div>
+
+        {/* Create Invoice CTA */}
+        <div className="h-px w-full bg-surface-variant"></div>
+        <Link
+          href={createInvoiceUrl}
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-primary/8 hover:bg-primary/15 text-primary font-label-md text-label-md transition-colors active:scale-95"
+        >
+          <MaterialIcon icon="add_circle" className="text-[18px]" />
+          Create Invoice
+        </Link>
 
       </div>
     </Link>

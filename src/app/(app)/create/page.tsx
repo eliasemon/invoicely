@@ -95,6 +95,25 @@ function CreateInvoiceForm() {
     }
   }, [searchParams, profile]);
 
+  // Pre-fill client details when navigating from the clients list
+  useEffect(() => {
+    const id = searchParams.get('id');
+    if (id) return; // skip if editing existing invoice
+
+    const prefillClientId = searchParams.get('clientId');
+    const prefillClientName = searchParams.get('clientName');
+    const prefillClientPhone = searchParams.get('clientPhone');
+    const prefillClientAddress = searchParams.get('clientAddress');
+
+    if (prefillClientName) {
+      if (prefillClientId) setClientId(prefillClientId);
+      setClientName(prefillClientName);
+      if (prefillClientPhone) setMobileNumber(prefillClientPhone);
+      if (prefillClientAddress) setClientAddress(prefillClientAddress);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">

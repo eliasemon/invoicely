@@ -37,6 +37,7 @@ export default async function ClientsPage() {
             id={client.id}
             name={client.name}
             phone={client.phone}
+            address={client.address}
             invoiceCount={client.invoiceCount}
             currencies={client.currencies}
           />
