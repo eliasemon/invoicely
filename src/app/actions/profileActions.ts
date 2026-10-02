@@ -1,6 +1,6 @@
 'use server';
 
-import { supabaseAdmin, getUserId } from '@/lib/supabase/admin';
+import { supabaseAdmin, getUserId, getLinkedUserIds } from '@/lib/supabase/admin';
 import { UserProfile } from '@/core/ports/database.types';
 
 export async function getProfile(): Promise<UserProfile | null> {
@@ -10,18 +10,25 @@ export async function getProfile(): Promise<UserProfile | null> {
       return null;
     }
 
+    const linkedIds = getLinkedUserIds(userId);
+
     const { data, error } = await supabaseAdmin
       .from('profiles')
       .select('*')
-      .eq('id', userId)
-      .maybeSingle();
+      .in('id', linkedIds);
 
     if (error) {
       console.warn('Error fetching profile from database:', error.message || error);
       return null;
     }
 
-    if (!data) {
+    // Prefer exact current userId match if it has profile info, otherwise any linked profile that has content
+    let profile = data?.find(p => p.id === userId && (p.company_name || p.full_name));
+    if (!profile && data && data.length > 0) {
+      profile = data.find(p => p.company_name || p.full_name) || data[0];
+    }
+
+    if (!profile) {
       // Auto-create/ensure profile exists if missing
       const { data: newProfile, error: upsertErr } = await supabaseAdmin
         .from('profiles')
@@ -41,7 +48,7 @@ export async function getProfile(): Promise<UserProfile | null> {
       return newProfile as UserProfile | null;
     }
 
-    return data as UserProfile | null;
+    return profile as UserProfile | null;
   } catch (err: any) {
     if (err && typeof err === 'object' && 'digest' in err && (err.digest === 'DYNAMIC_SERVER_USAGE' || String(err.digest).startsWith('NEXT_'))) {
       throw err;
@@ -56,25 +63,32 @@ export async function updateProfile(profileData: Partial<UserProfile>): Promise<
     const userId = await getUserId();
     if (!userId) throw new Error('Not authenticated');
 
+    const linkedIds = getLinkedUserIds(userId);
+
     // Strip metadata fields that should not be sent from the client
     const { id: _id, created_at: _ca, updated_at: _ua, ...cleanData } = profileData as any;
 
-    const { data, error } = await supabaseAdmin
-      .from('profiles')
-      .upsert({
-        id: userId,
-        ...cleanData,
-        updated_at: new Date().toISOString()
-      })
-      .select()
-      .maybeSingle();
+    const upsertPromises = linkedIds.map(id =>
+      supabaseAdmin
+        .from('profiles')
+        .upsert({
+          id,
+          ...cleanData,
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .maybeSingle()
+    );
 
-    if (error) {
-      console.error('Error updating profile:', error);
-      throw new Error(error.message || 'Failed to update profile');
+    const results = await Promise.all(upsertPromises);
+    const primaryResult = results.find(r => r.data?.id === userId) || results[0];
+
+    if (primaryResult.error) {
+      console.error('Error updating profile:', primaryResult.error);
+      throw new Error(primaryResult.error.message || 'Failed to update profile');
     }
 
-    return data as UserProfile;
+    return primaryResult.data as UserProfile;
   } catch (err: any) {
     console.error('Exception in updateProfile:', err);
     throw new Error(err?.message || 'Failed to update profile');
@@ -118,19 +132,19 @@ export async function uploadCompanyLogo(formData: FormData) {
     .from('company-logos')
     .getPublicUrl(filePath);
 
-  // 3. Update the profile with the new logo URL
-  const { error: updateError } = await supabaseAdmin
-    .from('profiles')
-    .upsert({
-      id: userId,
-      company_logo: publicUrl,
-      updated_at: new Date().toISOString()
-    });
-
-  if (updateError) {
-    console.error('Error updating profile with new logo:', updateError);
-    throw new Error('Failed to update profile with logo');
-  }
+  // 3. Update all linked profiles with the new logo URL
+  const linkedIds = getLinkedUserIds(userId);
+  await Promise.all(
+    linkedIds.map(id =>
+      supabaseAdmin
+        .from('profiles')
+        .upsert({
+          id,
+          company_logo: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+    )
+  );
 
   return publicUrl;
 }
@@ -139,17 +153,22 @@ export async function deleteCompanyLogo(logoUrl: string) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
 
-  const sanitizedUserId = userId.replace(/[^a-zA-Z0-9-]/g, '_');
+  const linkedIds = getLinkedUserIds(userId);
+  const isAuthorized = linkedIds.some(id => {
+    const sanitized = id.replace(/[^a-zA-Z0-9-]/g, '_');
+    return logoUrl.includes(sanitized);
+  });
 
   // Ensure the URL belongs to this user's path before attempting delete
-  if (!logoUrl.includes(sanitizedUserId)) {
-     throw new Error('Unauthorized to delete this logo');
+  if (!isAuthorized) {
+    throw new Error('Unauthorized to delete this logo');
   }
 
   // Extract file path from URL
   const urlParts = logoUrl.split('/');
   const fileName = urlParts[urlParts.length - 1];
-  const filePath = `${sanitizedUserId}/${fileName}`;
+  const userFolder = urlParts[urlParts.length - 2];
+  const filePath = `${userFolder}/${fileName}`;
 
   // 1. Delete from storage bucket
   const { error: deleteError } = await supabaseAdmin.storage
@@ -161,19 +180,18 @@ export async function deleteCompanyLogo(logoUrl: string) {
     throw new Error('Failed to delete logo');
   }
 
-  // 2. Clear from profile
-  const { error: updateError } = await supabaseAdmin
-    .from('profiles')
-    .upsert({
-      id: userId,
-      company_logo: null,
-      updated_at: new Date().toISOString()
-    });
-
-  if (updateError) {
-    console.error('Error clearing logo from profile:', updateError);
-    throw new Error('Failed to clear logo from profile');
-  }
+  // 2. Clear from linked profiles
+  await Promise.all(
+    linkedIds.map(id =>
+      supabaseAdmin
+        .from('profiles')
+        .upsert({
+          id,
+          company_logo: null,
+          updated_at: new Date().toISOString()
+        })
+    )
+  );
 }
 
 export async function uploadSignature(base64Data: string) {
@@ -216,19 +234,19 @@ export async function uploadSignature(base64Data: string) {
     .from('signatures')
     .getPublicUrl(filePath);
 
-  // 3. Persist the signature URL to the profiles table
-  const { error: updateError } = await supabaseAdmin
-    .from('profiles')
-    .upsert({
-      id: userId,
-      signature_url: publicUrl,
-      updated_at: new Date().toISOString()
-    });
-
-  if (updateError) {
-    console.error('Error updating profile with signature URL:', updateError);
-    throw new Error('Failed to save signature URL to profile');
-  }
+  // 3. Persist the signature URL to all linked profiles
+  const linkedIds = getLinkedUserIds(userId);
+  await Promise.all(
+    linkedIds.map(id =>
+      supabaseAdmin
+        .from('profiles')
+        .upsert({
+          id,
+          signature_url: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+    )
+  );
 
   return publicUrl;
 }

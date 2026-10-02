@@ -2,6 +2,8 @@ import { getClients } from '@/app/actions/clientActions';
 import { getProfile } from '@/app/actions/profileActions';
 import { ClientCard } from '@/components/clients/ClientCard';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Clients | Invorio',
 };

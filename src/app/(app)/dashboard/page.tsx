@@ -10,6 +10,8 @@ import Link from 'next/link';
 import dayjs from 'dayjs';
 import { StatusType } from '@/components/shared/StatusBadge';
 
+export const dynamic = 'force-dynamic';
+
 interface CurrencyStats {
   total: number;
   unpaid: number;

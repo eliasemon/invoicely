@@ -1,6 +1,6 @@
 'use server';
 
-import { supabaseAdmin, getUserId } from '@/lib/supabase/admin';
+import { supabaseAdmin, getUserId, getLinkedUserIds } from '@/lib/supabase/admin';
 import { GroupData } from '@/components/create/LineItemGroup';
 
 async function resolveClientId(userId: string, data: { clientId?: string, clientName?: string, clientPhone?: string, clientAddress?: string }) {
@@ -9,10 +9,11 @@ async function resolveClientId(userId: string, data: { clientId?: string, client
   if (!trimmedName) return null;
   
   try {
+    const linkedIds = getLinkedUserIds(userId);
     const { data: existing } = await supabaseAdmin
       .from('clients')
       .select('id')
-      .eq('profile_id', userId)
+      .in('profile_id', linkedIds)
       .ilike('name', trimmedName)
       .limit(1);
       
@@ -41,10 +42,11 @@ async function getNextInvoiceNumber(userId: string) {
   const prefix = `INV-${currentYear}-`;
   
   try {
+    const linkedIds = getLinkedUserIds(userId);
     const { data: existingInvoices } = await supabaseAdmin
       .from('invoices')
       .select('invoice_number')
-      .eq('profile_id', userId)
+      .in('profile_id', linkedIds)
       .ilike('invoice_number', `${prefix}%`);
 
     let maxNum = 0;
@@ -179,12 +181,13 @@ export async function createInvoice(data: {
 
   let existingInvoice = null;
   if (data.invoiceId) {
+    const linkedIds = getLinkedUserIds(userId);
     const { data: inv } = await supabaseAdmin
       .from('invoices')
       .select('*')
       .eq('id', data.invoiceId)
-      .eq('profile_id', userId)
-      .single();
+      .in('profile_id', linkedIds)
+      .maybeSingle();
     existingInvoice = inv;
     
     if (inv && inv.status !== 'DRAFT') {
@@ -290,11 +293,12 @@ export async function createInvoice(data: {
   let error;
 
   if (data.invoiceId) {
+    const linkedIds = getLinkedUserIds(userId);
     const res = await supabaseAdmin
       .from('invoices')
       .update(payload)
       .eq('id', data.invoiceId)
-      .eq('profile_id', userId)
+      .in('profile_id', linkedIds)
       .select()
       .single();
     invoice = res.data;
@@ -330,10 +334,12 @@ export async function getInvoices(filters?: { search?: string, status?: string, 
     const userId = await getUserId();
     if (!userId) return [];
 
+    const linkedIds = getLinkedUserIds(userId);
+
     let query = supabaseAdmin
       .from('invoices')
       .select('*')
-      .eq('profile_id', userId)
+      .in('profile_id', linkedIds)
       .order('created_at', { ascending: false });
 
     if (filters?.status && filters.status !== 'All') {
@@ -359,7 +365,10 @@ export async function getInvoices(filters?: { search?: string, status?: string, 
     }
 
     return data || [];
-  } catch (err) {
+  } catch (err: any) {
+    if (err && typeof err === 'object' && 'digest' in err && (err.digest === 'DYNAMIC_SERVER_USAGE' || String(err.digest).startsWith('NEXT_'))) {
+      throw err;
+    }
     console.error('Exception fetching invoices:', err);
     return [];
   }
@@ -374,11 +383,13 @@ export async function getInvoice(id: string) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) return null;
 
+    const linkedIds = getLinkedUserIds(userId);
+
     const { data, error } = await supabaseAdmin
       .from('invoices')
       .select('*')
       .eq('id', id)
-      .eq('profile_id', userId)
+      .in('profile_id', linkedIds)
       .maybeSingle();
 
     if (error) {
@@ -387,7 +398,10 @@ export async function getInvoice(id: string) {
     }
 
     return data;
-  } catch (err) {
+  } catch (err: any) {
+    if (err && typeof err === 'object' && 'digest' in err && (err.digest === 'DYNAMIC_SERVER_USAGE' || String(err.digest).startsWith('NEXT_'))) {
+      throw err;
+    }
     console.error('Exception fetching invoice:', err);
     return null;
   }
@@ -528,11 +542,12 @@ export async function saveDraftInvoice(data: {
 
     let existingInvoice = null;
     if (data.invoiceId) {
+      const linkedIds = getLinkedUserIds(userId);
       const { data: inv } = await supabaseAdmin
         .from('invoices')
         .select('*')
         .eq('id', data.invoiceId)
-        .eq('profile_id', userId)
+        .in('profile_id', linkedIds)
         .maybeSingle();
       existingInvoice = inv;
     }
@@ -617,11 +632,12 @@ export async function saveDraftInvoice(data: {
     let error;
 
     if (data.invoiceId) {
+      const linkedIds = getLinkedUserIds(userId);
       const res = await supabaseAdmin
         .from('invoices')
         .update(payload)
         .eq('id', data.invoiceId)
-        .eq('profile_id', userId)
+        .in('profile_id', linkedIds)
         .select()
         .single();
       invoice = res.data;
@@ -659,12 +675,14 @@ export async function recordPayment(id: string, amount: number, note?: string) {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(id)) throw new Error('Invalid invoice ID');
 
+  const linkedIds = getLinkedUserIds(userId);
+
   // Fetch current invoice to calculate new status
   const { data: invoice, error: fetchError } = await supabaseAdmin
     .from('invoices')
     .select('*')
     .eq('id', id)
-    .eq('profile_id', userId)
+    .in('profile_id', linkedIds)
     .single();
 
   if (fetchError || !invoice) {
@@ -701,9 +719,9 @@ export async function recordPayment(id: string, amount: number, note?: string) {
       updated_at: new Date().toISOString() 
     })
     .eq('id', id)
-    .eq('profile_id', userId);
+    .in('profile_id', linkedIds);
 
-    if (error) {
+  if (error) {
     console.error('Error recording payment:', error);
     throw new Error('Failed to record payment');
   }
@@ -716,11 +734,13 @@ export async function deleteInvoice(id: string) {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(id)) throw new Error('Invalid invoice ID');
 
+  const linkedIds = getLinkedUserIds(userId);
+
   const { data: invoice } = await supabaseAdmin
     .from('invoices')
     .select('status')
     .eq('id', id)
-    .eq('profile_id', userId)
+    .in('profile_id', linkedIds)
     .single();
 
   if (!invoice) throw new Error('Invoice not found');
@@ -728,8 +748,8 @@ export async function deleteInvoice(id: string) {
   const { data: profile } = await supabaseAdmin
     .from('profiles')
     .select('invoice_edit_enabled')
-    .eq('id', userId)
-    .single();
+    .in('id', linkedIds)
+    .maybeSingle();
 
   const editEnabled = profile?.invoice_edit_enabled ?? true;
 
@@ -741,7 +761,7 @@ export async function deleteInvoice(id: string) {
     .from('invoices')
     .delete()
     .eq('id', id)
-    .eq('profile_id', userId);
+    .in('profile_id', linkedIds);
 
   if (error) {
     console.error('Error deleting invoice:', error);
@@ -756,11 +776,13 @@ export async function deletePayment(invoiceId: string, paymentLogId: string) {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(invoiceId)) throw new Error('Invalid invoice ID');
 
+  const linkedIds = getLinkedUserIds(userId);
+
   const { data: invoice, error: fetchError } = await supabaseAdmin
     .from('invoices')
     .select('*')
     .eq('id', invoiceId)
-    .eq('profile_id', userId)
+    .in('profile_id', linkedIds)
     .single();
 
   if (fetchError || !invoice) {
@@ -811,7 +833,7 @@ export async function deletePayment(invoiceId: string, paymentLogId: string) {
       updated_at: new Date().toISOString() 
     })
     .eq('id', invoiceId)
-    .eq('profile_id', userId);
+    .in('profile_id', linkedIds);
 
   if (error) {
     console.error('Error deleting payment:', error);
@@ -837,6 +859,8 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
     throw new Error('Not authenticated');
   }
 
+  const linkedIds = getLinkedUserIds(userId);
+
   // Security guard: verify that the caller is the owner of the invoice
   const { data: inv, error: fetchErr } = await supabaseAdmin
     .from('invoices')
@@ -848,7 +872,7 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
     throw new Error('Invoice not found');
   }
 
-  if (inv.profile_id !== userId) {
+  if (!linkedIds.includes(inv.profile_id)) {
     throw new Error('Unauthorized: Only the invoice owner can modify settings');
   }
 
@@ -869,4 +893,5 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
 
   return data;
 }
+
 

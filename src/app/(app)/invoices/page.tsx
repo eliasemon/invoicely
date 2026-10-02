@@ -6,6 +6,8 @@ import { getInvoices } from '@/app/actions/invoiceActions';
 import { getProfile } from '@/app/actions/profileActions';
 import dayjs from 'dayjs';
 
+export const dynamic = 'force-dynamic';
+
 export default async function InvoicesPage(
   props: {
     searchParams?: Promise<{

@@ -1,6 +1,6 @@
 'use server';
 
-import { supabaseAdmin, getUserId } from '@/lib/supabase/admin';
+import { supabaseAdmin, getUserId, getLinkedUserIds } from '@/lib/supabase/admin';
 
 export interface CurrencySummary {
   currency: string;
@@ -24,10 +24,12 @@ export async function getClients(): Promise<ClientSummary[]> {
     const userId = await getUserId();
     if (!userId) return [];
 
+    const linkedIds = getLinkedUserIds(userId);
+
     const { data: clients, error: clientsError } = await supabaseAdmin
       .from('clients')
       .select('*')
-      .eq('profile_id', userId)
+      .in('profile_id', linkedIds)
       .order('name', { ascending: true });
 
     if (clientsError || !clients) {
@@ -38,7 +40,7 @@ export async function getClients(): Promise<ClientSummary[]> {
     const { data: invoices, error: invoicesError } = await supabaseAdmin
       .from('invoices')
       .select('client_id, total_amount, amount_paid, status, currency, currency_symbol')
-      .eq('profile_id', userId);
+      .in('profile_id', linkedIds);
 
     if (invoicesError) {
       console.error('Error fetching invoices for clients:', invoicesError);
@@ -59,8 +61,8 @@ export async function getClients(): Promise<ClientSummary[]> {
 
     invoices?.forEach(invoice => {
       if (!invoice.client_id) return;
-      const existing = clientMap.get(invoice.client_id);
-      if (!existing) return;
+      const summary = clientMap.get(invoice.client_id);
+      if (!summary) return;
 
       const amount = Number(invoice.total_amount || 0);
       const paid = Number(invoice.amount_paid || 0);
@@ -68,12 +70,12 @@ export async function getClients(): Promise<ClientSummary[]> {
         ? 0 
         : Math.max(0, amount - paid);
 
+      summary.invoiceCount += 1;
+
       const currencyCode = invoice.currency || 'USD';
 
-      existing.invoiceCount += 1;
-
-      if (!existing.currencies[currencyCode]) {
-        existing.currencies[currencyCode] = {
+      if (!summary.currencies[currencyCode]) {
+        summary.currencies[currencyCode] = {
           currency: currencyCode,
           currencySymbol: invoice.currency_symbol || null,
           totalBilled: 0,
@@ -81,77 +83,89 @@ export async function getClients(): Promise<ClientSummary[]> {
           totalOutstanding: 0
         };
       }
-      existing.currencies[currencyCode].totalBilled += amount;
-      existing.currencies[currencyCode].totalPaid += paid;
-      existing.currencies[currencyCode].totalOutstanding += outstanding;
+      summary.currencies[currencyCode].totalBilled += amount;
+      summary.currencies[currencyCode].totalPaid += paid;
+      summary.currencies[currencyCode].totalOutstanding += outstanding;
     });
 
     return Array.from(clientMap.values());
-  } catch (err) {
-    console.error('Exception fetching clients:', err);
+  } catch (err: any) {
+    if (err && typeof err === 'object' && 'digest' in err && (err.digest === 'DYNAMIC_SERVER_USAGE' || String(err.digest).startsWith('NEXT_'))) {
+      throw err;
+    }
+    console.error('Exception in getClients:', err);
     return [];
   }
 }
 
-export async function getClientSummary(id: string): Promise<ClientSummary | null> {
+export async function getClientSummary(clientId: string): Promise<ClientSummary | null> {
   try {
     const userId = await getUserId();
     if (!userId) return null;
 
+    const linkedIds = getLinkedUserIds(userId);
+
     const { data: client, error: clientError } = await supabaseAdmin
       .from('clients')
       .select('*')
-      .eq('id', id)
-      .eq('profile_id', userId)
-      .maybeSingle();
+      .eq('id', clientId)
+      .in('profile_id', linkedIds)
+      .single();
 
     if (clientError || !client) {
-      console.error('Error fetching client:', clientError, 'Client Data:', client);
+      console.error('Error fetching client details:', clientError);
       return null;
     }
 
-  const { data: invoices, error: invoicesError } = await supabaseAdmin
-    .from('invoices')
-    .select('total_amount, amount_paid, status, currency, currency_symbol')
-    .eq('profile_id', userId)
-    .eq('client_id', id);
+    const { data: invoices, error: invoicesError } = await supabaseAdmin
+      .from('invoices')
+      .select('total_amount, amount_paid, status, currency, currency_symbol')
+      .eq('client_id', clientId)
+      .in('profile_id', linkedIds);
 
-  const summary: ClientSummary = {
-    id: client.id,
-    name: client.name,
-    phone: client.phone || '',
-    address: client.address || '',
-    invoiceCount: 0,
-    currencies: {}
-  };
-
-  invoices?.forEach(invoice => {
-    const amount = Number(invoice.total_amount || 0);
-    const paid = Number(invoice.amount_paid || 0);
-    const outstanding = ['DRAFT', 'PAID'].includes(invoice.status) 
-      ? 0 
-      : Math.max(0, amount - paid);
-
-    summary.invoiceCount += 1;
-
-    const currencyCode = invoice.currency || 'USD';
-
-    if (!summary.currencies[currencyCode]) {
-      summary.currencies[currencyCode] = {
-        currency: currencyCode,
-        currencySymbol: invoice.currency_symbol || null,
-        totalBilled: 0,
-        totalPaid: 0,
-        totalOutstanding: 0
-      };
+    if (invoicesError) {
+      console.error('Error fetching client invoices:', invoicesError);
     }
-    summary.currencies[currencyCode].totalBilled += amount;
-    summary.currencies[currencyCode].totalPaid += paid;
-    summary.currencies[currencyCode].totalOutstanding += outstanding;
-  });
 
-  return summary;
-  } catch (err) {
+    const summary: ClientSummary = {
+      id: client.id,
+      name: client.name,
+      phone: client.phone || '',
+      address: client.address || '',
+      invoiceCount: 0,
+      currencies: {}
+    };
+
+    invoices?.forEach(invoice => {
+      const amount = Number(invoice.total_amount || 0);
+      const paid = Number(invoice.amount_paid || 0);
+      const outstanding = ['DRAFT', 'PAID'].includes(invoice.status) 
+        ? 0 
+        : Math.max(0, amount - paid);
+
+      summary.invoiceCount += 1;
+
+      const currencyCode = invoice.currency || 'USD';
+
+      if (!summary.currencies[currencyCode]) {
+        summary.currencies[currencyCode] = {
+          currency: currencyCode,
+          currencySymbol: invoice.currency_symbol || null,
+          totalBilled: 0,
+          totalPaid: 0,
+          totalOutstanding: 0
+        };
+      }
+      summary.currencies[currencyCode].totalBilled += amount;
+      summary.currencies[currencyCode].totalPaid += paid;
+      summary.currencies[currencyCode].totalOutstanding += outstanding;
+    });
+
+    return summary;
+  } catch (err: any) {
+    if (err && typeof err === 'object' && 'digest' in err && (err.digest === 'DYNAMIC_SERVER_USAGE' || String(err.digest).startsWith('NEXT_'))) {
+      throw err;
+    }
     console.error('Exception fetching client summary:', err);
     return null;
   }
@@ -160,6 +174,8 @@ export async function getClientSummary(id: string): Promise<ClientSummary | null
 export async function updateClient(id: string, data: { name: string, phone?: string, address?: string, email?: string }) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
+
+  const linkedIds = getLinkedUserIds(userId);
 
   const { error } = await supabaseAdmin
     .from('clients')
@@ -171,10 +187,10 @@ export async function updateClient(id: string, data: { name: string, phone?: str
       updated_at: new Date().toISOString()
     })
     .eq('id', id)
-    .eq('profile_id', userId);
+    .in('profile_id', linkedIds);
 
   if (error) {
     console.error('Error updating client:', error);
-    throw new Error('Failed to update client');
+    throw new Error(error.message || 'Failed to update client');
   }
 }

@@ -9,6 +9,8 @@ import { ClientHeader } from '@/components/clients/ClientHeader';
 import dayjs from 'dayjs';
 import { notFound } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const clientId = resolvedParams.id;

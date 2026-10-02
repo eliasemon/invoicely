@@ -4,7 +4,7 @@ import { MockAuthAdapter, MockDatabaseAdapter } from '@/adapters/mock';
 import { SupabaseAuthAdapter } from '@/adapters/supabase';
 
 export type AuthProviderType = 'mock' | 'supabase';
-export type DatabaseProviderType = 'mock' | 'postgres' | 'mongodb';
+export type DatabaseProviderType = 'mock' | 'postgres' | 'mongodb' | 'supabase';
 
 let authInstance: IAuthProvider | null = null;
 let dbInstance: IDatabaseProvider | null = null;
@@ -12,19 +12,18 @@ let dbInstance: IDatabaseProvider | null = null;
 export function getAuthAdapter(): IAuthProvider {
   if (authInstance) return authInstance;
 
-  const provider = (process.env.NEXT_PUBLIC_AUTH_PROVIDER || 'mock') as AuthProviderType;
+  const provider = (process.env.NEXT_PUBLIC_AUTH_PROVIDER || 'supabase') as AuthProviderType;
 
   switch (provider) {
     case 'mock': {
       authInstance = new MockAuthAdapter();
       break;
     }
-    case 'supabase': {
+    case 'supabase':
+    default: {
       authInstance = new SupabaseAuthAdapter();
       break;
     }
-    default:
-      throw new Error(`Unknown auth provider: ${provider}`);
   }
 
   return authInstance as IAuthProvider;
@@ -33,16 +32,8 @@ export function getAuthAdapter(): IAuthProvider {
 export function getDatabaseAdapter(): IDatabaseProvider {
   if (dbInstance) return dbInstance;
 
-  const provider = (process.env.NEXT_PUBLIC_DB_PROVIDER || 'mock') as DatabaseProviderType;
-
-  switch (provider) {
-    case 'mock': {
-      dbInstance = new MockDatabaseAdapter();
-      break;
-    }
-    default:
-      throw new Error(`Unknown database provider: ${provider}`);
-  }
-
+  // The client-side database context uses the mock adapter for offline state,
+  // while server actions query Supabase directly.
+  dbInstance = new MockDatabaseAdapter();
   return dbInstance as IDatabaseProvider;
 }
