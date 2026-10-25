@@ -52,7 +52,6 @@ export function PublicInvoiceViewer({
   const [textSize, setTextSize] = useState<TextSize>('normal');
   const [overallTextSize, setOverallTextSize] = useState<TextSize>('normal');
   const [currentTemplate, setCurrentTemplate] = useState(invoice.template || templateId || 'sleek-accent');
-  const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const [templateSavedNotification, setTemplateSavedNotification] = useState<string | null>(null);
 
   // Sync initialDocumentType if prop changes
@@ -288,9 +287,56 @@ export function PublicInvoiceViewer({
         onPrint={handlePrint}
       />
 
-      <div className="w-full flex flex-col items-center pt-3">
-        {/* Sticky Action Toolbar for Desktop (Zoom, Doc Text Resizer, Row Text Resizer, Print) */}
-        <div className="hidden md:flex sticky top-16 z-40 mb-4 items-center gap-2 bg-surface-container shadow-md p-1.5 rounded-xl border border-outline-variant/30 print:hidden flex-wrap justify-center">
+      {/* DOCUMENT OPTIONS SECTIONS WITH STICKY TAB NAVIGATION */}
+      <div className="w-full">
+        <PublicInvoiceSettingsTabs
+          documentType={documentType}
+          setDocumentType={setDocumentType}
+          quotationWithPricing={quotationWithPricing}
+          setQuotationWithPricing={setQuotationWithPricing}
+          invoiceModeEnabled={invoiceModeEnabled}
+          challanModeEnabled={challanModeEnabled}
+          quotationModeEnabled={quotationModeEnabled}
+          onToggleModeAvailability={handleToggleModeAvailability}
+          isUpdatingMode={isSavingSettings}
+          currentTemplate={currentTemplate}
+          onSelectTemplate={handleTemplateChange}
+          templateSavedNotification={templateSavedNotification}
+          textSize={textSize}
+          setTextSize={setTextSize}
+          overallTextSize={overallTextSize}
+          setOverallTextSize={setOverallTextSize}
+          hasGroups={hasGroups}
+          showGroups={showGroups}
+          setShowGroups={setShowGroups}
+          showGroupTotals={showGroupTotals}
+          setShowGroupTotals={setShowGroupTotals}
+          isOwner={effectiveIsOwner}
+          subjectEnabled={subjectEnabled}
+          setSubjectEnabled={setSubjectEnabled}
+          subjectInvoice={subjectInvoice}
+          setSubjectInvoice={setSubjectInvoice}
+          subjectChallan={subjectChallan}
+          setSubjectChallan={setSubjectChallan}
+          subjectQuotation={subjectQuotation}
+          setSubjectQuotation={setSubjectQuotation}
+          noteEnabled={noteEnabled}
+          setNoteEnabled={setNoteEnabled}
+          noteText={noteText}
+          setNoteText={setNoteText}
+          onSaveSettings={handleSaveSettings}
+          isSavingSettings={isSavingSettings}
+          settingsSavedMessage={settingsSavedMessage}
+        />
+      </div>
+
+      {/* SECTION 5: INVOICE PREVIEW CANVAS */}
+      <section
+        id="section-doc-preview"
+        className="scroll-mt-28 w-full flex flex-col items-center pt-8 pb-12 print:p-0"
+      >
+        {/* Sticky Action Toolbar for Preview (Zoom, Doc Text Resizer, Row Text Resizer, Print) */}
+        <div className="hidden md:flex sticky top-28 z-20 mb-4 items-center gap-2 bg-surface-container shadow-md p-1.5 rounded-xl border border-outline-variant/30 print:hidden flex-wrap justify-center">
           {/* Zoom Controls */}
           <div className="flex items-center gap-1">
             <button 
@@ -400,109 +446,76 @@ export function PublicInvoiceViewer({
           {/* Print / Download Button */}
           <button
             onClick={handlePrint}
-            className="px-3 h-8 bg-primary text-on-primary rounded-lg text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 active:scale-95 transition-all shadow-sm cursor-pointer"
+            className="px-3.5 h-8 bg-primary text-on-primary rounded-lg text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 active:scale-95 transition-all shadow-sm cursor-pointer"
           >
             <MaterialIcon icon="download" className="text-[16px]" />
             <span>Print / PDF</span>
           </button>
         </div>
 
-        {/* Desktop Tabbed Settings Panel (Organized by tabs like profile settings) */}
-        <div className="hidden md:block w-full max-w-4xl px-4 md:px-0 mx-auto mb-4">
-          <PublicInvoiceSettingsTabs
-            documentType={documentType}
-            setDocumentType={setDocumentType}
-            quotationWithPricing={quotationWithPricing}
-            setQuotationWithPricing={setQuotationWithPricing}
-            invoiceModeEnabled={invoiceModeEnabled}
-            challanModeEnabled={challanModeEnabled}
-            quotationModeEnabled={quotationModeEnabled}
-            onToggleModeAvailability={handleToggleModeAvailability}
-            isUpdatingMode={isSavingSettings}
-            currentTemplate={currentTemplate}
-            onSelectTemplate={handleTemplateChange}
-            templateSavedNotification={templateSavedNotification}
-            textSize={textSize}
-            setTextSize={setTextSize}
-            overallTextSize={overallTextSize}
-            setOverallTextSize={setOverallTextSize}
-            hasGroups={hasGroups}
-            showGroups={showGroups}
-            setShowGroups={setShowGroups}
-            showGroupTotals={showGroupTotals}
-            setShowGroupTotals={setShowGroupTotals}
-            isOwner={effectiveIsOwner}
-            subjectEnabled={subjectEnabled}
-            setSubjectEnabled={setSubjectEnabled}
-            subjectInvoice={subjectInvoice}
-            setSubjectInvoice={setSubjectInvoice}
-            subjectChallan={subjectChallan}
-            setSubjectChallan={setSubjectChallan}
-            subjectQuotation={subjectQuotation}
-            setSubjectQuotation={setSubjectQuotation}
-            noteEnabled={noteEnabled}
-            setNoteEnabled={setNoteEnabled}
-            noteText={noteText}
-            setNoteText={setNoteText}
-            onSaveSettings={handleSaveSettings}
-            isSavingSettings={isSavingSettings}
-            settingsSavedMessage={settingsSavedMessage}
-          />
-        </div>
-
-      {/* Scrollable Document Canvas Viewport (On mobile this appears 1st right at the top!) */}
-      <div 
-        ref={previewViewportRef}
-        className="w-full overflow-auto bg-transparent select-text print:hidden"
-        style={{ touchAction: 'manipulation' }}
-      >
-        {/* Zoom Wrapper - Reserves space for the scaled container */}
+        {/* Scrollable Document Canvas Viewport */}
         <div 
-          style={{ 
-            height: `${previewInvoiceHeight * previewZoom}px`,
-            width: previewViewportRef.current ? `${Math.max(previewViewportRef.current.clientWidth, 794 * previewZoom)}px` : '100%',
-            position: 'relative' 
-          }} 
-          className="transition-all duration-200 mx-auto"
+          ref={previewViewportRef}
+          className="w-full overflow-auto bg-transparent select-text print:hidden"
+          style={{ touchAction: 'manipulation' }}
         >
-          {/* Scaled Invoice Document */}
-          <div
-            ref={previewInvoiceRef}
-            style={{
-              width: previewViewportRef.current ? `${previewViewportRef.current.clientWidth / previewZoom}px` : '100%',
-              minWidth: '794px',
-              transform: `scale(${previewZoom})`,
-              transformOrigin: 'top left',
-              position: 'absolute',
-              left: 0,
-              top: 0,
-            }}
-            className="transition-shadow overflow-hidden bg-transparent"
+          {/* Zoom Wrapper - Reserves space for the scaled container */}
+          <div 
+            style={{ 
+              height: `${previewInvoiceHeight * previewZoom}px`,
+              width: previewViewportRef.current ? `${Math.max(previewViewportRef.current.clientWidth, 794 * previewZoom)}px` : '100%',
+              position: 'relative' 
+            }} 
+            className="transition-all duration-200 mx-auto"
           >
-            <InvoiceTemplateRenderer 
-              templateId={currentTemplate} 
-              invoice={effectiveInvoice} 
-              profile={profile} 
-              publicUrl={publicUrl}
-              showGroups={showGroups}
-              showGroupTotals={showGroupTotals}
-              isPreview={false}
-              isChallan={isChallan}
-              isQuotation={isQuotation}
-              documentType={documentType}
-              showPricing={documentType === 'quotation' ? quotationWithPricing : true}
-              textSize={textSize}
-              overallTextSize={overallTextSize}
-            />
+            {/* Scaled Invoice Document */}
+            <div
+              ref={previewInvoiceRef}
+              style={{
+                width: previewViewportRef.current ? `${previewViewportRef.current.clientWidth / previewZoom}px` : '100%',
+                minWidth: '794px',
+                transform: `scale(${previewZoom})`,
+                transformOrigin: 'top left',
+                position: 'absolute',
+                left: 0,
+                top: 0,
+              }}
+              className="transition-shadow overflow-hidden bg-transparent"
+            >
+              <InvoiceTemplateRenderer 
+                templateId={currentTemplate} 
+                invoice={effectiveInvoice} 
+                profile={profile} 
+                publicUrl={publicUrl}
+                showGroups={showGroups}
+                showGroupTotals={showGroupTotals}
+                isPreview={false}
+                isChallan={isChallan}
+                isQuotation={isQuotation}
+                documentType={documentType}
+                showPricing={documentType === 'quotation' ? quotationWithPricing : true}
+                textSize={textSize}
+                overallTextSize={overallTextSize}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Mobile Floating Bottom Action Bar */}
       <div className="md:hidden fixed bottom-4 left-3 right-3 z-40 flex items-center justify-between gap-2.5 pointer-events-none print:hidden">
         <button
           type="button"
-          onClick={() => setShowMobileDrawer(true)}
+          onClick={() => {
+            const el = document.getElementById('section-doc-format');
+            if (el) {
+              const offset = 125;
+              const pos = el.getBoundingClientRect().top + window.scrollY - offset;
+              window.scrollTo({ top: Math.max(0, pos), behavior: 'smooth' });
+            } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
           className="pointer-events-auto flex-1 bg-surface-container-highest/95 backdrop-blur-md text-on-surface border border-outline-variant/60 shadow-xl rounded-2xl px-4 py-3 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:bg-surface-container-highest"
         >
           <div className="flex items-center gap-2.5">
@@ -521,6 +534,23 @@ export function PublicInvoiceViewer({
 
         <button
           type="button"
+          onClick={() => {
+            const el = document.getElementById('section-doc-preview');
+            if (el) {
+              const offset = 125;
+              const pos = el.getBoundingClientRect().top + window.scrollY - offset;
+              window.scrollTo({ top: Math.max(0, pos), behavior: 'smooth' });
+            }
+          }}
+          className="pointer-events-auto bg-surface-container-highest/95 backdrop-blur-md text-primary border border-outline-variant/60 shadow-xl rounded-2xl px-3.5 py-3 flex items-center gap-1 font-bold text-xs cursor-pointer active:scale-95 transition-all"
+          title="Scroll to Invoice Preview"
+        >
+          <MaterialIcon icon="visibility" className="text-[18px]" />
+          <span>View</span>
+        </button>
+
+        <button
+          type="button"
           onClick={handlePrint}
           className="pointer-events-auto bg-primary text-on-primary shadow-xl rounded-2xl px-4 py-3 flex items-center gap-1.5 font-bold text-xs cursor-pointer active:scale-95 transition-all hover:opacity-90"
           title="Print or Save as PDF"
@@ -528,130 +558,6 @@ export function PublicInvoiceViewer({
           <MaterialIcon icon="download" className="text-[18px]" />
           <span>PDF</span>
         </button>
-      </div>
-
-      {/* Mobile Options Drawer (Bottom Sheet) */}
-      {showMobileDrawer && (
-        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end print:hidden">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-200"
-            onClick={() => setShowMobileDrawer(false)}
-          />
-
-          {/* Bottom Sheet */}
-          <div className="relative bg-surface rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl border-t border-outline-variant/40 z-10 animate-in slide-in-from-bottom duration-200">
-            {/* Handle & Header */}
-            <div className="sticky top-0 bg-surface z-10 px-4 pt-3 pb-2.5 border-b border-outline-variant/30 flex items-center justify-between rounded-t-3xl">
-              <div className="flex items-center gap-2">
-                <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                  <MaterialIcon icon="tune" className="text-[18px]" />
-                </span>
-                <span className="font-bold text-sm text-on-surface">Invoice Options & Controls</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowMobileDrawer(false)}
-                className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-95 transition-all cursor-pointer"
-                title="Close"
-              >
-                <MaterialIcon icon="close" className="text-[18px]" />
-              </button>
-            </div>
-
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-8">
-              {/* Quick Zoom Bar */}
-              <div className="flex items-center justify-between bg-surface-container-low p-2.5 rounded-xl border border-outline-variant/40">
-                <span className="text-xs font-bold text-on-surface">Zoom / View Size</span>
-                <div className="flex items-center gap-1.5">
-                  <button 
-                    onClick={previewZoomOut} 
-                    className="w-7 h-7 flex items-center justify-center bg-surface rounded-lg text-on-surface border border-outline-variant/40 active:scale-95 cursor-pointer"
-                    title="Zoom Out"
-                  >
-                    <MaterialIcon icon="remove" className="text-[16px]" />
-                  </button>
-                  <span className="text-xs font-bold px-1.5 min-w-[42px] text-center">
-                    {Math.round(previewZoom * 100)}%
-                  </span>
-                  <button 
-                    onClick={previewZoomIn} 
-                    className="w-7 h-7 flex items-center justify-center bg-surface rounded-lg text-on-surface border border-outline-variant/40 active:scale-95 cursor-pointer"
-                    title="Zoom In"
-                  >
-                    <MaterialIcon icon="add" className="text-[16px]" />
-                  </button>
-                  <button 
-                    onClick={previewFitToWidth} 
-                    className="px-2.5 h-7 flex items-center gap-1 bg-surface rounded-lg text-on-surface border border-outline-variant/40 active:scale-95 text-xs font-semibold cursor-pointer"
-                    title="Fit to Screen Width"
-                  >
-                    <MaterialIcon icon="fit_width" className="text-[14px]" />
-                    <span>Fit</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Tabbed Settings inside Mobile Drawer */}
-              <PublicInvoiceSettingsTabs
-                documentType={documentType}
-                setDocumentType={setDocumentType}
-                quotationWithPricing={quotationWithPricing}
-                setQuotationWithPricing={setQuotationWithPricing}
-                invoiceModeEnabled={invoiceModeEnabled}
-                challanModeEnabled={challanModeEnabled}
-                quotationModeEnabled={quotationModeEnabled}
-                onToggleModeAvailability={handleToggleModeAvailability}
-                isUpdatingMode={isSavingSettings}
-                currentTemplate={currentTemplate}
-                onSelectTemplate={handleTemplateChange}
-                templateSavedNotification={templateSavedNotification}
-                textSize={textSize}
-                setTextSize={setTextSize}
-                overallTextSize={overallTextSize}
-                setOverallTextSize={setOverallTextSize}
-                hasGroups={hasGroups}
-                showGroups={showGroups}
-                setShowGroups={setShowGroups}
-                showGroupTotals={showGroupTotals}
-                setShowGroupTotals={setShowGroupTotals}
-                isOwner={effectiveIsOwner}
-                subjectEnabled={subjectEnabled}
-                setSubjectEnabled={setSubjectEnabled}
-                subjectInvoice={subjectInvoice}
-                setSubjectInvoice={setSubjectInvoice}
-                subjectChallan={subjectChallan}
-                setSubjectChallan={setSubjectChallan}
-                subjectQuotation={subjectQuotation}
-                setSubjectQuotation={setSubjectQuotation}
-                noteEnabled={noteEnabled}
-                setNoteEnabled={setNoteEnabled}
-                noteText={noteText}
-                setNoteText={setNoteText}
-                onSaveSettings={handleSaveSettings}
-                isSavingSettings={isSavingSettings}
-                settingsSavedMessage={settingsSavedMessage}
-                isMobileDrawer={true}
-              />
-
-              {/* Primary Download / Print PDF Button */}
-              <button
-                type="button"
-                onClick={() => {
-                  setShowMobileDrawer(false);
-                  setTimeout(() => handlePrint(), 150);
-                }}
-                className="w-full py-3 bg-primary text-on-primary rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md hover:opacity-90 active:scale-98 transition-all cursor-pointer mt-2"
-              >
-                <MaterialIcon icon="download" className="text-[20px]" />
-                <span>Download / Print {documentType === 'challan' ? 'Challan' : documentType === 'quotation' ? (quotationWithPricing ? 'Quotation' : 'Quotation (Without Money)') : 'Invoice'} PDF</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       </div>
 
       {/* Dedicated Print Container */}
