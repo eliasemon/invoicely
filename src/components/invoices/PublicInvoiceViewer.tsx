@@ -517,27 +517,27 @@ export function PublicInvoiceViewer({
         </div>
       </section>
 
-      {/* Centered Mobile/Desktop Bottom Floating Bar with Document Options & PDF */}
-      <div className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:bottom-6 left-1/2 -translate-x-1/2 z-40 print:hidden w-[calc(100%-2rem)] max-w-md pointer-events-none">
-        <div className="pointer-events-auto bg-surface/90 dark:bg-surface-container-highest/90 backdrop-blur-xl border border-outline-variant/80 shadow-2xl rounded-2xl p-1.5 sm:p-2 flex items-center gap-2">
+      {/* Bottom Floating Bar: Horizontally full width on Mobile, Right Bottom side on Tablet & Desktop */}
+      <div className="fixed bottom-0 inset-x-0 md:inset-x-auto md:bottom-6 md:right-6 z-40 print:hidden w-full md:w-auto md:max-w-md pointer-events-none">
+        <div className="pointer-events-auto w-full md:w-auto bg-surface/95 dark:bg-surface-container-highest/95 backdrop-blur-xl border-t md:border border-outline-variant/80 md:rounded-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.08)] md:shadow-2xl px-3 sm:px-4 py-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] md:p-2 flex items-center gap-2.5 sm:gap-3">
           <button
             type="button"
             onClick={() => setIsSettingsModalOpen(true)}
-            className="flex-1 min-w-0 text-left bg-surface-container-high/60 hover:bg-surface-container-highest dark:bg-surface-container/60 dark:hover:bg-surface-container-high border border-outline-variant/40 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 flex items-center justify-between gap-2 cursor-pointer active:scale-[0.98] transition-all"
+            className="flex-1 min-w-0 md:w-64 text-left bg-surface-container-high/70 hover:bg-surface-container-highest dark:bg-surface-container/70 dark:hover:bg-surface-container-high border border-outline-variant/60 rounded-xl px-3.5 py-2 h-12 flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.98] transition-all group"
             title="Open Document Settings & Options"
           >
-            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-xs">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors flex items-center justify-center shrink-0 shadow-xs">
                 <MaterialIcon icon="tune" className="text-[18px]" />
               </span>
               <div className="min-w-0 flex-1">
                 <p className="font-bold text-xs text-on-surface leading-tight truncate">Document Options</p>
-                <p className="text-[10px] text-on-surface-variant capitalize truncate">
+                <p className="text-[10px] text-on-surface-variant capitalize truncate mt-0.5">
                   {documentType} • {currentTemplate.replace(/-/g, ' ')}
                 </p>
               </div>
             </div>
-            <span className="hidden sm:inline-block shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 capitalize">
+            <span className="hidden sm:inline-block shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 capitalize">
               {documentType}
             </span>
           </button>
@@ -545,11 +545,11 @@ export function PublicInvoiceViewer({
           <button
             type="button"
             onClick={handlePrint}
-            className="shrink-0 bg-primary text-on-primary hover:bg-primary/90 shadow-sm rounded-xl px-4 py-2 sm:px-5 sm:py-2.5 h-[42px] sm:h-[46px] flex items-center justify-center gap-1.5 font-bold text-xs cursor-pointer active:scale-[0.98] transition-all"
+            className="shrink-0 bg-primary text-on-primary hover:bg-primary/90 shadow-md rounded-xl px-4 sm:px-5 h-12 flex items-center justify-center gap-2 font-bold text-xs sm:text-sm cursor-pointer active:scale-[0.98] transition-all"
             title="Print or Save as PDF"
           >
-            <MaterialIcon icon="download" className="text-[18px]" />
-            <span>PDF</span>
+            <MaterialIcon icon="download" className="text-[19px]" />
+            <span><span className="hidden md:inline">Download </span>PDF</span>
           </button>
         </div>
       </div>
