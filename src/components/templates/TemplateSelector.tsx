@@ -109,13 +109,44 @@ export const availableTemplates: TemplateOption[] = [
   { id: 'enterprise-a4', name: 'Enterprise (A4)', wireframe: getWireframeForTemplateInternal('enterprise-a4') },
 ];
 
+import { useRef } from 'react';
+
 export function TemplateSelector({ selectedTemplate, onSelect }: Readonly<TemplateSelectorProps>) {
   const templates = availableTemplates;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    scrollContainerRef.current?.scrollBy({ left: -320, behavior: 'smooth' });
+  };
+
+  const scrollRight = () => {
+    scrollContainerRef.current?.scrollBy({ left: 320, behavior: 'smooth' });
+  };
 
   return (
-    <section>
-      <h2 className="font-body-lg text-body-lg font-semibold text-on-surface mb-sm">Template</h2>
-      <div className="flex overflow-x-auto gap-sm hide-scrollbar pb-xs">
+    <section className="relative group">
+      <div className="flex items-center justify-between mb-sm">
+        <h2 className="font-body-lg text-body-lg font-semibold text-on-surface">Template Layout</h2>
+        <div className="hidden sm:flex items-center gap-1">
+          <button
+            type="button"
+            onClick={scrollLeft}
+            className="w-7 h-7 rounded-lg bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors cursor-pointer active:scale-95 shadow-xs"
+            title="Scroll left"
+          >
+            <MaterialIcon icon="chevron_left" className="text-[18px]" />
+          </button>
+          <button
+            type="button"
+            onClick={scrollRight}
+            className="w-7 h-7 rounded-lg bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors cursor-pointer active:scale-95 shadow-xs"
+            title="Scroll right"
+          >
+            <MaterialIcon icon="chevron_right" className="text-[18px]" />
+          </button>
+        </div>
+      </div>
+      <div ref={scrollContainerRef} className="flex overflow-x-auto gap-sm hide-scrollbar pb-xs scroll-smooth">
         {templates.map((t) => {
           const isActive = selectedTemplate === t.id;
           return (
@@ -123,7 +154,7 @@ export function TemplateSelector({ selectedTemplate, onSelect }: Readonly<Templa
               key={t.id}
               onClick={() => onSelect(t.id)}
               className={`flex-shrink-0 w-[140px] border-2 rounded-xl p-xs relative cursor-pointer transition-all duration-200 ${
-                isActive ? 'border-primary bg-surface-bright' : 'border-outline-variant'
+                isActive ? 'border-primary bg-surface-bright shadow-xs' : 'border-outline-variant hover:border-outline-variant/80'
               }`}
             >
               <div className={`h-32 rounded-lg mb-2 overflow-hidden relative bg-surface-container-low`}>
@@ -133,7 +164,7 @@ export function TemplateSelector({ selectedTemplate, onSelect }: Readonly<Templa
                   t.wireframe
                 )}
               </div>
-              <p className="font-label-sm text-label-sm text-center font-medium">{t.name}</p>
+              <p className="font-label-sm text-label-sm text-center font-medium truncate">{t.name}</p>
               <div className={`absolute top-2 right-2 bg-primary text-on-primary rounded-full w-5 h-5 flex items-center justify-center transition-opacity ${
                 isActive ? 'opacity-100' : 'opacity-0'
               }`}>
