@@ -127,7 +127,7 @@ export function InvoiceDisplayOptions({
               </div>
               <span className="text-[11px] sm:text-xs font-medium px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
                 {currentDocType === "quotation"
-                  ? (quotationWithPricing ? "Quotation (With Money)" : "Quotation (Without Money)")
+                  ? (isOwner ? (quotationWithPricing ? "Quotation (With Money)" : "Quotation (Without Money)") : "Quotation Mode")
                   : currentDocType === "challan"
                   ? "Consignment Mode"
                   : "Commercial Mode"}
@@ -375,8 +375,8 @@ export function InvoiceDisplayOptions({
         );
       })()}
 
-      {/* Quotation Pricing Mode Toggle (With Money / Without Money) */}
-      {currentDocType === "quotation" && setQuotationWithPricing && (
+      {/* Quotation Pricing Mode Toggle (With Money / Without Money) - OWNER ONLY */}
+      {isOwner && currentDocType === "quotation" && setQuotationWithPricing && (
         <div className="flex flex-col gap-2.5 bg-surface border border-outline-variant/70 rounded-xl px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm text-sm">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">

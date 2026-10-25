@@ -320,6 +320,7 @@ export default function TemplatesGalleryPage() {
             <InvoiceDisplayOptions 
               quotationWithPricing={quotationWithPricing}
               setQuotationWithPricing={setQuotationWithPricing}
+              isOwner={true}
               showGroups={showGroups} 
               setShowGroups={setShowGroups} 
               showGroupTotals={showGroupTotals} 
