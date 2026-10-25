@@ -26,10 +26,11 @@ export function SleekAccentTemplate({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
   const clientLabel = isQuotationDoc ? "QUOTATION FOR" : isChallanDoc ? "DELIVERED TO" : "BILL TO";
 
@@ -112,7 +113,7 @@ export function SleekAccentTemplate({
                   CREATION DATE :
                 </span>
                 <span>{formatDate(issueDate)}</span>
-                {!isPricingHidden && (
+                {!isPricingHidden && !isQuotationDoc && (
                   <>
                     <span className="text-gray-500 font-medium">DUE DATE :</span>
                     <span>{formatDate(dueDate)}</span>
@@ -168,7 +169,7 @@ export function SleekAccentTemplate({
                 <div className="col-span-1 text-xs font-semibold tracking-wider text-center">
                   #
                 </div>
-                <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-3'} text-xs font-semibold tracking-wider text-center`}>
+                <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-3'} text-xs font-semibold tracking-wider text-left`}>
                   DESCRIPTION
                 </div>
                 <div className={`${isPricingHidden ? 'col-span-4' : 'col-span-2'} text-xs font-semibold tracking-wider text-center`}>
@@ -213,7 +214,7 @@ export function SleekAccentTemplate({
                                 <div className="col-span-1 text-xs font-mono text-center text-gray-500">
                                   {runningIdx}
                                 </div>
-                                <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-3'} text-sm font-medium text-center`}>
+                                <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-3'} text-sm font-medium text-left`}>
                                   {item.name}
                                 </div>
                                 <div className={`${isPricingHidden ? 'col-span-4' : 'col-span-2'} text-sm text-center`}>
@@ -266,7 +267,7 @@ export function SleekAccentTemplate({
                         <div className="col-span-1 text-xs font-mono text-center text-gray-500">
                           {idx + 1}
                         </div>
-                        <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-3'} text-sm font-medium text-center`}>
+                        <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-3'} text-sm font-medium text-left`}>
                           {item.name}
                         </div>
                         <div className={`${isPricingHidden ? 'col-span-4' : 'col-span-2'} text-sm text-center`}>
@@ -393,13 +394,13 @@ export function SleekAccentTemplate({
                   )}
 
                   <div className="flex justify-between items-center bg-[#0b1b3d] text-white py-2 px-3 mt-2 rounded-sm shadow-sm">
-                    <span className="text-sm font-bold">Total Amount</span>
+                    <span className="text-sm font-bold">{isQuotationDoc ? "Quotation Total" : "Total Amount"}</span>
                     <span className="text-lg font-bold">
                       {formatMoney(total, sym)}
                     </span>
                   </div>
 
-                  {amountPaid > 0 && (
+                  {amountPaid > 0 && !isQuotationDoc && (
                     <>
                       <div className="flex justify-between py-2 mt-2 text-sm text-gray-500 font-medium">
                         <span>Paid</span>

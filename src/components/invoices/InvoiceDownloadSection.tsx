@@ -21,6 +21,7 @@ export function InvoiceDownloadSection({
   const [invoiceMode, setInvoiceMode] = useState<boolean>(initialInvoiceMode);
   const [challanMode, setChallanMode] = useState<boolean>(initialChallanMode);
   const [quotationMode, setQuotationMode] = useState<boolean>(initialQuotationMode);
+  const [quotationPricing, setQuotationPricing] = useState<'with_money' | 'without_money'>('with_money');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -127,31 +128,68 @@ export function InvoiceDownloadSection({
         </div>
 
         {/* Quotation Card */}
-        <div className="flex items-center gap-1.5 p-1 bg-white/5 rounded-lg border border-white/10">
-          <Link
-            href={`/public/invoice/${invoiceId}?type=quotation`}
-            target="_blank"
-            className="flex-1 flex items-center gap-1.5 px-2 py-1.5 hover:bg-white/10 text-white rounded-md transition-all active:scale-95 font-label-sm text-xs"
-            title="Open and download quotation"
-          >
-            <MaterialIcon icon="request_quote" className="text-[16px] text-tertiary-fixed-dim" />
-            <span className="font-medium truncate">Quotation</span>
-            <MaterialIcon icon="open_in_new" className="text-[12px] opacity-60 ml-auto" />
-          </Link>
-          <button
-            type="button"
-            onClick={() => handleToggle('quotation', !quotationMode)}
-            disabled={isUpdating}
-            title={quotationMode ? 'Quotation public view is ON. Click to disable.' : 'Quotation public view is OFF. Click to enable.'}
-            className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold border transition-all cursor-pointer active:scale-95 ${
-              quotationMode
-                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 hover:bg-emerald-500/30'
-                : 'bg-amber-500/20 text-amber-300 border-amber-400/40 hover:bg-amber-500/30'
-            }`}
-          >
-            <span className={`w-1.5 h-1.5 rounded-full ${quotationMode ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
-            <span>{quotationMode ? 'On' : 'Off'}</span>
-          </button>
+        <div className="flex flex-col gap-1.5 p-1.5 bg-white/5 rounded-lg border border-white/10">
+          <div className="flex items-center gap-1.5">
+            <Link
+              href={`/public/invoice/${invoiceId}?type=quotation&pricing=${quotationPricing}`}
+              target="_blank"
+              className="flex-1 flex items-center gap-1.5 px-2 py-1.5 hover:bg-white/10 text-white rounded-md transition-all active:scale-95 font-label-sm text-xs"
+              title={`Open and download quotation (${quotationPricing === 'with_money' ? 'With Money' : 'Without Money'})`}
+            >
+              <MaterialIcon icon="request_quote" className="text-[16px] text-tertiary-fixed-dim" />
+              <span className="font-medium truncate">Quotation</span>
+              <span className="text-[10px] text-white/80 bg-white/10 px-1.5 py-0.5 rounded font-medium">
+                {quotationPricing === 'with_money' ? 'With Money' : 'Without Money'}
+              </span>
+              <MaterialIcon icon="open_in_new" className="text-[12px] opacity-60 ml-auto" />
+            </Link>
+            <button
+              type="button"
+              onClick={() => handleToggle('quotation', !quotationMode)}
+              disabled={isUpdating}
+              title={quotationMode ? 'Quotation public view is ON. Click to disable.' : 'Quotation public view is OFF. Click to enable.'}
+              className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold border transition-all cursor-pointer active:scale-95 ${
+                quotationMode
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 hover:bg-emerald-500/30'
+                  : 'bg-amber-500/20 text-amber-300 border-amber-400/40 hover:bg-amber-500/30'
+              }`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${quotationMode ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+              <span>{quotationMode ? 'On' : 'Off'}</span>
+            </button>
+          </div>
+
+          {/* Pricing Toggle for Quotation */}
+          <div className="flex items-center justify-between px-2 py-1 bg-black/25 rounded border border-white/5 text-[11px]">
+            <span className="text-white/70 flex items-center gap-1 text-[10px] uppercase font-semibold tracking-wider">
+              <MaterialIcon icon="payments" className="text-[14px] text-white/60" />
+              <span>Pricing:</span>
+            </span>
+            <div className="flex items-center gap-1 bg-white/10 p-0.5 rounded text-[10px] font-medium">
+              <button
+                type="button"
+                onClick={() => setQuotationPricing('with_money')}
+                className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                  quotationPricing === 'with_money'
+                    ? 'bg-primary text-white font-bold shadow-xs'
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                With Money
+              </button>
+              <button
+                type="button"
+                onClick={() => setQuotationPricing('without_money')}
+                className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                  quotationPricing === 'without_money'
+                    ? 'bg-primary text-white font-bold shadow-xs'
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                Without Money
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

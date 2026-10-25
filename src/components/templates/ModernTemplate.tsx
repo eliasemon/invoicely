@@ -24,10 +24,11 @@ export function ModernTemplate({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation Number" : isChallanDoc ? "Challan Number" : "Invoice Number";
   const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Billed To";
 
@@ -133,7 +134,7 @@ export function ModernTemplate({
               </p>
               <p className="text-[11px]">{formatDate(issueDate)}</p>
             </div>
-            {!isPricingHidden && (
+            {!isPricingHidden && !isQuotationDoc && (
               <div className="mb-2">
                 <p className="text-[10px] uppercase tracking-wider opacity-70 mb-0.5">
                   Due Date
@@ -200,7 +201,7 @@ export function ModernTemplate({
                   {invoice.clientAddress || invoice.clientPhone}
                 </p>
               </div>
-              {!isPricingHidden && (
+              {!isPricingHidden && !isQuotationDoc && (
                 <div
                   className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                     invoice.status === "PAID"
@@ -224,7 +225,7 @@ export function ModernTemplate({
             {/* Items */}
             <div className="mb-2">
               <div className="flex justify-between text-[10px] uppercase text-[#76777d] mb-1.5 border-b border-[#dce9ff] pb-1">
-                <span># Description</span>
+                <span className="text-left"># Description</span>
                 <span>{isPricingHidden ? 'Qty' : 'Amount'}</span>
               </div>
               {(() => {
@@ -241,12 +242,12 @@ export function ModernTemplate({
                           key={iIdx}
                           className="template-item-row flex justify-between items-start mb-1.5"
                         >
-                          <div className="flex items-start gap-2 pr-4">
+                          <div className="flex items-start gap-2 pr-4 text-left">
                             <span className="text-[11px] font-mono text-[#0058be] font-bold mt-0.5 min-w-[16px]">
                               {runningIdx}.
                             </span>
                             <div>
-                              <h4 className="font-semibold text-xs">{item.name}</h4>
+                              <h4 className="font-semibold text-xs text-left">{item.name}</h4>
                               <p
                                 className="text-[10px] text-[#45464d] mt-0.5"
                                 style={{ fontFamily: "Geist, monospace" }}
@@ -339,7 +340,7 @@ export function ModernTemplate({
                 <div className="flex justify-end">
                   <div className="w-2/3 print:w-2/3 bg-[#131b2e] py-3 px-4 rounded-lg flex justify-between items-center">
                     <p className="text-[10px] uppercase tracking-wider text-[#bec6e0]">
-                      Total
+                      {isQuotationDoc ? "Quotation Total" : "Total"}
                     </p>
                     <p
                       className="text-[11px] font-bold text-white"
@@ -349,7 +350,7 @@ export function ModernTemplate({
                     </p>
                   </div>
                 </div>
-                {amountPaid > 0 && (
+                {amountPaid > 0 && !isQuotationDoc && (
                   <>
                     <div className="flex justify-end mt-2">
                       <div className="w-2/3 print:w-2/3 py-2 px-4 flex justify-between items-center text-sm">

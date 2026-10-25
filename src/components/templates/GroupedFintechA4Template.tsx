@@ -23,10 +23,11 @@ export function GroupedFintechA4Template({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
   const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
 
@@ -204,7 +205,7 @@ export function GroupedFintechA4Template({
                                   {runningIdx}
                                 </td>
                                 <td
-                                  className="py-2 px-3 text-[#0f172a]"
+                                  className="py-2 px-3 text-[#0f172a] text-left"
                                   style={{ fontFamily: "Geist, sans-serif" }}
                                 >
                                   {item.name}
@@ -286,10 +287,10 @@ export function GroupedFintechA4Template({
                   )}
 
                   <div className="flex justify-between py-2 border-t-2 border-[#0f172a] mt-1 text-sm font-bold text-[#0f172a] font-mono">
-                    <span>Total Amount</span>
+                    <span>{isQuotationDoc ? "Quotation Total" : "Total Amount"}</span>
                     <span>{formatMoney(total, sym)}</span>
                   </div>
-                  {amountPaid > 0 && (
+                  {amountPaid > 0 && !isQuotationDoc && (
                     <>
                       <div className="flex justify-between py-1.5 text-xs text-gray-500 font-medium">
                         <span>Paid</span>

@@ -3,6 +3,8 @@ import { MaterialIcon } from "@/components/shared/MaterialIcon";
 import { DocumentType, TextSize } from "./templateUtils";
 
 interface InvoiceDisplayOptionsProps {
+  quotationWithPricing?: boolean;
+  setQuotationWithPricing?: (val: boolean) => void;
   showGroups: boolean;
   setShowGroups: (val: boolean) => void;
   showGroupTotals: boolean;
@@ -27,6 +29,8 @@ interface InvoiceDisplayOptionsProps {
 }
 
 export function InvoiceDisplayOptions({
+  quotationWithPricing = true,
+  setQuotationWithPricing,
   showGroups,
   setShowGroups,
   showGroupTotals,
@@ -95,7 +99,7 @@ export function InvoiceDisplayOptions({
     else if (overallTextSize === "normal") setOverallTextSize("large");
   };
 
-  const isPricingHidden = currentDocType !== "invoice";
+  const isPricingHidden = currentDocType === "challan" || (currentDocType === "quotation" && quotationWithPricing === false);
 
   return (
     <div className="w-full flex flex-col gap-4 print:hidden mb-4">
@@ -123,7 +127,7 @@ export function InvoiceDisplayOptions({
               </div>
               <span className="text-[11px] sm:text-xs font-medium px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
                 {currentDocType === "quotation"
-                  ? "Quotation Mode"
+                  ? (quotationWithPricing ? "Quotation (With Money)" : "Quotation (Without Money)")
                   : currentDocType === "challan"
                   ? "Consignment Mode"
                   : "Commercial Mode"}
@@ -346,7 +350,9 @@ export function InvoiceDisplayOptions({
                       )}
                     </div>
                     <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed line-clamp-2">
-                      Item list with quantities only — hides all pricing details
+                      {quotationWithPricing
+                        ? "Quotation with full pricing and amount breakdown"
+                        : "Quotation with quantities only — hides all pricing"}
                     </p>
                   </div>
 
@@ -368,6 +374,48 @@ export function InvoiceDisplayOptions({
           </div>
         );
       })()}
+
+      {/* Quotation Pricing Mode Toggle (With Money / Without Money) */}
+      {currentDocType === "quotation" && setQuotationWithPricing && (
+        <div className="flex flex-col gap-2.5 bg-surface border border-outline-variant/70 rounded-xl px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm text-sm">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <MaterialIcon icon="payments" className="text-primary text-[20px] flex-shrink-0" />
+              <div className="text-left min-w-0">
+                <p className="font-semibold text-xs sm:text-sm text-on-surface truncate">
+                  Quotation Pricing & Money Amount
+                </p>
+                <p className="text-[11px] sm:text-xs text-on-surface-variant truncate">
+                  {quotationWithPricing
+                    ? "Prices, rates & total amounts are visible (With Money)"
+                    : "Prices, rates & total amounts are hidden (Without Money)"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-surface-container-high text-on-surface">
+                {quotationWithPricing ? "With Money" : "Without Money"}
+              </span>
+              <button
+                type="button"
+                onClick={() => setQuotationWithPricing(!quotationWithPricing)}
+                aria-label="Toggle Quotation Pricing"
+                title={quotationWithPricing ? "Switch to quotation without money" : "Switch to quotation with money"}
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 cursor-pointer ${
+                  quotationWithPricing ? "bg-primary" : "bg-surface-container-highest"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    quotationWithPricing ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Overall Document Font Size Controls (Excluding line items) */}
       {setOverallTextSize && (

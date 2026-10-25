@@ -16,6 +16,7 @@ export default function TemplatesGalleryPage() {
   const [showGroupTotals, setShowGroupTotals] = useState(false);
   const [documentType, setDocumentType] = useState<DocumentType>('invoice');
   const [textSize, setTextSize] = useState<TextSize>('normal');
+  const [quotationWithPricing, setQuotationWithPricing] = useState<boolean>(true);
 
   // Refs and dimensions for scaling
   const previewPaneRef = useRef<HTMLDivElement>(null);
@@ -317,6 +318,8 @@ export default function TemplatesGalleryPage() {
           
           <div className="flex-shrink-0 px-md pt-sm print:hidden bg-surface-container">
             <InvoiceDisplayOptions 
+              quotationWithPricing={quotationWithPricing}
+              setQuotationWithPricing={setQuotationWithPricing}
               showGroups={showGroups} 
               setShowGroups={setShowGroups} 
               showGroupTotals={showGroupTotals} 
@@ -372,6 +375,7 @@ export default function TemplatesGalleryPage() {
                   isChallan={documentType === 'challan'}
                   isQuotation={documentType === 'quotation'}
                   documentType={documentType}
+                  showPricing={documentType === 'quotation' ? quotationWithPricing : true}
                   textSize={textSize}
                   publicUrl={`${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/public/invoice/demo-123`}
                 />

@@ -26,10 +26,11 @@ export function ElegantTemplate({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
   const docNumberLabel = isQuotationDoc ? "Quotation No." : isChallanDoc ? "Challan No." : "Invoice No.";
   const clientLabel = isQuotationDoc ? "QUOTATION FOR" : isChallanDoc ? "DELIVERED TO" : "BILL TO";
@@ -179,7 +180,7 @@ export function ElegantTemplate({
                 <div className="col-span-1 text-center text-[12px] text-[#76777d] font-semibold uppercase">
                   #
                 </div>
-                <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-5'} text-[12px] text-[#76777d] font-semibold uppercase`}>
+                <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-5'} text-[12px] text-[#76777d] font-semibold uppercase text-left`}>
                   DESCRIPTION
                 </div>
                 <div className={`${isPricingHidden ? 'col-span-4' : 'col-span-2'} text-right text-[12px] text-[#76777d] font-semibold uppercase`}>
@@ -202,7 +203,7 @@ export function ElegantTemplate({
                     return invoice.groups.map((group, gIdx) => (
                       <React.Fragment key={gIdx}>
                         {group.name && (
-                          <div className="col-span-12 text-[10px] font-bold tracking-wider text-slate-700 bg-slate-100 px-3 py-1 mb-2 mt-3 uppercase rounded">
+                          <div className="col-span-12 text-[10px] font-bold tracking-wider text-slate-700 bg-slate-100 px-3 py-1 mb-2 mt-3 uppercase rounded text-left">
                             {group.name}
                           </div>
                         )}
@@ -216,8 +217,8 @@ export function ElegantTemplate({
                               <div className="col-span-1 text-center text-xs text-[#76777d] font-mono">
                                 {runningIdx}
                               </div>
-                              <div className={isPricingHidden ? 'col-span-7' : 'col-span-5'}>
-                                <p className="font-medium text-xs">{item.name}</p>
+                              <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-5'} text-left`}>
+                                <p className="font-medium text-xs text-left">{item.name}</p>
                               </div>
                               <div
                                 className={`${isPricingHidden ? 'col-span-4' : 'col-span-2'} text-right text-xs text-[#565e74]`}
@@ -278,8 +279,8 @@ export function ElegantTemplate({
                       <div className="col-span-1 text-center text-xs text-[#76777d] font-mono">
                         {idx + 1}
                       </div>
-                      <div className={isPricingHidden ? 'col-span-7' : 'col-span-5'}>
-                        <p className="font-medium text-xs">{item.name}</p>
+                      <div className={`${isPricingHidden ? 'col-span-7' : 'col-span-5'} text-left`}>
+                        <p className="font-medium text-xs text-left">{item.name}</p>
                       </div>
                       <div
                         className={`${isPricingHidden ? 'col-span-4' : 'col-span-2'} text-right text-xs text-[#565e74]`}
@@ -373,7 +374,7 @@ export function ElegantTemplate({
                     {formatMoney(total, sym)}
                   </span>
                 </div>
-                {amountPaid > 0 && (
+                {amountPaid > 0 && !isQuotationDoc && (
                   <>
                     <div className="flex justify-between py-1.5 text-xs text-gray-500 font-medium">
                       <span>Paid</span>

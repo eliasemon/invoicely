@@ -26,10 +26,11 @@ export function ModernPurpleTemplate({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
   const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Delivered To" : "Billed To";
 
@@ -148,7 +149,7 @@ export function ModernPurpleTemplate({
             <div className="mb-6">
               <div className="grid grid-cols-12 gap-4 pb-2 border-b-2 border-purple-200 text-xs font-bold uppercase tracking-wider text-[#6b21a8]">
                 <div className="col-span-1 text-center">#</div>
-                <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>DESCRIPTION</div>
+                <div className={`${isPricingHidden ? "col-span-7" : "col-span-5"} text-left`}>DESCRIPTION</div>
                 <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right`}>QTY</div>
                 {!isPricingHidden && (
                   <>
@@ -178,8 +179,8 @@ export function ModernPurpleTemplate({
                               <div className="col-span-1 text-center font-mono text-purple-700 font-semibold">
                                 {runningIdx}
                               </div>
-                              <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>
-                                <p className="font-semibold text-gray-900">{item.name}</p>
+                              <div className={`${isPricingHidden ? "col-span-7" : "col-span-5"} text-left`}>
+                                <p className="font-semibold text-gray-900 text-left">{item.name}</p>
                               </div>
                               <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right text-gray-600 font-mono`}>
                                 {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
@@ -225,8 +226,8 @@ export function ModernPurpleTemplate({
                       <div className="col-span-1 text-center font-mono text-purple-700 font-semibold">
                         {idx + 1}
                       </div>
-                      <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>
-                        <p className="font-semibold text-gray-900">{item.name}</p>
+                      <div className={`${isPricingHidden ? "col-span-7" : "col-span-5"} text-left`}>
+                        <p className="font-semibold text-gray-900 text-left">{item.name}</p>
                       </div>
                       <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right text-gray-600 font-mono`}>
                         {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
@@ -277,10 +278,10 @@ export function ModernPurpleTemplate({
                   )}
 
                   <div className="flex justify-between py-2 border-t-2 border-[#6b21a8] mt-1 text-sm font-bold text-gray-900">
-                    <span>Total</span>
+                    <span>{isQuotationDoc ? "Quotation Total" : "Total"}</span>
                     <span className="text-[#6b21a8] font-mono">{formatMoney(total, sym)}</span>
                   </div>
-                  {amountPaid > 0 && (
+                  {amountPaid > 0 && !isQuotationDoc && (
                     <>
                       <div className="flex justify-between py-1 text-xs text-gray-500 font-medium">
                         <span>Paid</span>

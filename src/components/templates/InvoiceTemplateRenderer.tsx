@@ -51,6 +51,7 @@ export function InvoiceTemplateRenderer({
   isChallan = false,
   isQuotation = false,
   documentType = 'invoice',
+  showPricing = true,
   textSize = 'normal',
   overallTextSize = 'normal',
 }: InvoiceTemplateRendererProps) {
@@ -68,12 +69,16 @@ export function InvoiceTemplateRenderer({
     try {
       const urlObj = new URL(publicUrl, 'http://localhost');
       urlObj.searchParams.set('type', effectiveDocType);
+      if (effectiveDocType === 'quotation') {
+        urlObj.searchParams.set('pricing', showPricing === false ? 'without_money' : 'with_money');
+      }
       qrUrl = publicUrl.startsWith('http') 
         ? urlObj.toString() 
         : `${urlObj.pathname}${urlObj.search}`;
     } catch {
       const sep = publicUrl.includes('?') ? '&' : '?';
-      qrUrl = `${publicUrl}${sep}type=${effectiveDocType}`;
+      const pricingParam = effectiveDocType === 'quotation' ? `&pricing=${showPricing === false ? 'without_money' : 'with_money'}` : '';
+      qrUrl = `${publicUrl}${sep}type=${effectiveDocType}${pricingParam}`;
     }
   }
 
@@ -98,6 +103,7 @@ export function InvoiceTemplateRenderer({
         isChallan={effectiveChallan}
         isQuotation={effectiveQuotation}
         documentType={effectiveDocType}
+        showPricing={showPricing}
         textSize={textSize}
         overallTextSize={overallTextSize}
       />

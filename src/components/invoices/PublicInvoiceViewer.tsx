@@ -15,6 +15,7 @@ interface PublicInvoiceViewerProps {
   publicUrl?: string;
   templateId?: string;
   initialDocumentType?: DocumentType;
+  initialQuotationWithPricing?: boolean;
   isOwner?: boolean;
 }
 
@@ -24,6 +25,7 @@ export function PublicInvoiceViewer({
   publicUrl,
   templateId,
   initialDocumentType = 'invoice',
+  initialQuotationWithPricing = true,
   isOwner = false,
 }: PublicInvoiceViewerProps) {
   const { user } = useAuth();
@@ -47,6 +49,7 @@ export function PublicInvoiceViewer({
   const [showGroups, setShowGroups] = useState(false);
   const [showGroupTotals, setShowGroupTotals] = useState(false);
   const [documentType, setDocumentType] = useState<DocumentType>(initialDocumentType);
+  const [quotationWithPricing, setQuotationWithPricing] = useState<boolean>(initialQuotationWithPricing);
   const [textSize, setTextSize] = useState<TextSize>('normal');
   const [overallTextSize, setOverallTextSize] = useState<TextSize>('normal');
   const [currentTemplate, setCurrentTemplate] = useState(invoice.template || templateId || 'sleek-accent');
@@ -59,6 +62,12 @@ export function PublicInvoiceViewer({
       setDocumentType(initialDocumentType);
     }
   }, [initialDocumentType]);
+
+  useEffect(() => {
+    if (typeof initialQuotationWithPricing === 'boolean') {
+      setQuotationWithPricing(initialQuotationWithPricing);
+    }
+  }, [initialQuotationWithPricing]);
 
   const handleTemplateChange = async (newTemplate: string) => {
     setCurrentTemplate(newTemplate);
@@ -97,7 +106,7 @@ export function PublicInvoiceViewer({
       documentType === 'challan'
         ? 'Delivery-Challan'
         : documentType === 'quotation'
-        ? 'Quotation'
+        ? (quotationWithPricing ? 'Quotation' : 'Quotation-Without-Money')
         : 'Invoice';
     const num = invoice.invoiceNumber || invoice.invoice_number || 'document';
     const prevTitle = document.title;
@@ -628,6 +637,8 @@ export function PublicInvoiceViewer({
           </div>
           <div className="mt-4">
             <InvoiceDisplayOptions 
+              quotationWithPricing={quotationWithPricing}
+              setQuotationWithPricing={setQuotationWithPricing}
               showGroups={showGroups}
               setShowGroups={setShowGroups}
               showGroupTotals={showGroupTotals}
@@ -691,6 +702,7 @@ export function PublicInvoiceViewer({
               isChallan={isChallan}
               isQuotation={isQuotation}
               documentType={documentType}
+              showPricing={documentType === 'quotation' ? quotationWithPricing : true}
               textSize={textSize}
               overallTextSize={overallTextSize}
             />
@@ -812,6 +824,8 @@ export function PublicInvoiceViewer({
 
               {/* Document Format, Overall Font Size, Table Items Font Size, Group Toggles */}
               <InvoiceDisplayOptions 
+                quotationWithPricing={quotationWithPricing}
+                setQuotationWithPricing={setQuotationWithPricing}
                 showGroups={showGroups}
                 setShowGroups={setShowGroups}
                 showGroupTotals={showGroupTotals}
@@ -843,7 +857,7 @@ export function PublicInvoiceViewer({
                 className="w-full py-3 bg-primary text-on-primary rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md hover:opacity-90 active:scale-98 transition-all cursor-pointer mt-2"
               >
                 <MaterialIcon icon="download" className="text-[20px]" />
-                <span>Download / Print {documentType === 'challan' ? 'Challan' : documentType === 'quotation' ? 'Quotation' : 'Invoice'} PDF</span>
+                <span>Download / Print {documentType === 'challan' ? 'Challan' : documentType === 'quotation' ? (quotationWithPricing ? 'Quotation' : 'Quotation (Without Money)') : 'Invoice'} PDF</span>
               </button>
             </div>
           </div>
@@ -865,6 +879,7 @@ export function PublicInvoiceViewer({
           isChallan={isChallan}
           isQuotation={isQuotation}
           documentType={documentType}
+          showPricing={documentType === 'quotation' ? quotationWithPricing : true}
           textSize={textSize}
           overallTextSize={overallTextSize}
         />

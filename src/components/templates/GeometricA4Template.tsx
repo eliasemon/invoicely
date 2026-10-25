@@ -25,10 +25,11 @@ export function GeometricA4Template({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
   const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
 
@@ -122,7 +123,7 @@ export function GeometricA4Template({
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2 w-full">
-              {!isPricingHidden ? (
+              {!isPricingHidden && !isQuotationDoc ? (
                 <>
                   <div>
                     <p className="text-[10px] text-[#94a3b8] uppercase tracking-wider mb-1 font-semibold">
@@ -190,11 +191,11 @@ export function GeometricA4Template({
                                 <div className="w-6 h-6 bg-[#eff6ff] rounded-md flex items-center justify-center text-[#3b82f6] text-[10px] font-bold">
                                   {runningIdx}
                                 </div>
-                                <div>
-                                  <p className="font-medium text-[11px] text-[#1e293b]">
+                                <div className="text-left">
+                                  <p className="font-medium text-[11px] text-[#1e293b] text-left">
                                     {item.name}
                                   </p>
-                                  <p className="text-[10px] text-[#94a3b8] font-mono">
+                                  <p className="text-[10px] text-[#94a3b8] font-mono text-left">
                                     {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                                     {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
                                   </p>
@@ -242,11 +243,11 @@ export function GeometricA4Template({
                       <div className="w-6 h-6 bg-[#eff6ff] rounded-md flex items-center justify-center text-[#3b82f6] text-[10px] font-bold">
                         {idx + 1}
                       </div>
-                      <div>
-                        <p className="font-medium text-[11px] text-[#1e293b]">
+                      <div className="text-left">
+                        <p className="font-medium text-[11px] text-[#1e293b] text-left">
                           {item.name}
                         </p>
-                        <p className="text-[10px] text-[#94a3b8] font-mono">
+                        <p className="text-[10px] text-[#94a3b8] font-mono text-left">
                           {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
                           {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
                         </p>
@@ -294,10 +295,10 @@ export function GeometricA4Template({
                   )}
 
                   <div className="flex justify-between py-2 border-t border-[#e2e8f0] mt-1 text-sm font-bold text-[#1e293b]">
-                    <span>Total</span>
+                    <span>{isQuotationDoc ? "Quotation Total" : "Total"}</span>
                     <span className="text-[#3b82f6] font-mono">{formatMoney(total, sym)}</span>
                   </div>
-                  {amountPaid > 0 && (
+                  {amountPaid > 0 && !isQuotationDoc && (
                     <>
                       <div className="flex justify-between py-1 text-xs text-gray-500 font-medium">
                         <span>Paid</span>

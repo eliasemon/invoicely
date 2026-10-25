@@ -39,6 +39,7 @@ export interface TemplateProps {
   isChallan?: boolean;
   isQuotation?: boolean;
   documentType?: DocumentType;
+  showPricing?: boolean;
   textSize?: TextSize;
   overallTextSize?: TextSize;
 }

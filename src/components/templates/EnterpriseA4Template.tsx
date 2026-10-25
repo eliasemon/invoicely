@@ -26,10 +26,11 @@ export function EnterpriseA4Template({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
   const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Billed To";
@@ -219,7 +220,7 @@ export function EnterpriseA4Template({
                                       {runningIdx}
                                     </td>
                                     <td
-                                      className="py-2 px-3 text-[#1e293b]"
+                                      className="py-2 px-3 text-[#1e293b] text-left"
                                       style={{ fontFamily: "Geist, sans-serif" }}
                                     >
                                       {item.name}
@@ -279,7 +280,7 @@ export function EnterpriseA4Template({
                               {idx + 1}
                             </td>
                             <td
-                              className="py-2 px-3 text-[#1e293b]"
+                              className="py-2 px-3 text-[#1e293b] text-left"
                               style={{ fontFamily: "Geist, sans-serif" }}
                             >
                               {item.name}
@@ -335,10 +336,10 @@ export function EnterpriseA4Template({
                     )}
 
                     <div className="flex justify-between py-2 mt-1 text-sm font-bold text-[#1e40af] font-mono bg-[#eff6ff] px-3 rounded">
-                      <span>Total Due</span>
+                      <span>{isQuotationDoc ? "Total Quotation" : "Total Due"}</span>
                       <span>{formatMoney(total, sym)}</span>
                     </div>
-                    {amountPaid > 0 && (
+                    {amountPaid > 0 && !isQuotationDoc && (
                       <>
                         <div className="flex justify-between py-1.5 text-xs text-gray-500 font-medium">
                           <span>Paid</span>

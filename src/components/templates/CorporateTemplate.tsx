@@ -26,10 +26,11 @@ export function CorporateTemplate({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
   const docNumberLabel = isQuotationDoc ? "Quotation Number:" : isChallanDoc ? "Challan Number:" : "Invoice Number:";
   const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
@@ -85,7 +86,7 @@ export function CorporateTemplate({
             <div className="p-4 sm:p-5 print:p-4">
               {/* Header */}
               <div className="border-2 border-[#c6c6cd] p-2.5 sm:p-3 mb-2 flex flex-col gap-2 relative">
-                {!isPricingHidden && (
+                {!isPricingHidden && !isQuotationDoc && (
                   <div
                     className={`absolute -top-3 -right-3 px-3 py-0.5 rounded text-[11px] font-bold uppercase flex items-center gap-1 shadow-sm ${
                       invoice.status === "PAID"
@@ -216,7 +217,7 @@ export function CorporateTemplate({
                 {!isPricingHidden && (
                   <div className="flex-shrink-0 text-right">
                     <div className="text-[10px] sm:text-[11px] text-[#45464d] uppercase tracking-widest font-bold mb-1 border-b border-[#c6c6cd] pb-1 inline-block">
-                      Amount Due
+                      {isQuotationDoc ? "Quotation Total" : "Amount Due"}
                     </div>
                     <div
                       className="text-xl sm:text-2xl leading-tight font-bold text-[#0058be] mt-1"
@@ -244,7 +245,7 @@ export function CorporateTemplate({
                       <th className="py-2 px-3 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd] w-12 text-center">
                         #
                       </th>
-                      <th className="py-2 px-3 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd]">
+                      <th className="py-2 px-3 text-[12px] font-bold text-[#45464d] uppercase tracking-wider border-r border-[#c6c6cd] text-left">
                         Description
                       </th>
                       <th className={`py-2 px-3 text-[12px] font-bold text-[#45464d] uppercase tracking-wider text-right ${isPricingHidden ? 'w-32' : 'border-r border-[#c6c6cd] w-24'}`}>
@@ -288,8 +289,8 @@ export function CorporateTemplate({
                                     <td className="py-2 px-3 border-r border-[#c6c6cd] text-center text-[#45464d]">
                                       {runningIdx}
                                     </td>
-                                    <td className="py-2 px-3 border-r border-[#c6c6cd] text-[12px]">
-                                      <div className="font-bold">{item.name}</div>
+                                    <td className="py-2 px-3 border-r border-[#c6c6cd] text-[12px] text-left">
+                                      <div className="font-bold text-left">{item.name}</div>
                                     </td>
                                 <td className={`py-2 px-3 ${isPricingHidden ? '' : 'border-r border-[#c6c6cd]'} text-right text-[12px]`}>
                                   {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
@@ -342,8 +343,8 @@ export function CorporateTemplate({
                             <td className="py-2 px-3 border-r border-[#c6c6cd] text-center text-[#45464d]">
                               {idx + 1}
                             </td>
-                            <td className="py-2 px-3 border-r border-[#c6c6cd] text-[12px]">
-                              <div className="font-bold">{item.name}</div>
+                            <td className="py-2 px-3 border-r border-[#c6c6cd] text-[12px] text-left">
+                              <div className="font-bold text-left">{item.name}</div>
                             </td>
                             <td className={`py-2 px-3 ${isPricingHidden ? '' : 'border-r border-[#c6c6cd]'} text-right text-[12px]`}>
                               {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
@@ -432,7 +433,7 @@ export function CorporateTemplate({
                         {formatMoney(total, sym)}
                       </span>
                     </div>
-                    {amountPaid > 0 && (
+                    {amountPaid > 0 && !isQuotationDoc && (
                       <>
                         <div className="flex justify-between py-1.5 text-sm text-gray-500 font-medium">
                           <span>Paid</span>

@@ -26,10 +26,11 @@ export function MinimalistWithQrCodeTemplate({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
   const clientLabel = isQuotationDoc ? "Quotation to" : isChallanDoc ? "Delivered to" : "Billed to";
 
@@ -136,7 +137,7 @@ export function MinimalistWithQrCodeTemplate({
           <div className="mb-8">
             <div className="grid grid-cols-12 gap-4 pb-2 border-b border-black text-xs font-bold uppercase tracking-wider text-black">
               <div className="col-span-1 text-center">#</div>
-              <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>Description</div>
+              <div className={`${isPricingHidden ? "col-span-7" : "col-span-5"} text-left`}>Description</div>
               <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right`}>Qty</div>
               {!isPricingHidden && (
                 <>
@@ -166,8 +167,8 @@ export function MinimalistWithQrCodeTemplate({
                             <div className="col-span-1 text-center font-mono text-gray-500">
                               {runningIdx}
                             </div>
-                            <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>
-                              <p className="font-semibold text-black">{item.name}</p>
+                            <div className={`${isPricingHidden ? "col-span-7" : "col-span-5"} text-left`}>
+                              <p className="font-semibold text-black text-left">{item.name}</p>
                             </div>
                             <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right font-mono`}>
                               {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
@@ -214,8 +215,8 @@ export function MinimalistWithQrCodeTemplate({
                     <div className="col-span-1 text-center font-mono text-gray-500">
                       {idx + 1}
                     </div>
-                    <div className={isPricingHidden ? "col-span-7" : "col-span-5"}>
-                      <p className="font-semibold text-black">{item.name}</p>
+                    <div className={`${isPricingHidden ? "col-span-7" : "col-span-5"} text-left`}>
+                      <p className="font-semibold text-black text-left">{item.name}</p>
                     </div>
                     <div className={`${isPricingHidden ? "col-span-4" : "col-span-2"} text-right font-mono`}>
                       {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
@@ -266,10 +267,10 @@ export function MinimalistWithQrCodeTemplate({
                 )}
 
                 <div className="flex justify-between py-2 border-t-2 border-black mt-2 text-sm font-bold text-black">
-                  <span>Total</span>
+                  <span>{isQuotationDoc ? "Quotation Total" : "Total"}</span>
                   <span className="font-mono">{formatMoney(total, sym)}</span>
                 </div>
-                {amountPaid > 0 && (
+                {amountPaid > 0 && !isQuotationDoc && (
                   <>
                     <div className="flex justify-between py-1 text-xs text-gray-500 font-medium">
                       <span>Paid</span>

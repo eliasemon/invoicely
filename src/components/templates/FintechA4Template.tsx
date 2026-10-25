@@ -25,10 +25,11 @@ export function FintechA4Template({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
   const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Client";
 
@@ -146,21 +147,23 @@ export function FintechA4Template({
               <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl py-2.5 px-4 mb-4 flex flex-row justify-between items-center">
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] text-[#15803d] uppercase tracking-wider font-semibold">
-                    Amount Due:
+                    {isQuotationDoc ? "Quotation Total:" : "Amount Due:"}
                   </span>
                   <span className="text-sm font-bold text-[#15803d] font-mono">
-                    {formatMoney(balanceDue > 0 ? balanceDue : subtotal, sym)}
+                    {formatMoney(balanceDue > 0 && !isQuotationDoc ? balanceDue : subtotal, sym)}
                   </span>
                 </div>
-                <div
-                  className={`px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                    invoice.status === "PAID"
-                      ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
-                      : "bg-amber-100 text-amber-700 border border-amber-300"
-                  }`}
-                >
-                  {invoice.status}
-                </div>
+                {!isQuotationDoc && (
+                  <div
+                    className={`px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                      invoice.status === "PAID"
+                        ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
+                        : "bg-amber-100 text-amber-700 border border-amber-300"
+                    }`}
+                  >
+                    {invoice.status}
+                  </div>
+                )}
               </div>
             )}
 
@@ -227,7 +230,7 @@ export function FintechA4Template({
                                       {runningIdx}
                                     </td>
                                     <td
-                                      className="py-2 px-3 text-[#0f172a]"
+                                      className="py-2 px-3 text-[#0f172a] text-left"
                                       style={{ fontFamily: "Geist, sans-serif" }}
                                     >
                                       {item.name}
@@ -284,7 +287,7 @@ export function FintechA4Template({
                               {idx + 1}
                             </td>
                             <td
-                              className="py-2 px-3 text-[#0f172a]"
+                              className="py-2 px-3 text-[#0f172a] text-left"
                               style={{ fontFamily: "Geist, sans-serif" }}
                             >
                               {item.name}
@@ -341,10 +344,10 @@ export function FintechA4Template({
                   )}
 
                   <div className="flex justify-between py-2 border-t-2 border-[#10b981] mt-1 text-sm font-bold text-[#0f172a] font-mono">
-                    <span>Total</span>
+                    <span>{isQuotationDoc ? "Quotation Total" : "Total"}</span>
                     <span className="text-[#10b981]">{formatMoney(total, sym)}</span>
                   </div>
-                  {amountPaid > 0 && (
+                  {amountPaid > 0 && !isQuotationDoc && (
                     <>
                       <div className="flex justify-between py-1.5 text-xs text-gray-500 font-medium">
                         <span>Paid</span>

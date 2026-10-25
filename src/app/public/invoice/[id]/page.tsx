@@ -12,11 +12,24 @@ export default async function PublicInvoicePage({
   searchParams 
 }: { 
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ type?: string }>;
+  searchParams?: Promise<{ type?: string; pricing?: string; with_money?: string }>;
 }) {
   const { id } = await params;
   const sParams = searchParams ? await searchParams : {};
   const rawType = sParams.type?.toLowerCase();
+  const rawPricing = sParams.pricing?.toLowerCase();
+  const rawWithMoney = sParams.with_money?.toLowerCase();
+  const initialQuotationWithPricing =
+    rawPricing === 'without_money' ||
+    rawPricing === 'without-money' ||
+    rawPricing === 'false' ||
+    rawPricing === 'no' ||
+    rawPricing === '0' ||
+    rawWithMoney === 'false' ||
+    rawWithMoney === '0' ||
+    rawWithMoney === 'no'
+      ? false
+      : true;
   
   const invoice = await getPublicInvoice(id);
   if (!invoice) return notFound();
@@ -87,6 +100,7 @@ export default async function PublicInvoicePage({
           profile={invoice.profile} 
           publicUrl={publicUrl}
           initialDocumentType={initialDocumentType}
+          initialQuotationWithPricing={initialQuotationWithPricing}
           isOwner={isOwner}
         />
       </div>

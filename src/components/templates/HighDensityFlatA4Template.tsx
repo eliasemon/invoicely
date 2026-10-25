@@ -25,10 +25,11 @@ export function HighDensityFlatA4Template({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
   const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
 
@@ -192,7 +193,7 @@ export function HighDensityFlatA4Template({
                                   {runningIdx}
                                 </td>
                                 <td
-                                  className="py-1 px-2 text-[#0f172a]"
+                                  className="py-1 px-2 text-[#0f172a] text-left"
                                   style={{ fontFamily: "Geist, sans-serif" }}
                                 >
                                   {item.name}
@@ -249,7 +250,7 @@ export function HighDensityFlatA4Template({
                           {idx + 1}
                         </td>
                         <td
-                          className="py-1 px-2 text-[#0f172a]"
+                          className="py-1 px-2 text-[#0f172a] text-left"
                           style={{ fontFamily: "Geist, sans-serif" }}
                         >
                           {item.name}
@@ -305,10 +306,10 @@ export function HighDensityFlatA4Template({
                 )}
 
                 <div className="flex justify-between py-1.5 border-t border-[#0f172a] mt-1 text-xs font-bold text-[#0f172a] font-mono">
-                  <span>Total</span>
+                  <span>{isQuotationDoc ? "Quotation Total" : "Total"}</span>
                   <span>{formatMoney(total, sym)}</span>
                 </div>
-                {amountPaid > 0 && (
+                {amountPaid > 0 && !isQuotationDoc && (
                   <>
                     <div className="flex justify-between py-1 text-xs text-gray-500 font-medium">
                       <span>Paid</span>

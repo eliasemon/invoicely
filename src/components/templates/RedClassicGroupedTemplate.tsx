@@ -24,10 +24,11 @@ export function RedClassicGroupedTemplate({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
   const clientLabel = isQuotationDoc ? "Quotation To," : isChallanDoc ? "Delivered To," : "To,";
   const refLabel = isQuotationDoc ? "Quotation No:" : isChallanDoc ? "Challan No:" : "Ref:";
@@ -140,7 +141,7 @@ export function RedClassicGroupedTemplate({
                     <br />
                     No
                   </th>
-                  <th className="border border-gray-300 py-1 px-2 text-center font-bold">
+                  <th className="border border-gray-300 py-1 px-2 text-left font-bold">
                     Description of Item
                   </th>
                   <th className={`border border-gray-300 py-1 px-1 text-center font-bold ${isPricingHidden ? 'w-28' : 'w-16'}`}>
@@ -189,7 +190,7 @@ export function RedClassicGroupedTemplate({
                             <td className="border border-gray-300 py-1 px-1 text-center text-gray-800">
                               {currentSlNo}
                             </td>
-                            <td className="border border-gray-300 py-1 px-2 text-gray-800 font-medium">
+                            <td className="border border-gray-300 py-1 px-2 text-left text-gray-800 font-medium">
                               {item.name}
                             </td>
                             <td className="border border-gray-300 py-1 px-1 text-center text-gray-800">
@@ -279,7 +280,7 @@ export function RedClassicGroupedTemplate({
                         colSpan={4}
                         className="border border-gray-300 py-1.5 px-2 text-right font-bold text-[#8b0000] text-[12px]"
                       >
-                        Grand Total
+                        {isQuotationDoc ? "Quotation Total" : "Grand Total"}
                       </td>
                       <td className="border border-[#8b0000] bg-[#8b0000] py-1.5 px-1 text-right font-bold text-white text-[12px]">
                         {formatMoney(total, "")}
@@ -287,7 +288,7 @@ export function RedClassicGroupedTemplate({
                     </tr>
 
                     {/* Paid Amount and Balance Due */}
-                    {amountPaid > 0 && (
+                    {amountPaid > 0 && !isQuotationDoc && (
                       <>
                         <tr>
                           <td
