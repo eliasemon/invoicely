@@ -326,6 +326,13 @@ export function HighDensityFlatA4Template({
           )}
         </div>
 
+        {/* N.B. Note - Immediately below table/totals, above bank details */}
+        {noteText && (
+          <div className="mb-2 pt-1.5 border-t border-[#cbd5e1] text-[9px] text-[#64748b] whitespace-pre-line text-left break-inside-avoid template-nb-note">
+            <strong className="text-[#0f172a]">N.B:</strong> {noteText}
+          </div>
+        )}
+
         {/* Bank details & Signature */}
         <div>
           <div className="flex flex-row print:flex-row justify-between items-start border-t border-[#cbd5e1] pt-3">
@@ -401,12 +408,7 @@ export function HighDensityFlatA4Template({
             </div>
           )}
 
-          {/* N.B. Note */}
-          {noteText && (
-            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#e2e8f0] text-[9px] text-[#64748b] whitespace-pre-line text-left break-inside-avoid template-nb-note">
-              <strong className="text-[#0f172a]">N.B:</strong> {noteText}
-            </div>
-          )}
+
         </div>
       </div>
     </div>

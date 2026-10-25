@@ -391,6 +391,15 @@ export function ElegantTemplate({
           )}
         </div>
 
+        {/* N.B. Note - Immediately below table/totals, above bank details */}
+        {noteText && (
+          <div className="border-t border-[#dce9ff] pt-2 mt-2 mb-2 text-left print:pt-1.5 print:mt-1.5 print:mb-1.5 break-inside-avoid template-nb-note">
+            <div className="text-[11px] text-[#565e74] whitespace-pre-line">
+              <strong className="text-black">N.B:</strong> {noteText}
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <footer className="flex flex-row print:flex-row justify-between items-end print:items-end gap-3 mt-2 w-full pt-2.5 print:mt-1.5 print:pt-2 border-t border-[#dce9ff] break-inside-avoid template-bottom-section">
           <div className="w-1/2 print:w-1/2 space-y-2">
@@ -485,14 +494,7 @@ export function ElegantTemplate({
           </div>
         </footer>
 
-        {/* N.B. Note */}
-        {noteText && (
-          <div className="border-t border-[#c6c6cd] pt-2 mt-2 text-left print:pt-1.5 print:mt-1.5 break-inside-avoid template-nb-note">
-            <div className="text-[11px] text-[#565e74] whitespace-pre-line">
-              <strong className="text-black">N.B:</strong> {noteText}
-            </div>
-          </div>
-        )}
+
       </main>
     </div>
   );

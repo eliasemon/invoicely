@@ -346,6 +346,13 @@ export function HeritageA4Template({
           </div>
         </div>
 
+        {/* N.B. Note - Immediately below table/totals, above bank details */}
+        {noteText && (
+          <div className="mb-3 pt-2 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-line text-left break-inside-avoid template-nb-note">
+            <strong className="text-[#78350f]">N.B:</strong> {noteText}
+          </div>
+        )}
+
         {/* Bank Details & Signature Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t-2 border-[#b45309] pt-4 items-start">
           {/* Bank Details - Only in Invoice Mode */}
@@ -435,12 +442,7 @@ export function HeritageA4Template({
           </div>
         )}
 
-        {/* N.B. Note */}
-        {noteText && (
-          <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-line text-left break-inside-avoid template-nb-note">
-            <strong className="text-[#78350f]">N.B:</strong> {noteText}
-          </div>
-        )}
+
       </div>
     </div>
   );

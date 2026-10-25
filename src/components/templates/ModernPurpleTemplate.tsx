@@ -299,6 +299,15 @@ export function ModernPurpleTemplate({
           </div>
         </div>
 
+        {/* N.B. Note - Immediately below table/totals, above bank details */}
+        {noteText && (
+          <div className="px-8 print:px-6 mb-2">
+            <div className="pt-2 border-t border-purple-100 text-[10px] text-gray-500 whitespace-pre-line text-left break-inside-avoid template-nb-note">
+              <strong className="text-gray-800">N.B:</strong> {noteText}
+            </div>
+          </div>
+        )}
+
         {/* Bank & Signature */}
         <div className="p-8 print:p-6 pt-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-purple-100 pt-4 items-start">
@@ -365,12 +374,7 @@ export function ModernPurpleTemplate({
             </div>
           )}
 
-          {/* N.B. Note */}
-          {noteText && (
-            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-purple-100 text-[10px] text-gray-500 whitespace-pre-line text-left break-inside-avoid template-nb-note">
-              <strong className="text-gray-800">N.B:</strong> {noteText}
-            </div>
-          )}
+
         </div>
       </div>
     </div>

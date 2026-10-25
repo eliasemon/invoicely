@@ -264,6 +264,15 @@ export function MixedGroupsA4Template({
           </div>
         </div>
 
+        {/* N.B. Note - Immediately below table/totals, above bank details */}
+        {noteText && (
+          <div className="px-6 print:px-6 mb-2">
+            <div className="pt-2 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left break-inside-avoid template-nb-note">
+              <strong className="text-[#0f172a]">N.B:</strong> {noteText}
+            </div>
+          </div>
+        )}
+
         {/* Bank & Signature */}
         <div className="p-6 pt-0 print:p-6 print:pt-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#e2e8f0] pt-4 items-start">
@@ -351,12 +360,7 @@ export function MixedGroupsA4Template({
             </div>
           )}
 
-          {/* N.B. Note */}
-          {noteText && (
-            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left break-inside-avoid template-nb-note">
-              <strong className="text-[#0f172a]">N.B:</strong> {noteText}
-            </div>
-          )}
+
         </div>
       </div>
     </div>

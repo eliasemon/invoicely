@@ -330,6 +330,13 @@ export function PristineA4Template({
           )}
         </div>
 
+        {/* N.B. Note - Immediately below table/totals, above bank details */}
+        {noteText && (
+          <div className="mb-3 pt-2 border-t border-gray-200 text-[10px] text-[#64748b] whitespace-pre-line text-left break-inside-avoid template-nb-note">
+            <strong className="text-[#0f172a]">N.B:</strong> {noteText}
+          </div>
+        )}
+
         {/* Bank & Signature */}
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-200 pt-4 items-start">
@@ -396,12 +403,7 @@ export function PristineA4Template({
             </div>
           )}
 
-          {/* N.B. Note */}
-          {noteText && (
-            <div className="mt-2 pt-2 border-t border-gray-100 text-[10px] text-[#64748b] whitespace-pre-line text-left break-inside-avoid template-nb-note">
-              <strong className="text-[#0f172a]">N.B:</strong> {noteText}
-            </div>
-          )}
+
         </div>
       </div>
     </div>

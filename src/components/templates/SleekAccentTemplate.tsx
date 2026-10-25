@@ -295,6 +295,13 @@ export function SleekAccentTemplate({
             </div>
           </section>
 
+          {/* N.B. Note - Immediately below table/items, above payment & bank details */}
+          {noteText && (
+            <div className="mb-4 pt-2 border-t border-gray-200 text-[11px] text-gray-600 whitespace-pre-line text-left break-inside-avoid template-nb-note">
+              <strong className="text-[#0b1b3d]">N.B:</strong> {noteText}
+            </div>
+          )}
+
           {/* Payment & Totals */}
           <section className="flex flex-row print:flex-row justify-between items-start mt-auto gap-8">
             <div className="w-1/2 print:w-1/2">
@@ -446,12 +453,7 @@ export function SleekAccentTemplate({
             </div>
           </section>
 
-          {/* N.B. Note */}
-          {noteText && (
-            <div className="mt-3 pt-2 border-t border-gray-200 text-[11px] text-gray-600 whitespace-pre-line text-left break-inside-avoid template-nb-note">
-              <strong className="text-[#0b1b3d]">N.B:</strong> {noteText}
-            </div>
-          )}
+
 
           {/* Footer Contact Info */}
           <footer className="mt-4 pt-3 border-t border-gray-200 flex flex-wrap justify-between items-center text-xs font-semibold text-[#0b1b3d] gap-4">

@@ -303,7 +303,7 @@ export function PublicInvoiceViewer({
         </div>
 
         {/* Quick active mode subject edit */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-2">
           <div className="flex-1 flex items-center gap-2 bg-surface px-3 py-1.5 rounded-xl border border-outline-variant/40">
             <span className="text-[11px] font-bold text-on-surface-variant whitespace-nowrap">
               {documentType === 'quotation' ? 'Quotation Subject:' : documentType === 'challan' ? 'Challan Subject:' : 'Invoice Subject:'}
@@ -331,16 +331,45 @@ export function PublicInvoiceViewer({
                 type="checkbox"
                 checked={subjectEnabled}
                 onChange={(e) => setSubjectEnabled(e.target.checked)}
-                className="w-3.5 h-3.5 rounded text-primary focus:ring-primary"
+                className="w-3.5 h-3.5 rounded text-primary focus:ring-primary cursor-pointer"
               />
               <span>Subject</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Quick N.B. Bottom Note Edit - OWNER ONLY */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <div className="flex-1 flex items-center gap-2 bg-surface px-3 py-1.5 rounded-xl border border-outline-variant/40">
+            <span className="text-[11px] font-bold text-on-surface-variant whitespace-nowrap">
+              Bottom Note (N.B.):
+            </span>
+            <input
+              type="text"
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              disabled={!noteEnabled}
+              placeholder="e.g. Goods once sold are not returnable..."
+              className="w-full text-xs bg-transparent outline-none disabled:opacity-50 text-on-surface"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 justify-end">
+            <label className="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-on-surface select-none">
+              <input
+                type="checkbox"
+                checked={noteEnabled}
+                onChange={(e) => setNoteEnabled(e.target.checked)}
+                className="w-3.5 h-3.5 rounded text-primary focus:ring-primary cursor-pointer"
+              />
+              <span>N.B. Note</span>
             </label>
 
             <button
               type="button"
               onClick={handleSaveSettings}
               disabled={isSavingSettings}
-              className="px-3 py-1.5 bg-primary text-on-primary rounded-xl text-xs font-semibold hover:opacity-90 active:scale-95 transition-all flex items-center gap-1 disabled:opacity-50 cursor-pointer shadow-xs"
+              className="px-3.5 py-1.5 bg-primary text-on-primary rounded-xl text-xs font-semibold hover:opacity-90 active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap"
             >
               {isSavingSettings ? (
                 <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

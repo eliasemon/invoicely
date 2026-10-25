@@ -384,6 +384,13 @@ export function ModernTemplate({
             )}
           </div>
 
+          {/* N.B. Note - Immediately below table/totals */}
+          {noteText && (
+            <div className="mt-2.5 pt-1.5 border-t border-[#dce9ff] text-[10px] text-[#45464d] whitespace-pre-line text-left break-inside-avoid template-nb-note">
+              <strong className="text-black">N.B:</strong> {noteText}
+            </div>
+          )}
+
           {/* Notes and Signature */}
           <div className="mt-3 pt-2 print:mt-2 print:pt-1.5 border-t border-[#dce9ff] flex flex-row print:flex-row justify-between items-start gap-2 break-inside-avoid template-bottom-section">
             <div className="flex-1 flex flex-col gap-2">
@@ -438,12 +445,7 @@ export function ModernTemplate({
             </div>
           </div>
 
-          {/* N.B. Note */}
-          {noteText && (
-            <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#c6c6cd] text-[10px] text-[#45464d] whitespace-pre-line text-left break-inside-avoid template-nb-note">
-              <strong className="text-black">N.B:</strong> {noteText}
-            </div>
-          )}
+
         </div>
       </div>
     </div>

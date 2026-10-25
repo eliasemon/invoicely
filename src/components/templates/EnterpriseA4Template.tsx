@@ -356,7 +356,14 @@ export function EnterpriseA4Template({
               )}
             </div>
 
-            {/* Bank Details & Signature Section */}
+            {/* N.B. Note - Immediately below table/totals, above settlement/bank details */}
+              {noteText && (
+                <div className="mt-2.5 pt-2 mb-1 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left break-inside-avoid template-nb-note">
+                  <strong className="text-[#1e293b]">N.B:</strong> {noteText}
+                </div>
+              )}
+
+              {/* Bank Details & Signature Section */}
             <div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3 border-t border-[#e2e8f0] pt-4 text-left w-full items-start">
                 {/* Bank Details - Only in Invoice Mode */}
@@ -463,12 +470,7 @@ export function EnterpriseA4Template({
                 </div>
               )}
 
-              {/* N.B. Note */}
-              {noteText && (
-                <div className="mt-2 pt-1.5 print:mt-1 print:pt-1 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left break-inside-avoid template-nb-note">
-                  <strong className="text-[#1e293b]">N.B:</strong> {noteText}
-                </div>
-              )}
+
             </div>
           </div>
         </div>
