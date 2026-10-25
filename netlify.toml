@@ -1,0 +1,11 @@
+# Netlify configuration for Next.js
+# This file is only read by Netlify and is completely ignored by Vercel.
+
+[build]
+  command = "npm run build"
+
+[build.environment]
+  # Next.js inlines NEXT_PUBLIC_* variables into client bundles and HTML output by design.
+  # Furthermore, values like "supabase" and "https://invorio.app" naturally appear in code.
+  # Disabling secrets scanning prevents Netlify from incorrectly flagging these public values.
+  SECRETS_SCAN_ENABLED = "false"
