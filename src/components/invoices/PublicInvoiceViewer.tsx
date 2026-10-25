@@ -335,7 +335,7 @@ export function PublicInvoiceViewer({
       {/* PRIMARY VIEW: INVOICE PREVIEW CANVAS (Clean, not stacked below settings on same scroll) */}
       <section
         id="section-doc-preview"
-        className="w-full flex flex-col items-center pt-3 sm:pt-6 pb-20 print:p-0"
+        className="w-full max-w-full overflow-x-hidden flex flex-col items-center pt-3 sm:pt-6 pb-28 sm:pb-32 print:p-0"
       >
         {/* Sticky Action Toolbar for Preview (Zoom, Doc Text Resizer, Row Text Resizer, Settings & Print) */}
         <div className="hidden md:flex sticky top-16 z-20 mb-4 items-center gap-2 bg-surface/90 backdrop-blur-md shadow-md p-1.5 rounded-xl border border-outline-variant/50 print:hidden flex-wrap justify-center">
@@ -517,36 +517,41 @@ export function PublicInvoiceViewer({
         </div>
       </section>
 
-      {/* Mobile/Desktop Bottom Floating Bar with Options & PDF */}
-      <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-30 print:hidden flex items-center gap-2 pointer-events-none">
-        <button
-          type="button"
-          onClick={() => setIsSettingsModalOpen(true)}
-          className="pointer-events-auto flex-1 bg-surface-container-highest/95 backdrop-blur-md text-on-surface border border-outline-variant/60 shadow-xl rounded-2xl px-4 py-3 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:bg-surface-container-highest"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-xs">
-              <MaterialIcon icon="tune" className="text-[18px]" />
-            </span>
-            <div className="text-left">
-              <p className="font-bold text-xs text-on-surface leading-tight">Document Options</p>
-              <p className="text-[10px] text-on-surface-variant capitalize">{documentType} • {currentTemplate.replace(/-/g, ' ')}</p>
+      {/* Centered Mobile/Desktop Bottom Floating Bar with Document Options & PDF */}
+      <div className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:bottom-6 left-1/2 -translate-x-1/2 z-40 print:hidden w-[calc(100%-2rem)] max-w-md pointer-events-none">
+        <div className="pointer-events-auto bg-surface/90 dark:bg-surface-container-highest/90 backdrop-blur-xl border border-outline-variant/80 shadow-2xl rounded-2xl p-1.5 sm:p-2 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="flex-1 min-w-0 text-left bg-surface-container-high/60 hover:bg-surface-container-highest dark:bg-surface-container/60 dark:hover:bg-surface-container-high border border-outline-variant/40 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 flex items-center justify-between gap-2 cursor-pointer active:scale-[0.98] transition-all"
+            title="Open Document Settings & Options"
+          >
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+              <span className="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-xs">
+                <MaterialIcon icon="tune" className="text-[18px]" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-xs text-on-surface leading-tight truncate">Document Options</p>
+                <p className="text-[10px] text-on-surface-variant capitalize truncate">
+                  {documentType} • {currentTemplate.replace(/-/g, ' ')}
+                </p>
+              </div>
             </div>
-          </div>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 capitalize">
-            {documentType}
-          </span>
-        </button>
+            <span className="hidden sm:inline-block shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 capitalize">
+              {documentType}
+            </span>
+          </button>
 
-        <button
-          type="button"
-          onClick={handlePrint}
-          className="pointer-events-auto bg-primary text-on-primary shadow-xl rounded-2xl px-4 py-3 flex items-center gap-1.5 font-bold text-xs cursor-pointer active:scale-95 transition-all hover:opacity-90"
-          title="Print or Save as PDF"
-        >
-          <MaterialIcon icon="download" className="text-[18px]" />
-          <span>PDF</span>
-        </button>
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="shrink-0 bg-primary text-on-primary hover:bg-primary/90 shadow-sm rounded-xl px-4 py-2 sm:px-5 sm:py-2.5 h-[42px] sm:h-[46px] flex items-center justify-center gap-1.5 font-bold text-xs cursor-pointer active:scale-[0.98] transition-all"
+            title="Print or Save as PDF"
+          >
+            <MaterialIcon icon="download" className="text-[18px]" />
+            <span>PDF</span>
+          </button>
+        </div>
       </div>
 
       {/* BOTTOM SHEET MODAL POPUP FOR SETTINGS PANEL */}

@@ -95,8 +95,8 @@ export default async function PublicInvoicePage({
   const publicUrl = `${baseUrl}/public/invoice/${id}`;
 
   return (
-    <div className="bg-surface-container-lowest min-h-screen flex flex-col print:block print:bg-white print:min-h-0 print:p-0 print:m-0 print:w-[210mm]">
-      <div className="flex-1 pb-24 md:pb-12 print:py-0 print:px-0 print:m-0 print:block print:w-full">
+    <div className="bg-surface-container-lowest min-h-screen flex flex-col overflow-x-hidden w-full max-w-full print:block print:bg-white print:min-h-0 print:p-0 print:m-0 print:w-[210mm]">
+      <div className="flex-1 w-full max-w-full overflow-x-hidden pb-28 md:pb-20 print:py-0 print:px-0 print:m-0 print:block print:w-full">
         <PublicInvoiceViewer 
           templateId={invoice.template} 
           invoice={fullInvoice as any} 
