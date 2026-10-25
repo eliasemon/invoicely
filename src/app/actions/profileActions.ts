@@ -35,6 +35,7 @@ export async function getProfile(): Promise<UserProfile | null> {
         .upsert({
           id: userId,
           default_currency: 'USD',
+          currency_symbol_display: 'all',
           invoice_edit_enabled: true,
           updated_at: new Date().toISOString()
         })

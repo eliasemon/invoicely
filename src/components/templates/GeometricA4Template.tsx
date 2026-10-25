@@ -4,6 +4,7 @@ import {
   TemplateProps,
   formatDate,
   formatMoney,
+  getItemCurrencySymbol,
   getIssueDate,
   getDueDate,
   getSubtotal,
@@ -34,6 +35,7 @@ export function GeometricA4Template({
   const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
+  const itemSym = getItemCurrencySymbol(invoice, profile);
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
@@ -197,13 +199,13 @@ export function GeometricA4Template({
                                   </p>
                                   <p className="text-[10px] text-[#94a3b8] font-mono text-left">
                                     {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                                    {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
+                                    {!isPricingHidden && ` × ${formatMoney(item.unitPrice, itemSym)}`}
                                   </p>
                                 </div>
                               </div>
                               {!isPricingHidden && (
                                 <p className="font-mono font-semibold text-[11px] text-[#1e293b]">
-                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                                 </p>
                               )}
                             </div>
@@ -225,7 +227,7 @@ export function GeometricA4Template({
                                     sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                   0,
                                 ),
-                                sym,
+                                itemSym,
                               )}
                             </div>
                           </div>
@@ -249,13 +251,13 @@ export function GeometricA4Template({
                         </p>
                         <p className="text-[10px] text-[#94a3b8] font-mono text-left">
                           {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                          {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
+                          {!isPricingHidden && ` × ${formatMoney(item.unitPrice, itemSym)}`}
                         </p>
                       </div>
                     </div>
                     {!isPricingHidden && (
                       <p className="font-mono font-semibold text-[11px] text-[#1e293b]">
-                        {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                        {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                       </p>
                     )}
                   </div>

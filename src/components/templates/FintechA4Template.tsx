@@ -4,6 +4,7 @@ import {
   TemplateProps,
   formatDate,
   formatMoney,
+  getItemCurrencySymbol,
   getIssueDate,
   getDueDate,
   getSubtotal,
@@ -34,6 +35,7 @@ export function FintechA4Template({
   const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
+  const itemSym = getItemCurrencySymbol(invoice, profile);
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
@@ -241,12 +243,12 @@ export function FintechA4Template({
                                     {!isPricingHidden && (
                                       <>
                                         <td className="py-2 px-3 text-right text-[#475569]">
-                                          {formatMoney(item.unitPrice, sym)}
+                                          {formatMoney(item.unitPrice, itemSym)}
                                         </td>
                                         <td className="py-2 px-3 text-right text-[#16a34a] font-semibold">
                                           {formatMoney(
                                             (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
-                                            sym,
+                                            itemSym,
                                           )}
                                         </td>
                                       </>
@@ -270,7 +272,7 @@ export function FintechA4Template({
                                           sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                         0,
                                       ),
-                                      sym,
+                                      itemSym,
                                     )}
                                   </td>
                                 </tr>
@@ -298,10 +300,10 @@ export function FintechA4Template({
                             {!isPricingHidden && (
                               <>
                                 <td className="py-2 px-3 text-right text-[#475569]">
-                                  {formatMoney(item.unitPrice, sym)}
+                                  {formatMoney(item.unitPrice, itemSym)}
                                 </td>
                                 <td className="py-2 px-3 text-right text-[#16a34a] font-semibold">
-                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                                 </td>
                               </>
                             )}

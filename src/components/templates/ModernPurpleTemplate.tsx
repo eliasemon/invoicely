@@ -4,6 +4,7 @@ import {
   TemplateProps,
   formatDate,
   formatMoney,
+  getItemCurrencySymbol,
   getIssueDate,
   getDueDate,
   getSubtotal,
@@ -35,6 +36,7 @@ export function ModernPurpleTemplate({
   const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
+  const itemSym = getItemCurrencySymbol(invoice, profile);
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
@@ -188,10 +190,10 @@ export function ModernPurpleTemplate({
                               {!isPricingHidden && (
                                 <>
                                   <div className="col-span-2 text-right text-gray-600 font-mono">
-                                    {formatMoney(item.unitPrice, sym)}
+                                    {formatMoney(item.unitPrice, itemSym)}
                                   </div>
                                   <div className="col-span-2 text-right font-semibold text-gray-900 font-mono">
-                                    {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                    {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                                   </div>
                                 </>
                               )}
@@ -210,7 +212,7 @@ export function ModernPurpleTemplate({
                                   (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                   0,
                                 ),
-                                sym,
+                                itemSym,
                               )}
                             </span>
                           </div>
@@ -235,10 +237,10 @@ export function ModernPurpleTemplate({
                       {!isPricingHidden && (
                         <>
                           <div className="col-span-2 text-right text-gray-600 font-mono">
-                            {formatMoney(item.unitPrice, sym)}
+                            {formatMoney(item.unitPrice, itemSym)}
                           </div>
                           <div className="col-span-2 text-right font-semibold text-gray-900 font-mono">
-                            {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                            {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                           </div>
                         </>
                       )}

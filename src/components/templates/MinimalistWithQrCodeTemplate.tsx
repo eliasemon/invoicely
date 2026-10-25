@@ -4,6 +4,7 @@ import {
   TemplateProps,
   formatDate,
   formatMoney,
+  getItemCurrencySymbol,
   getIssueDate,
   getDueDate,
   getSubtotal,
@@ -35,6 +36,7 @@ export function MinimalistWithQrCodeTemplate({
   const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
+  const itemSym = getItemCurrencySymbol(invoice, profile);
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
@@ -176,10 +178,10 @@ export function MinimalistWithQrCodeTemplate({
                             {!isPricingHidden && (
                               <>
                                 <div className="col-span-2 text-right font-mono text-gray-600">
-                                  {formatMoney(item.unitPrice, sym)}
+                                  {formatMoney(item.unitPrice, itemSym)}
                                 </div>
                                 <div className="col-span-2 text-right font-mono font-semibold text-black">
-                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                                 </div>
                               </>
                             )}
@@ -199,7 +201,7 @@ export function MinimalistWithQrCodeTemplate({
                                   sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                 0,
                               ),
-                              sym,
+                              itemSym,
                             )}
                           </span>
                         </div>
@@ -224,10 +226,10 @@ export function MinimalistWithQrCodeTemplate({
                     {!isPricingHidden && (
                       <>
                         <div className="col-span-2 text-right font-mono text-gray-600">
-                          {formatMoney(item.unitPrice, sym)}
+                          {formatMoney(item.unitPrice, itemSym)}
                         </div>
                         <div className="col-span-2 text-right font-mono font-semibold text-black">
-                          {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                          {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                         </div>
                       </>
                     )}

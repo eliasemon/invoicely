@@ -4,6 +4,7 @@ import {
   TemplateProps,
   formatDate,
   formatMoney,
+  getItemCurrencySymbol,
   getIssueDate,
   getDueDate,
   getSubtotal,
@@ -33,6 +34,7 @@ export function ModernTemplate({
   const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
+  const itemSym = getItemCurrencySymbol(invoice, profile);
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
@@ -253,7 +255,7 @@ export function ModernTemplate({
                                 style={{ fontFamily: "Geist, monospace" }}
                               >
                                 Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                                {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
+                                {!isPricingHidden && ` × ${formatMoney(item.unitPrice, itemSym)}`}
                               </p>
                             </div>
                           </div>
@@ -262,7 +264,7 @@ export function ModernTemplate({
                               className="text-[11px] whitespace-nowrap font-medium"
                               style={{ fontFamily: "Geist, monospace" }}
                             >
-                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                             </p>
                           )}
                         </div>
@@ -283,7 +285,7 @@ export function ModernTemplate({
                             (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                             0,
                           ),
-                          sym,
+                          itemSym,
                         )}
                       </div>
                     </div>

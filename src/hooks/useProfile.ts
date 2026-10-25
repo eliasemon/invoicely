@@ -21,6 +21,7 @@ export interface UserProfile {
   // Regional Settings
   default_currency: string;
   currency_symbol: string;
+  currency_symbol_display?: 'all' | 'selected';
   
   // Contact Details
   email: string | null;

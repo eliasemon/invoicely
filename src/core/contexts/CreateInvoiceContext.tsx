@@ -32,6 +32,7 @@ interface CreateInvoiceContextType {
   setShippingCost: (cost: number) => void;
   currency: string;
   currencySymbol: string;
+  currencySymbolDisplay: 'all' | 'selected';
   amountPaid: number;
   setAmountPaid: (val: number) => void;
   issuedAt: string;
@@ -104,6 +105,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
       return currency;
     }
   })();
+  const currencySymbolDisplay: 'all' | 'selected' = profile?.currency_symbol_display === 'selected' ? 'selected' : 'all';
 
   const isInitialMount = useRef(true);
   const draftIdRef = useRef<string | null>(null);
@@ -247,7 +249,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
       discountType, setDiscountType,
       discountValue, setDiscountValue,
       shippingCost, setShippingCost,
-      currency, currencySymbol,
+      currency, currencySymbol, currencySymbolDisplay,
       amountPaid, setAmountPaid,
       issuedAt, setIssuedAt,
       dueDate, setDueDate,

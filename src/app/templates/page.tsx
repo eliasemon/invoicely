@@ -106,7 +106,8 @@ export default function TemplatesGalleryPage() {
     signatory_name: 'Alexander Wright',
     qr_code_enabled: true,
     tax_id: 'US-123456789',
-    business_registration: 'REG-987654'
+    business_registration: 'REG-987654',
+    currency_symbol_display: 'all' as const
   };
 
   const mockInvoice = {
@@ -136,6 +137,7 @@ export default function TemplatesGalleryPage() {
     updated_at: new Date(),
     currency: 'USD',
     currency_symbol: '$',
+    currency_symbol_display: 'all' as const,
     signature_url: null,
     signatory_name: mockProfile.signatory_name,
     bank_name: mockProfile.bank_name,

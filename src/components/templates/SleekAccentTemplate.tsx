@@ -14,6 +14,7 @@ import {
   getAllItems,
   getSubjectForDoc,
   getNoteText,
+  getItemCurrencySymbol,
 } from "./templateUtils";
 
 export function SleekAccentTemplate({
@@ -35,6 +36,7 @@ export function SleekAccentTemplate({
   const clientLabel = isQuotationDoc ? "QUOTATION TO" : isChallanDoc ? "CHALLAN TO" : "BILL TO";
 
   const sym = invoice.currency_symbol || "$";
+  const itemSym = getItemCurrencySymbol(invoice, profile);
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
@@ -223,16 +225,16 @@ export function SleekAccentTemplate({
                                 {!isPricingHidden && (
                                   <>
                                     <div className="col-span-2 text-sm text-center">
-                                      {formatMoney(item.unitPrice, sym)}
+                                      {formatMoney(item.unitPrice, itemSym)}
                                     </div>
                                     <div className="col-span-1 text-sm text-center">
-                                      {formatMoney(tax, sym)}
+                                      {formatMoney(tax, itemSym)}
                                     </div>
                                     <div className="col-span-1 text-sm text-center">
-                                      {sym}0
+                                      {itemSym ? `${itemSym}0` : '0'}
                                     </div>
                                     <div className="col-span-2 text-sm font-medium text-center">
-                                      {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                      {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                                     </div>
                                   </>
                                 )}
@@ -251,7 +253,7 @@ export function SleekAccentTemplate({
                                       sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                     0,
                                   ),
-                                  sym,
+                                  itemSym,
                                 )}
                               </span>
                             </div>
@@ -276,16 +278,16 @@ export function SleekAccentTemplate({
                         {!isPricingHidden && (
                           <>
                             <div className="col-span-2 text-sm text-center">
-                              {formatMoney(item.unitPrice, sym)}
+                              {formatMoney(item.unitPrice, itemSym)}
                             </div>
                             <div className="col-span-1 text-sm text-center">
-                              {formatMoney(tax, sym)}
+                              {formatMoney(tax, itemSym)}
                             </div>
                             <div className="col-span-1 text-sm text-center">
-                              {sym}0
+                              {itemSym ? `${itemSym}0` : '0'}
                             </div>
                             <div className="col-span-2 text-sm font-medium text-center">
-                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                              {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                             </div>
                           </>
                         )}

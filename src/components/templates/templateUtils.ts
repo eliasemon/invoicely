@@ -2,6 +2,7 @@ import { Invoice } from '@/core/ports/database.types';
 
 export type DocumentType = 'invoice' | 'challan' | 'quotation';
 export type TextSize = 'compact' | 'normal' | 'large';
+export type CurrencySymbolDisplay = 'all' | 'selected';
 
 export interface TemplateProps {
   invoice: Invoice;
@@ -16,6 +17,7 @@ export interface TemplateProps {
     billing_address?: string | null;
     default_currency?: string;
     currency_symbol?: string;
+    currency_symbol_display?: 'all' | 'selected' | null;
     bank_enabled?: boolean;
     bank_name?: string | null;
     bank_account_holder?: string | null;
@@ -65,6 +67,17 @@ export function formatDate(date: Date | string): string {
 
 export function formatMoney(amount: number, symbol: string = '$'): string {
   return `${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+export function getItemCurrencySymbol(
+  invoice: Invoice,
+  profile?: { currency_symbol_display?: CurrencySymbolDisplay | null } | null
+): string {
+  const display = invoice.currency_symbol_display || profile?.currency_symbol_display || 'all';
+  if (display === 'selected') {
+    return '';
+  }
+  return invoice.currency_symbol || '$';
 }
 
 export function getIssueDate(invoice: Invoice): Date {

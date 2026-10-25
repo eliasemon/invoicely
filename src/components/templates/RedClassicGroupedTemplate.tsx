@@ -4,6 +4,7 @@ import {
   TemplateProps,
   formatDate,
   formatMoney,
+  getItemCurrencySymbol,
   getIssueDate,
   getSubtotal,
   getDiscountAmount,
@@ -39,6 +40,7 @@ export function RedClassicGroupedTemplate({
     : "Bill for Items/Services";
 
   const sym = invoice.currency_symbol || "$";
+  const itemSym = getItemCurrencySymbol(invoice, profile);
   const issueDate = getIssueDate(invoice);
   const subtotal = getSubtotal(invoice);
   const discountAmount = getDiscountAmount(invoice, subtotal);
@@ -199,10 +201,10 @@ export function RedClassicGroupedTemplate({
                             {!isPricingHidden && (
                               <>
                                 <td className="border border-gray-300 py-1 px-1 text-right text-gray-800">
-                                  {formatMoney(item.unitPrice, sym)}
+                                  {formatMoney(item.unitPrice, itemSym)}
                                 </td>
                                 <td className="border border-gray-300 py-1 px-1 text-right text-gray-900">
-                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                  {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                                 </td>
                               </>
                             )}
@@ -223,7 +225,7 @@ export function RedClassicGroupedTemplate({
                                 : "Group Total:"}
                             </span>{" "}
                             <span className="ml-2">
-                              {formatMoney(groupSubtotal, sym)}
+                              {formatMoney(groupSubtotal, itemSym)}
                             </span>
                           </td>
                         </tr>

@@ -42,6 +42,7 @@ export interface Invoice {
   // Snapshots from Profile at generation time
   currency?: string | null;
   currency_symbol?: string | null;
+  currency_symbol_display?: 'all' | 'selected' | null;
   signature_url?: string | null;
   signatory_name?: string | null;
   bank_name?: string | null;
@@ -124,6 +125,7 @@ export interface UserProfile {
   // Regional Settings
   default_currency: string;
   currency_symbol: string;
+  currency_symbol_display?: 'all' | 'selected';
   
   // Contact Details
   email: string | null;

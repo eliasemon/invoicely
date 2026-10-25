@@ -4,6 +4,7 @@ import {
   TemplateProps,
   formatDate,
   formatMoney,
+  getItemCurrencySymbol,
   getIssueDate,
   getDueDate,
   getSubtotal,
@@ -36,6 +37,7 @@ export function ElegantTemplate({
   const clientLabel = isQuotationDoc ? "QUOTATION TO" : isChallanDoc ? "CHALLAN TO" : "BILL TO";
 
   const sym = invoice.currency_symbol || "$";
+  const itemSym = getItemCurrencySymbol(invoice, profile);
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice, 14);
   const subtotal = getSubtotal(invoice);
@@ -232,13 +234,13 @@ export function ElegantTemplate({
                                     className="col-span-2 text-right text-xs text-[#565e74]"
                                     style={{ fontFamily: "Geist, monospace" }}
                                   >
-                                    {formatMoney(item.unitPrice, sym)}
+                                    {formatMoney(item.unitPrice, itemSym)}
                                   </div>
                                   <div
                                     className="col-span-2 text-right text-xs font-semibold"
                                     style={{ fontFamily: "Geist, monospace" }}
                                   >
-                                    {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                    {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                                   </div>
                                 </>
                               )}
@@ -262,7 +264,7 @@ export function ElegantTemplate({
                                       sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                     0,
                                   ),
-                                  sym,
+                                  itemSym,
                                 )}
                               </span>
                             </div>
@@ -294,13 +296,13 @@ export function ElegantTemplate({
                             className="col-span-2 text-right text-xs text-[#565e74]"
                             style={{ fontFamily: "Geist, monospace" }}
                           >
-                            {formatMoney(item.unitPrice, sym)}
+                            {formatMoney(item.unitPrice, itemSym)}
                           </div>
                           <div
                             className="col-span-2 text-right text-xs font-semibold"
                             style={{ fontFamily: "Geist, monospace" }}
                           >
-                            {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                            {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                           </div>
                         </>
                       )}

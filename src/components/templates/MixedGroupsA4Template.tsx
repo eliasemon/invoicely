@@ -4,6 +4,7 @@ import {
   TemplateProps,
   formatDate,
   formatMoney,
+  getItemCurrencySymbol,
   getIssueDate,
   getDueDate,
   getSubtotal,
@@ -32,6 +33,7 @@ export function MixedGroupsA4Template({
   const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
+  const itemSym = getItemCurrencySymbol(invoice, profile);
   const issueDate = getIssueDate(invoice);
   const dueDate = getDueDate(invoice);
   const subtotal = getSubtotal(invoice);
@@ -176,13 +178,13 @@ export function MixedGroupsA4Template({
                                 <p className="font-medium text-[#0f172a] text-left">{item.name}</p>
                                 <p className="text-[11px] text-[#64748b] font-mono">
                                   Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
-                                  {!isPricingHidden && ` × ${formatMoney(item.unitPrice, sym)}`}
+                                  {!isPricingHidden && ` × ${formatMoney(item.unitPrice, itemSym)}`}
                                 </p>
                               </div>
                             </div>
                             {!isPricingHidden && (
                               <p className="text-[11px] font-semibold font-mono text-[#0f172a]">
-                                {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, sym)}
+                                {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
                               </p>
                             )}
                           </div>
@@ -200,7 +202,7 @@ export function MixedGroupsA4Template({
                                 (sum, item) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
                                 0,
                               ),
-                              sym,
+                              itemSym,
                             )}
                           </span>
                         </div>

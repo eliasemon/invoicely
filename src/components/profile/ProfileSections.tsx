@@ -110,6 +110,54 @@ export function RegionalSettingsSection({ profile, onChange }: SectionProps) {
           />
         </div>
       </div>
+
+      {/* Currency Symbol Display Option */}
+      <div className="mt-6 pt-5 border-t border-surface-container-high">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <label className="font-label-sm text-label-sm text-on-surface uppercase font-semibold">
+                Currency Symbol Placement
+              </label>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                (profile.currency_symbol_display ?? 'all') === 'selected'
+                  ? 'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-400'
+                  : 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400'
+              }`}>
+                {(profile.currency_symbol_display ?? 'all') === 'selected' ? 'Only Selected Places' : 'Show in All Places'}
+              </span>
+            </div>
+            <p className="font-body-sm text-body-sm text-on-surface-variant max-w-xl">
+              Choose whether the currency symbol ({profile.currency_symbol || '$'}) appears on every item row in the items table or only on summary breakdown totals (sub-total, discount, tax, and total).
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-surface-container-high/60 p-1 rounded-xl border border-outline-variant/40 shrink-0 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => onChange({ currency_symbol_display: 'all' })}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                (profile.currency_symbol_display ?? 'all') === 'all'
+                  ? 'bg-primary text-on-primary shadow-xs'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Show in all place
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange({ currency_symbol_display: 'selected' })}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                profile.currency_symbol_display === 'selected'
+                  ? 'bg-primary text-on-primary shadow-xs'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Only selected places
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
