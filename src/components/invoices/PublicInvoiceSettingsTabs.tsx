@@ -52,6 +52,7 @@ interface PublicInvoiceSettingsTabsProps {
   onSaveSettings: () => Promise<void>;
   isSavingSettings: boolean;
   settingsSavedMessage?: string | null;
+  onClose?: () => void;
 }
 
 export function PublicInvoiceSettingsTabs({
@@ -93,6 +94,7 @@ export function PublicInvoiceSettingsTabs({
   onSaveSettings,
   isSavingSettings,
   settingsSavedMessage,
+  onClose,
 }: PublicInvoiceSettingsTabsProps) {
   const [activeTab, setActiveTab] = useState('section-doc-format');
   const tabScrollRef = useRef<HTMLDivElement>(null);
@@ -165,34 +167,38 @@ export function PublicInvoiceSettingsTabs({
           },
         ]
       : []),
-    {
-      id: 'section-doc-preview',
-      label: 'Invoice Preview',
-      icon: 'visibility',
-      badge: 'A4 View',
-    },
   ];
 
-  // Smooth scroll to section (like profile settings)
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Smooth scroll to section inside the modal container
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
-    if (element) {
-      const offset = 125; // Header + sticky tab bar offset
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = Math.max(0, elementPosition - offset);
+    const container = scrollContainerRef.current;
+    if (element && container) {
+      const containerRect = container.getBoundingClientRect();
+      const elemRect = element.getBoundingClientRect();
+      const relativeTop = elemRect.top - containerRect.top + container.scrollTop;
+      const offset = 12;
 
-      window.scrollTo({
-        top: offsetPosition,
+      container.scrollTo({
+        top: Math.max(0, relativeTop - offset),
         behavior: 'smooth',
       });
+      setActiveTab(id);
+    } else if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setActiveTab(id);
     }
   };
 
-  // Active section spy on scroll (matching profile settings)
+  // Active section spy on scroll within the modal scroll container
   useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
     const handleScroll = () => {
-      const scrollPos = window.scrollY + 145;
+      const scrollPos = container.scrollTop + 50;
       let current = activeTab;
 
       for (const tab of tabs) {
@@ -206,18 +212,13 @@ export function PublicInvoiceSettingsTabs({
         }
       }
 
-      // If user reaches near the bottom of the page, highlight preview
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80) {
-        current = 'section-doc-preview';
-      }
-
       if (current !== activeTab) {
         setActiveTab(current);
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
   }, [activeTab, tabs]);
 
   // Ensure active tab button is scrolled into view in horizontal container
@@ -273,7 +274,7 @@ export function PublicInvoiceSettingsTabs({
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col bg-surface">
       {/* CSS Keyframes for Noticeable Horizontal Scroll Hint Animation */}
       <style jsx>{`
         @keyframes tabsNudgeKeyframe {
@@ -289,12 +290,51 @@ export function PublicInvoiceSettingsTabs({
         }
       `}</style>
 
-      {/* Sticky Tab Navigation Bar (Identical to ProfileNav) */}
+      {/* Top Drag Grabber Pill for Bottom Sheet */}
+      <div className="w-12 h-1.5 rounded-full bg-outline-variant/60 mx-auto mt-3 mb-1 cursor-grab" />
+
+      {/* Modal Top Header Bar */}
+      <div className="px-4 sm:px-6 py-2.5 flex items-center justify-between border-b border-outline-variant/50 flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <MaterialIcon icon="tune" className="text-[20px]" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-sm sm:text-base text-on-surface">Document Settings & Formats</h3>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 capitalize">
+                {documentType}
+              </span>
+            </div>
+            <p className="text-[11px] text-on-surface-variant">Customize format, layout, font sizes, notes and subjects</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {settingsSavedMessage && (
+            <span className="hidden sm:inline-block text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md animate-in fade-in">
+              {settingsSavedMessage}
+            </span>
+          )}
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close settings"
+              className="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
+            >
+              <MaterialIcon icon="close" className="text-[20px]" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Sticky Tab Navigation Bar */}
       <nav 
         aria-label="Document settings navigation"
-        className="sticky top-14 bg-surface/95 backdrop-blur-md border-b border-outline-variant z-30 shadow-xs -mx-4 px-4 sm:mx-0 sm:px-0 mb-6"
+        className="sticky top-0 bg-surface/95 backdrop-blur-md border-b border-outline-variant z-20 shadow-xs px-4 sm:px-6 flex-shrink-0"
       >
-        <div className="max-w-5xl mx-auto relative flex items-center">
+        <div className="relative flex items-center">
           {/* Left Gradient Cue (if scrolled right) */}
           {hasLeftOverflow && (
             <button
@@ -327,13 +367,13 @@ export function PublicInvoiceSettingsTabs({
                     id={`nav-btn-${tab.id}`}
                     type="button"
                     onClick={() => scrollToSection(tab.id)}
-                    className={`flex items-center gap-2 px-4 sm:px-5 py-3.5 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 hover:bg-surface-container transition-all cursor-pointer ${
+                    className={`flex items-center gap-2 px-4 sm:px-5 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 hover:bg-surface-container transition-all cursor-pointer ${
                       isActive
                         ? 'border-primary text-primary bg-surface-container/60 font-bold'
                         : 'border-transparent text-on-surface-variant'
                     }`}
                   >
-                    <MaterialIcon icon={tab.icon} className="text-[19px]" />
+                    <MaterialIcon icon={tab.icon} className="text-[18px]" />
                     <span>{tab.label}</span>
                     {tab.badge && (
                       <span
@@ -370,12 +410,15 @@ export function PublicInvoiceSettingsTabs({
         </div>
       </nav>
 
-      {/* ALL SECTIONS RENDERED SEQUENTIALLY ON THE SCROLLABLE PAGE */}
-      <div className="max-w-5xl mx-auto space-y-6">
+      {/* ALL SECTIONS RENDERED INSIDE MODAL SCROLL CONTAINER */}
+      <div 
+        ref={scrollContainerRef}
+        className="overflow-y-auto max-h-[calc(85vh-150px)] px-4 sm:px-6 py-4 space-y-6"
+      >
         {/* SECTION 1: DOCUMENT FORMAT */}
         <section
           id="section-doc-format"
-          className="scroll-mt-32 bg-surface border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs transition-all"
+          className="scroll-mt-4 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs transition-all"
         >
           <div className="mb-4">
             <div className="flex items-center justify-between mb-1">
@@ -1060,6 +1103,43 @@ export function PublicInvoiceSettingsTabs({
             </div>
           </section>
         )}
+      </div>
+
+      {/* Sticky Bottom Actions Bar */}
+      <div className="px-4 sm:px-6 py-3 border-t border-outline-variant/60 bg-surface/95 backdrop-blur-md flex items-center justify-between gap-3 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          {settingsSavedMessage && (
+            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md">
+              {settingsSavedMessage}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 ml-auto">
+          {isOwner && (
+            <button
+              type="button"
+              onClick={onSaveSettings}
+              disabled={isSavingSettings}
+              className="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-semibold hover:opacity-90 active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-xs"
+            >
+              {isSavingSettings ? (
+                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <MaterialIcon icon="save" className="text-[16px]" />
+              )}
+              <span>{isSavingSettings ? 'Saving...' : 'Save All Settings'}</span>
+            </button>
+          )}
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 border border-outline-variant/50"
+            >
+              Done
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

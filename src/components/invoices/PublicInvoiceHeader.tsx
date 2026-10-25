@@ -8,6 +8,7 @@ interface PublicInvoiceHeaderProps {
   documentType?: DocumentType;
   isOwner?: boolean;
   onPrint?: () => void;
+  onOpenSettings?: () => void;
 }
 
 export function PublicInvoiceHeader({
@@ -15,6 +16,7 @@ export function PublicInvoiceHeader({
   documentType = 'invoice',
   isOwner = false,
   onPrint,
+  onOpenSettings,
 }: PublicInvoiceHeaderProps) {
   const docTitle =
     documentType === 'challan'
@@ -57,13 +59,27 @@ export function PublicInvoiceHeader({
             )}
           </div>
         </div>
-        <button
-          onClick={handleDownload}
-          className="px-4 py-2 bg-primary text-on-primary font-body-sm text-body-sm font-semibold rounded-lg flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-sm cursor-pointer"
-        >
-          <MaterialIcon icon="download" className="text-[18px]" />
-          <span>Download / Print {documentType === 'challan' ? 'Challan' : documentType === 'quotation' ? 'Quotation' : 'Invoice'}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {onOpenSettings && (
+            <button
+              type="button"
+              onClick={onOpenSettings}
+              className="px-3 sm:px-3.5 py-2 bg-surface border border-outline-variant hover:border-primary text-on-surface hover:text-primary font-body-sm text-xs sm:text-sm font-semibold rounded-lg flex items-center gap-1.5 active:scale-95 transition-all shadow-xs cursor-pointer"
+              title="Open Document Settings & Options"
+            >
+              <MaterialIcon icon="tune" className="text-[18px] text-primary" />
+              <span className="hidden sm:inline">Options</span>
+            </button>
+          )}
+
+          <button
+            onClick={handleDownload}
+            className="px-3.5 sm:px-4 py-2 bg-primary text-on-primary font-body-sm text-xs sm:text-sm font-semibold rounded-lg flex items-center gap-1.5 sm:gap-2 hover:opacity-90 active:scale-95 transition-all shadow-sm cursor-pointer whitespace-nowrap"
+          >
+            <MaterialIcon icon="download" className="text-[18px]" />
+            <span>Download / Print <span className="hidden md:inline">{documentType === 'challan' ? 'Challan' : documentType === 'quotation' ? 'Quotation' : 'Invoice'}</span></span>
+          </button>
+        </div>
       </div>
     </header>
   );

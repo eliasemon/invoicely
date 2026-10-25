@@ -53,6 +53,7 @@ export function PublicInvoiceViewer({
   const [overallTextSize, setOverallTextSize] = useState<TextSize>('normal');
   const [currentTemplate, setCurrentTemplate] = useState(invoice.template || templateId || 'sleek-accent');
   const [templateSavedNotification, setTemplateSavedNotification] = useState<string | null>(null);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   // Sync initialDocumentType if prop changes
   useEffect(() => {
@@ -66,6 +67,24 @@ export function PublicInvoiceViewer({
       setQuotationWithPricing(initialQuotationWithPricing);
     }
   }, [initialQuotationWithPricing]);
+
+  // Lock body scroll and handle Escape key when settings modal is open
+  useEffect(() => {
+    if (isSettingsModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setIsSettingsModalOpen(false);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [isSettingsModalOpen]);
 
   const handleTemplateChange = async (newTemplate: string) => {
     setCurrentTemplate(newTemplate);
@@ -310,59 +329,16 @@ export function PublicInvoiceViewer({
         documentType={documentType}
         isOwner={effectiveIsOwner}
         onPrint={handlePrint}
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
       />
 
-      {/* DOCUMENT OPTIONS SECTIONS WITH STICKY TAB NAVIGATION */}
-      <div className="w-full">
-        <PublicInvoiceSettingsTabs
-          documentType={documentType}
-          setDocumentType={setDocumentType}
-          quotationWithPricing={quotationWithPricing}
-          setQuotationWithPricing={setQuotationWithPricing}
-          onToggleQuotationPricing={handleToggleQuotationPricing}
-          invoiceModeEnabled={invoiceModeEnabled}
-          challanModeEnabled={challanModeEnabled}
-          quotationModeEnabled={quotationModeEnabled}
-          onToggleModeAvailability={handleToggleModeAvailability}
-          isUpdatingMode={isSavingSettings}
-          currentTemplate={currentTemplate}
-          onSelectTemplate={handleTemplateChange}
-          templateSavedNotification={templateSavedNotification}
-          textSize={textSize}
-          setTextSize={setTextSize}
-          overallTextSize={overallTextSize}
-          setOverallTextSize={setOverallTextSize}
-          hasGroups={hasGroups}
-          showGroups={showGroups}
-          setShowGroups={setShowGroups}
-          showGroupTotals={showGroupTotals}
-          setShowGroupTotals={setShowGroupTotals}
-          isOwner={effectiveIsOwner}
-          subjectEnabled={subjectEnabled}
-          setSubjectEnabled={setSubjectEnabled}
-          subjectInvoice={subjectInvoice}
-          setSubjectInvoice={setSubjectInvoice}
-          subjectChallan={subjectChallan}
-          setSubjectChallan={setSubjectChallan}
-          subjectQuotation={subjectQuotation}
-          setSubjectQuotation={setSubjectQuotation}
-          noteEnabled={noteEnabled}
-          setNoteEnabled={setNoteEnabled}
-          noteText={noteText}
-          setNoteText={setNoteText}
-          onSaveSettings={handleSaveSettings}
-          isSavingSettings={isSavingSettings}
-          settingsSavedMessage={settingsSavedMessage}
-        />
-      </div>
-
-      {/* SECTION 5: INVOICE PREVIEW CANVAS */}
+      {/* PRIMARY VIEW: INVOICE PREVIEW CANVAS (Clean, not stacked below settings on same scroll) */}
       <section
         id="section-doc-preview"
-        className="scroll-mt-28 w-full flex flex-col items-center pt-8 pb-12 print:p-0"
+        className="w-full flex flex-col items-center pt-3 sm:pt-6 pb-20 print:p-0"
       >
-        {/* Sticky Action Toolbar for Preview (Zoom, Doc Text Resizer, Row Text Resizer, Print) */}
-        <div className="hidden md:flex sticky top-28 z-20 mb-4 items-center gap-2 bg-surface-container shadow-md p-1.5 rounded-xl border border-outline-variant/30 print:hidden flex-wrap justify-center">
+        {/* Sticky Action Toolbar for Preview (Zoom, Doc Text Resizer, Row Text Resizer, Settings & Print) */}
+        <div className="hidden md:flex sticky top-16 z-20 mb-4 items-center gap-2 bg-surface/90 backdrop-blur-md shadow-md p-1.5 rounded-xl border border-outline-variant/50 print:hidden flex-wrap justify-center">
           {/* Zoom Controls */}
           <div className="flex items-center gap-1">
             <button 
@@ -469,6 +445,19 @@ export function PublicInvoiceViewer({
 
           <div className="w-px bg-outline-variant/50 h-5"></div>
 
+          {/* Document Options Modal Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="px-3 h-8 flex items-center gap-1.5 bg-surface-container-high hover:bg-surface-container-highest text-primary rounded-lg text-xs font-semibold transition-all cursor-pointer active:scale-95 border border-primary/25 shadow-xs"
+            title="Open Document Settings & Formats Modal"
+          >
+            <MaterialIcon icon="tune" className="text-[16px]" />
+            <span>Document Options</span>
+          </button>
+
+          <div className="w-px bg-outline-variant/50 h-5"></div>
+
           {/* Print / Download Button */}
           <button
             onClick={handlePrint}
@@ -528,20 +517,11 @@ export function PublicInvoiceViewer({
         </div>
       </section>
 
-      {/* Mobile Floating Bottom Action Bar */}
-      <div className="md:hidden fixed bottom-4 left-3 right-3 z-40 flex items-center justify-between gap-2.5 pointer-events-none print:hidden">
+      {/* Mobile/Desktop Bottom Floating Bar with Options & PDF */}
+      <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-30 print:hidden flex items-center gap-2 pointer-events-none">
         <button
           type="button"
-          onClick={() => {
-            const el = document.getElementById('section-doc-format');
-            if (el) {
-              const offset = 125;
-              const pos = el.getBoundingClientRect().top + window.scrollY - offset;
-              window.scrollTo({ top: Math.max(0, pos), behavior: 'smooth' });
-            } else {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-          }}
+          onClick={() => setIsSettingsModalOpen(true)}
           className="pointer-events-auto flex-1 bg-surface-container-highest/95 backdrop-blur-md text-on-surface border border-outline-variant/60 shadow-xl rounded-2xl px-4 py-3 flex items-center justify-between cursor-pointer active:scale-95 transition-all hover:bg-surface-container-highest"
         >
           <div className="flex items-center gap-2.5">
@@ -560,23 +540,6 @@ export function PublicInvoiceViewer({
 
         <button
           type="button"
-          onClick={() => {
-            const el = document.getElementById('section-doc-preview');
-            if (el) {
-              const offset = 125;
-              const pos = el.getBoundingClientRect().top + window.scrollY - offset;
-              window.scrollTo({ top: Math.max(0, pos), behavior: 'smooth' });
-            }
-          }}
-          className="pointer-events-auto bg-surface-container-highest/95 backdrop-blur-md text-primary border border-outline-variant/60 shadow-xl rounded-2xl px-3.5 py-3 flex items-center gap-1 font-bold text-xs cursor-pointer active:scale-95 transition-all"
-          title="Scroll to Invoice Preview"
-        >
-          <MaterialIcon icon="visibility" className="text-[18px]" />
-          <span>View</span>
-        </button>
-
-        <button
-          type="button"
           onClick={handlePrint}
           className="pointer-events-auto bg-primary text-on-primary shadow-xl rounded-2xl px-4 py-3 flex items-center gap-1.5 font-bold text-xs cursor-pointer active:scale-95 transition-all hover:opacity-90"
           title="Print or Save as PDF"
@@ -585,6 +548,64 @@ export function PublicInvoiceViewer({
           <span>PDF</span>
         </button>
       </div>
+
+      {/* BOTTOM SHEET MODAL POPUP FOR SETTINGS PANEL */}
+      {isSettingsModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Document Settings"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end transition-opacity duration-300 print:hidden"
+          onClick={() => setIsSettingsModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-5xl mx-auto bg-surface border-t border-x border-outline-variant rounded-t-3xl shadow-2xl flex flex-col max-h-[88vh] overflow-hidden animate-in slide-in-from-bottom duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PublicInvoiceSettingsTabs
+              documentType={documentType}
+              setDocumentType={setDocumentType}
+              quotationWithPricing={quotationWithPricing}
+              setQuotationWithPricing={setQuotationWithPricing}
+              onToggleQuotationPricing={handleToggleQuotationPricing}
+              invoiceModeEnabled={invoiceModeEnabled}
+              challanModeEnabled={challanModeEnabled}
+              quotationModeEnabled={quotationModeEnabled}
+              onToggleModeAvailability={handleToggleModeAvailability}
+              isUpdatingMode={isSavingSettings}
+              currentTemplate={currentTemplate}
+              onSelectTemplate={handleTemplateChange}
+              templateSavedNotification={templateSavedNotification}
+              textSize={textSize}
+              setTextSize={setTextSize}
+              overallTextSize={overallTextSize}
+              setOverallTextSize={setOverallTextSize}
+              hasGroups={hasGroups}
+              showGroups={showGroups}
+              setShowGroups={setShowGroups}
+              showGroupTotals={showGroupTotals}
+              setShowGroupTotals={setShowGroupTotals}
+              isOwner={effectiveIsOwner}
+              subjectEnabled={subjectEnabled}
+              setSubjectEnabled={setSubjectEnabled}
+              subjectInvoice={subjectInvoice}
+              setSubjectInvoice={setSubjectInvoice}
+              subjectChallan={subjectChallan}
+              setSubjectChallan={setSubjectChallan}
+              subjectQuotation={subjectQuotation}
+              setSubjectQuotation={setSubjectQuotation}
+              noteEnabled={noteEnabled}
+              setNoteEnabled={setNoteEnabled}
+              noteText={noteText}
+              setNoteText={setNoteText}
+              onSaveSettings={handleSaveSettings}
+              isSavingSettings={isSavingSettings}
+              settingsSavedMessage={settingsSavedMessage}
+              onClose={() => setIsSettingsModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Dedicated Print Container */}
       <div className="hidden print:block w-[210mm] mx-auto bg-white border-none shadow-none m-0 p-0">
