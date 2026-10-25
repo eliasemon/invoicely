@@ -20,6 +20,8 @@ interface InvoiceDisplayOptionsProps {
   setTextSize?: (val: TextSize) => void;
   overallTextSize?: TextSize;
   setOverallTextSize?: (val: TextSize) => void;
+  currencySymbolDisplay?: 'all' | 'selected';
+  setCurrencySymbolDisplay?: (val: 'all' | 'selected') => void;
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
@@ -46,6 +48,8 @@ export function InvoiceDisplayOptions({
   setTextSize,
   overallTextSize = "normal",
   setOverallTextSize,
+  currencySymbolDisplay = "all",
+  setCurrencySymbolDisplay,
   invoiceModeEnabled = true,
   challanModeEnabled = true,
   quotationModeEnabled = true,
@@ -673,6 +677,45 @@ export function InvoiceDisplayOptions({
               </button>
             </div>
           )}
+        </div>
+      )}
+      {/* Currency Symbol on Table Items Option */}
+      {setCurrencySymbolDisplay && (
+        <div className="flex flex-col gap-2.5 bg-surface border border-outline-variant/70 rounded-xl px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm text-sm">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <span className="material-symbols-outlined text-primary text-[20px] flex-shrink-0">
+                attach_money
+              </span>
+              <div className="text-left min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-semibold text-xs sm:text-sm text-on-surface truncate">
+                    Currency Symbol on Items Table
+                  </p>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border transition-all ${
+                    currencySymbolDisplay !== 'selected'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400'
+                      : 'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-400'
+                  }`}>
+                    {currencySymbolDisplay !== 'selected' ? 'Show on all items' : 'Only below sub-total'}
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-on-surface-variant truncate">
+                  Show currency symbol on every row in the item table. Uncheck to show only on summary totals below.
+                </p>
+              </div>
+            </div>
+
+            <label className="relative inline-flex items-center cursor-pointer shrink-0">
+              <input
+                type="checkbox"
+                checked={currencySymbolDisplay !== 'selected'}
+                onChange={(e) => setCurrencySymbolDisplay(e.target.checked ? 'all' : 'selected')}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
         </div>
       )}
     </div>

@@ -112,6 +112,9 @@ export function PublicInvoiceViewer({
   const [quotationModeEnabled, setQuotationModeEnabled] = useState<boolean>(invoice.quotation_mode_enabled ?? true);
   const [noteEnabled, setNoteEnabled] = useState<boolean>(invoice.note_enabled ?? true);
   const [noteText, setNoteText] = useState<string>(invoice.note_text !== undefined && invoice.note_text !== null ? invoice.note_text : DEFAULT_NOTE_TEXT);
+  const [currencySymbolDisplay, setCurrencySymbolDisplay] = useState<'all' | 'selected'>(
+    invoice.currency_symbol_display || profile?.currency_symbol_display || 'all'
+  );
 
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsSavedMessage, setSettingsSavedMessage] = useState<string | null>(null);
@@ -204,6 +207,29 @@ export function PublicInvoiceViewer({
     }
   };
 
+  const handleToggleCurrencySymbolDisplay = async (newDisplay: 'all' | 'selected') => {
+    setCurrencySymbolDisplay(newDisplay);
+    if (!effectiveIsOwner || !invoice?.id) return;
+
+    setIsSavingSettings(true);
+    setSettingsSavedMessage(null);
+    try {
+      await updateInvoiceSettings(invoice.id, {
+        currency_symbol_display: newDisplay,
+      });
+      setSettingsSavedMessage(
+        `Currency symbol display saved: ${newDisplay === 'all' ? 'All items' : 'Only below sub-total'}.`
+      );
+      setTimeout(() => setSettingsSavedMessage(null), 3000);
+    } catch (err: any) {
+      console.error('Failed to save currency symbol display setting:', err);
+      setSettingsSavedMessage('Failed to save currency symbol display setting. Please try again.');
+      setTimeout(() => setSettingsSavedMessage(null), 3500);
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
   const handleSaveSettings = async () => {
     if (!effectiveIsOwner || !invoice?.id) return;
     setIsSavingSettings(true);
@@ -221,6 +247,7 @@ export function PublicInvoiceViewer({
         note_enabled: noteEnabled,
         note_text: noteText || null,
         template: currentTemplate,
+        currency_symbol_display: currencySymbolDisplay,
       });
       setSettingsSavedMessage('Settings saved successfully!');
       setTimeout(() => setSettingsSavedMessage(null), 3000);
@@ -246,6 +273,7 @@ export function PublicInvoiceViewer({
     quotation_with_pricing: quotationWithPricing,
     note_enabled: noteEnabled,
     note_text: noteText || null,
+    currency_symbol_display: currencySymbolDisplay,
   };
   
   const [previewZoom, setPreviewZoom] = useState(0.5);
@@ -585,6 +613,8 @@ export function PublicInvoiceViewer({
               setTextSize={setTextSize}
               overallTextSize={overallTextSize}
               setOverallTextSize={setOverallTextSize}
+              currencySymbolDisplay={currencySymbolDisplay}
+              onToggleCurrencySymbolDisplay={handleToggleCurrencySymbolDisplay}
               hasGroups={hasGroups}
               showGroups={showGroups}
               setShowGroups={setShowGroups}

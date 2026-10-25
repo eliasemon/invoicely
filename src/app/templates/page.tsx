@@ -17,6 +17,7 @@ export default function TemplatesGalleryPage() {
   const [documentType, setDocumentType] = useState<DocumentType>('invoice');
   const [textSize, setTextSize] = useState<TextSize>('normal');
   const [quotationWithPricing, setQuotationWithPricing] = useState<boolean>(true);
+  const [currencySymbolDisplay, setCurrencySymbolDisplay] = useState<'all' | 'selected'>('all');
 
   // Refs and dimensions for scaling
   const previewPaneRef = useRef<HTMLDivElement>(null);
@@ -137,7 +138,7 @@ export default function TemplatesGalleryPage() {
     updated_at: new Date(),
     currency: 'USD',
     currency_symbol: '$',
-    currency_symbol_display: 'all' as const,
+    currency_symbol_display: currencySymbolDisplay,
     signature_url: null,
     signatory_name: mockProfile.signatory_name,
     bank_name: mockProfile.bank_name,
@@ -336,6 +337,8 @@ export default function TemplatesGalleryPage() {
               setDocumentType={setDocumentType}
               textSize={textSize}
               setTextSize={setTextSize}
+              currencySymbolDisplay={currencySymbolDisplay}
+              setCurrencySymbolDisplay={setCurrencySymbolDisplay}
             />
           </div>
 

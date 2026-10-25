@@ -27,6 +27,8 @@ interface PublicInvoiceSettingsTabsProps {
   setTextSize: (size: TextSize) => void;
   overallTextSize: TextSize;
   setOverallTextSize: (size: TextSize) => void;
+  currencySymbolDisplay?: 'all' | 'selected';
+  onToggleCurrencySymbolDisplay?: (display: 'all' | 'selected') => void;
 
   // Groups
   hasGroups: boolean;
@@ -73,6 +75,8 @@ export function PublicInvoiceSettingsTabs({
   setTextSize,
   overallTextSize,
   setOverallTextSize,
+  currencySymbolDisplay = 'all',
+  onToggleCurrencySymbolDisplay,
   hasGroups,
   showGroups,
   setShowGroups,
@@ -941,6 +945,40 @@ export function PublicInvoiceSettingsTabs({
               </div>
             </div>
           )}
+
+          {/* Currency Symbol on Table Items Option */}
+          <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container-low/70 border border-outline-variant/60 rounded-xl p-3.5 shadow-xs">
+            <div className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                <MaterialIcon icon="attach_money" className="text-[18px]" />
+              </span>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-semibold text-xs text-on-surface">Currency Symbol on Table Items</p>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border transition-all ${
+                    currencySymbolDisplay !== 'selected'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400'
+                      : 'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-400'
+                  }`}>
+                    {currencySymbolDisplay !== 'selected' ? 'Show on all items' : 'Only below sub-total'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-on-surface-variant">
+                  Show currency symbol on every row in the item table. Uncheck to show only on summary totals below.
+                </p>
+              </div>
+            </div>
+
+            <label className="relative inline-flex items-center cursor-pointer self-end sm:self-auto shrink-0">
+              <input
+                type="checkbox"
+                checked={currencySymbolDisplay !== 'selected'}
+                onChange={(e) => onToggleCurrencySymbolDisplay?.(e.target.checked ? 'all' : 'selected')}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
         </section>
 
         {/* SECTION 4: NOTES & SUBJECTS (OWNER ONLY) */}

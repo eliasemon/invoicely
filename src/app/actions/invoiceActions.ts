@@ -258,7 +258,7 @@ export async function createInvoice(data: {
           return fallbackCurrency;
         }
       })(),
-      currency_symbol_display: profile?.currency_symbol_display || 'all',
+      currency_symbol_display: profile?.currency_symbol_display || null,
       signature_url: profile?.signature_enabled ? profile.signature_url : null,
       signatory_name: profile?.signature_enabled ? profile.signatory_name : null,
       bank_name: profile?.bank_enabled ? profile.bank_name : null,
@@ -622,7 +622,7 @@ export async function saveDraftInvoice(data: {
           return fallbackCurrency;
         }
       })(),
-      currency_symbol_display: profile?.currency_symbol_display || 'all',
+      currency_symbol_display: (existingInvoice as any)?.currency_symbol_display || profile?.currency_symbol_display || null,
       signature_url: profile?.signature_enabled ? profile.signature_url : null,
       signatory_name: profile?.signature_enabled ? profile.signatory_name : null,
       bank_name: profile?.bank_enabled ? profile.bank_name : null,
