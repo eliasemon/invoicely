@@ -31,7 +31,7 @@ export function HeritageA4Template({
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
   const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
-  const clientLabel = isQuotationDoc ? "QUOTATION FOR" : isChallanDoc ? "DELIVERED TO" : "BILL TO";
+  const clientLabel = isQuotationDoc ? "QUOTATION TO" : isChallanDoc ? "CHALLAN TO" : "BILL TO";
 
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);

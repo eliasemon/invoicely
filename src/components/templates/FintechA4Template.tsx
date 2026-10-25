@@ -31,7 +31,7 @@ export function FintechA4Template({
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
   const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
-  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Client";
+  const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);

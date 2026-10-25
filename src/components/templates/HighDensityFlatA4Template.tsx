@@ -31,7 +31,7 @@ export function HighDensityFlatA4Template({
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
   const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
-  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
+  const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);

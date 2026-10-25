@@ -33,7 +33,7 @@ export function CorporateTemplate({
   const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
   const docNumberLabel = isQuotationDoc ? "Quotation Number:" : isChallanDoc ? "Challan Number:" : "Invoice Number:";
-  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
+  const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);

@@ -25,12 +25,13 @@ export function PristineA4Template({
   isChallan,
   isQuotation,
   documentType,
+  showPricing,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
-  const isPricingHidden = isChallanDoc || isQuotationDoc;
+  const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
-  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Bill To";
+  const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
@@ -113,7 +114,7 @@ export function PristineA4Template({
                   {formatDate(issueDate)}
                 </p>
               </div>
-              {!isPricingHidden ? (
+              {!isPricingHidden && !isQuotationDoc ? (
                 <div>
                   <p className="text-[10px] uppercase font-bold text-[#64748b] tracking-wider mb-1">
                     Due
@@ -196,7 +197,7 @@ export function PristineA4Template({
                                   {runningIdx}
                                 </td>
                                 <td
-                                  className="py-2 px-3 text-[#0f172a]"
+                                  className="py-2 px-3 text-[#0f172a] text-left"
                                   style={{ fontFamily: "Geist, sans-serif" }}
                                 >
                                   {item.name}
@@ -253,7 +254,7 @@ export function PristineA4Template({
                           {idx + 1}
                         </td>
                         <td
-                          className="py-2 px-3 text-[#0f172a]"
+                          className="py-2 px-3 text-[#0f172a] text-left"
                           style={{ fontFamily: "Geist, sans-serif" }}
                         >
                           {item.name}
@@ -309,10 +310,10 @@ export function PristineA4Template({
                 )}
 
                 <div className="flex justify-between py-1.5 border-t border-[#0f172a] mt-1 text-xs font-bold text-[#0f172a] font-mono">
-                  <span>Total</span>
+                  <span>{isQuotationDoc ? "Quotation Total" : "Total"}</span>
                   <span>{formatMoney(total, sym)}</span>
                 </div>
-                {amountPaid > 0 && (
+                {amountPaid > 0 && !isQuotationDoc && (
                   <>
                     <div className="flex justify-between py-1 text-xs text-gray-500 font-medium">
                       <span>Paid</span>
@@ -333,7 +334,7 @@ export function PristineA4Template({
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-200 pt-4 items-start">
             {/* Bank Details - Only in Invoice Mode */}
-            {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+            {!isPricingHidden && !isQuotationDoc && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
               <div className="text-[11px] text-[#475569] space-y-1 font-mono">
                 <p className="font-bold text-[#0f172a] uppercase tracking-wider text-[10px]">Bank Details</p>
                 <p>Bank: {invoice.bank_name || profile?.bank_name}</p>

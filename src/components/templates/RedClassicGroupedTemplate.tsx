@@ -30,7 +30,7 @@ export function RedClassicGroupedTemplate({
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
   const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
-  const clientLabel = isQuotationDoc ? "Quotation To," : isChallanDoc ? "Delivered To," : "To,";
+  const clientLabel = isQuotationDoc ? "Quotation To:" : isChallanDoc ? "Challan To:" : "Bill To:";
   const refLabel = isQuotationDoc ? "Quotation No:" : isChallanDoc ? "Challan No:" : "Ref:";
   const subjectFallback = isQuotationDoc
     ? "Quotation for Items/Services"

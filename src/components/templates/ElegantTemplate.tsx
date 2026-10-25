@@ -33,7 +33,7 @@ export function ElegantTemplate({
   const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
   const docNumberLabel = isQuotationDoc ? "Quotation No." : isChallanDoc ? "Challan No." : "Invoice No.";
-  const clientLabel = isQuotationDoc ? "QUOTATION FOR" : isChallanDoc ? "DELIVERED TO" : "BILL TO";
+  const clientLabel = isQuotationDoc ? "QUOTATION TO" : isChallanDoc ? "CHALLAN TO" : "BILL TO";
 
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);

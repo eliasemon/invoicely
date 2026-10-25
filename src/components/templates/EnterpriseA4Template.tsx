@@ -33,7 +33,7 @@ export function EnterpriseA4Template({
   const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitle = isQuotationDoc ? "Quotation" : isChallanDoc ? "Challan" : "Invoice";
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
-  const clientLabel = isQuotationDoc ? "Quotation For" : isChallanDoc ? "Delivered To" : "Billed To";
+  const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);

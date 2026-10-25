@@ -32,7 +32,7 @@ export function ModernPurpleTemplate({
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
   const isPricingHidden = isChallanDoc || (isQuotationDoc && showPricing === false);
   const docTitleUpper = isQuotationDoc ? "QUOTATION" : isChallanDoc ? "CHALLAN" : "INVOICE";
-  const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Delivered To" : "Billed To";
+  const clientLabel = isQuotationDoc ? "Quotation To" : isChallanDoc ? "Challan To" : "Bill To";
 
   const sym = invoice.currency_symbol || "$";
   const issueDate = getIssueDate(invoice);
