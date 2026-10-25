@@ -10,6 +10,7 @@ interface PublicInvoiceSettingsTabsProps {
   setDocumentType: (type: DocumentType) => void;
   quotationWithPricing: boolean;
   setQuotationWithPricing: (val: boolean) => void;
+  onToggleQuotationPricing?: (enabled: boolean) => void;
   invoiceModeEnabled: boolean;
   challanModeEnabled: boolean;
   quotationModeEnabled: boolean;
@@ -58,6 +59,7 @@ export function PublicInvoiceSettingsTabs({
   setDocumentType,
   quotationWithPricing,
   setQuotationWithPricing,
+  onToggleQuotationPricing,
   invoiceModeEnabled,
   challanModeEnabled,
   quotationModeEnabled,
@@ -662,7 +664,13 @@ export function PublicInvoiceSettingsTabs({
                 </span>
                 <button
                   type="button"
-                  onClick={() => setQuotationWithPricing(!quotationWithPricing)}
+                  onClick={() => {
+                    if (onToggleQuotationPricing) {
+                      onToggleQuotationPricing(!quotationWithPricing);
+                    } else {
+                      setQuotationWithPricing(!quotationWithPricing);
+                    }
+                  }}
                   aria-label="Toggle Quotation Pricing"
                   className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors cursor-pointer ${
                     quotationWithPricing ? 'bg-primary' : 'bg-surface-container-highest'

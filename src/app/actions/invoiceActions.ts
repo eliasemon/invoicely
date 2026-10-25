@@ -117,6 +117,7 @@ export async function createInvoice(data: {
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
+  quotationWithPricing?: boolean;
   noteEnabled?: boolean;
   noteText?: string;
   template?: string;
@@ -275,6 +276,7 @@ export async function createInvoice(data: {
       invoice_mode_enabled: data.invoiceModeEnabled ?? true,
       challan_mode_enabled: data.challanModeEnabled ?? true,
       quotation_mode_enabled: data.quotationModeEnabled ?? true,
+      quotation_with_pricing: data.quotationWithPricing !== undefined ? data.quotationWithPricing : true,
       note_enabled: data.noteEnabled ?? true,
       note_text: data.noteText || null,
       template: data.template || 'sleek-accent',
@@ -304,6 +306,19 @@ export async function createInvoice(data: {
       .single();
     invoice = res.data;
     error = res.error;
+    if (error && (error.code === '42703' || error.message?.includes('quotation_with_pricing'))) {
+      const fallbackPayload = { ...payload };
+      delete fallbackPayload.quotation_with_pricing;
+      const retryRes = await supabaseAdmin
+        .from('invoices')
+        .update(fallbackPayload)
+        .eq('id', data.invoiceId)
+        .in('profile_id', linkedIds)
+        .select()
+        .single();
+      invoice = retryRes.data;
+      error = retryRes.error;
+    }
   } else {
     const res = await supabaseAdmin
       .from('invoices')
@@ -316,6 +331,21 @@ export async function createInvoice(data: {
       .single();
     invoice = res.data;
     error = res.error;
+    if (error && (error.code === '42703' || error.message?.includes('quotation_with_pricing'))) {
+      const fallbackPayload = { ...payload };
+      delete fallbackPayload.quotation_with_pricing;
+      const retryRes = await supabaseAdmin
+        .from('invoices')
+        .insert({
+          profile_id: userId,
+          invoice_number: invoiceNumber,
+          ...fallbackPayload
+        })
+        .select()
+        .single();
+      invoice = retryRes.data;
+      error = retryRes.error;
+    }
   }
 
     if (error) {
@@ -504,6 +534,7 @@ export async function saveDraftInvoice(data: {
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
+  quotationWithPricing?: boolean;
   noteEnabled?: boolean;
   noteText?: string;
   template?: string;
@@ -608,6 +639,7 @@ export async function saveDraftInvoice(data: {
       invoice_mode_enabled: data.invoiceModeEnabled ?? true,
       challan_mode_enabled: data.challanModeEnabled ?? true,
       quotation_mode_enabled: data.quotationModeEnabled ?? true,
+      quotation_with_pricing: data.quotationWithPricing !== undefined ? data.quotationWithPricing : true,
       note_enabled: data.noteEnabled ?? true,
       note_text: data.noteText || null,
       template: data.template || 'sleek-accent',
@@ -643,6 +675,19 @@ export async function saveDraftInvoice(data: {
         .single();
       invoice = res.data;
       error = res.error;
+      if (error && (error.code === '42703' || error.message?.includes('quotation_with_pricing'))) {
+        const fallbackPayload = { ...payload };
+        delete fallbackPayload.quotation_with_pricing;
+        const retryRes = await supabaseAdmin
+          .from('invoices')
+          .update(fallbackPayload)
+          .eq('id', data.invoiceId)
+          .in('profile_id', linkedIds)
+          .select()
+          .single();
+        invoice = retryRes.data;
+        error = retryRes.error;
+      }
     } else {
       const res = await supabaseAdmin
         .from('invoices')
@@ -655,6 +700,21 @@ export async function saveDraftInvoice(data: {
         .single();
       invoice = res.data;
       error = res.error;
+      if (error && (error.code === '42703' || error.message?.includes('quotation_with_pricing'))) {
+        const fallbackPayload = { ...payload };
+        delete fallbackPayload.quotation_with_pricing;
+        const retryRes = await supabaseAdmin
+          .from('invoices')
+          .insert({
+            profile_id: userId,
+            invoice_number: invoiceNumber,
+            ...fallbackPayload
+          })
+          .select()
+          .single();
+        invoice = retryRes.data;
+        error = retryRes.error;
+      }
     }
 
     if (error) {
@@ -851,6 +911,7 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
   invoice_mode_enabled?: boolean;
   challan_mode_enabled?: boolean;
   quotation_mode_enabled?: boolean;
+  quotation_with_pricing?: boolean;
   note_enabled?: boolean;
   note_text?: string | null;
   template?: string;
@@ -886,15 +947,32 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
     throw new Error('At least one document format must remain enabled for public view.');
   }
 
-  const { data, error } = await supabaseAdmin
+  const updatePayload: Record<string, any> = {
+    ...settings,
+    updated_at: new Date().toISOString()
+  };
+
+  let { data, error } = await supabaseAdmin
     .from('invoices')
-    .update({
-      ...settings,
-      updated_at: new Date().toISOString()
-    })
+    .update(updatePayload)
     .eq('id', invoiceId)
     .select()
     .single();
+
+  // If column quotation_with_pricing does not exist yet in DB, retry without it to prevent crash
+  if (error && (error.code === '42703' || error.message?.includes('quotation_with_pricing'))) {
+    console.warn('Column quotation_with_pricing not yet in DB, retrying update without it...');
+    const fallbackPayload = { ...updatePayload };
+    delete fallbackPayload.quotation_with_pricing;
+    const retryRes = await supabaseAdmin
+      .from('invoices')
+      .update(fallbackPayload)
+      .eq('id', invoiceId)
+      .select()
+      .single();
+    data = retryRes.data;
+    error = retryRes.error;
+  }
 
   if (error) {
     console.error('Error updating invoice settings:', error);

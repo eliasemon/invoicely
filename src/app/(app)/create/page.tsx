@@ -41,6 +41,7 @@ function CreateInvoiceForm() {
     invoiceModeEnabled, setInvoiceModeEnabled,
     challanModeEnabled, setChallanModeEnabled,
     quotationModeEnabled, setQuotationModeEnabled,
+    quotationWithPricing, setQuotationWithPricing,
     noteEnabled, setNoteEnabled,
     noteText, setNoteText,
   } = useCreateInvoice();
@@ -82,6 +83,7 @@ function CreateInvoiceForm() {
           if (invoice.invoice_mode_enabled !== undefined) setInvoiceModeEnabled(invoice.invoice_mode_enabled);
           if (invoice.challan_mode_enabled !== undefined) setChallanModeEnabled(invoice.challan_mode_enabled);
           if (invoice.quotation_mode_enabled !== undefined) setQuotationModeEnabled(invoice.quotation_mode_enabled);
+          if (invoice.quotation_with_pricing !== undefined) setQuotationWithPricing(invoice.quotation_with_pricing);
           if (invoice.note_enabled !== undefined) setNoteEnabled(invoice.note_enabled);
           if (invoice.note_text) setNoteText(invoice.note_text);
         } else if (invoice && invoice.status !== 'DRAFT') {
@@ -231,6 +233,7 @@ function CreateInvoiceForm() {
         invoiceModeEnabled,
         challanModeEnabled,
         quotationModeEnabled,
+        quotationWithPricing,
         noteEnabled,
         noteText: noteText || undefined,
         template: selectedTemplate,
@@ -279,6 +282,7 @@ function CreateInvoiceForm() {
         invoiceModeEnabled,
         challanModeEnabled,
         quotationModeEnabled,
+        quotationWithPricing,
         noteEnabled,
         noteText: noteText || undefined,
         template: selectedTemplate,

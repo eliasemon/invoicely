@@ -82,6 +82,7 @@ export interface Invoice {
   invoice_mode_enabled?: boolean;
   challan_mode_enabled?: boolean;
   quotation_mode_enabled?: boolean;
+  quotation_with_pricing?: boolean;
 
   // CamelCase aliases — set by the public invoice mapping layer for template compatibility
   invoiceNumber?: string;

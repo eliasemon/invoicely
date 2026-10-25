@@ -10,6 +10,7 @@ interface InvoiceDownloadSectionProps {
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
+  quotationWithPricing?: boolean;
 }
 
 export function InvoiceDownloadSection({
@@ -17,13 +18,37 @@ export function InvoiceDownloadSection({
   invoiceModeEnabled: initialInvoiceMode = true,
   challanModeEnabled: initialChallanMode = true,
   quotationModeEnabled: initialQuotationMode = true,
+  quotationWithPricing: initialQuotationWithPricing = true,
 }: InvoiceDownloadSectionProps) {
   const [invoiceMode, setInvoiceMode] = useState<boolean>(initialInvoiceMode);
   const [challanMode, setChallanMode] = useState<boolean>(initialChallanMode);
   const [quotationMode, setQuotationMode] = useState<boolean>(initialQuotationMode);
-  const [quotationPricing, setQuotationPricing] = useState<'with_money' | 'without_money'>('with_money');
+  const [quotationPricing, setQuotationPricing] = useState<'with_money' | 'without_money'>(
+    initialQuotationWithPricing ? 'with_money' : 'without_money'
+  );
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleQuotationPricingChange = async (newPricing: 'with_money' | 'without_money') => {
+    setQuotationPricing(newPricing);
+    setIsUpdating(true);
+    setToastMessage(null);
+    try {
+      await updateInvoiceSettings(invoiceId, {
+        quotation_with_pricing: newPricing === 'with_money',
+      });
+      setToastMessage(
+        `Quotation pricing updated to: ${newPricing === 'with_money' ? 'With Money' : 'Without Money'}.`
+      );
+      setTimeout(() => setToastMessage(null), 2500);
+    } catch (err: any) {
+      console.error('Error saving quotation pricing mode:', err);
+      setToastMessage('Failed to save quotation pricing setting.');
+      setTimeout(() => setToastMessage(null), 3000);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const handleToggle = async (mode: 'invoice' | 'challan' | 'quotation', newEnabled: boolean) => {
     const nextInvoice = mode === 'invoice' ? newEnabled : invoiceMode;
@@ -168,7 +193,8 @@ export function InvoiceDownloadSection({
             <div className="flex items-center gap-1 bg-white/10 p-0.5 rounded text-[10px] font-medium">
               <button
                 type="button"
-                onClick={() => setQuotationPricing('with_money')}
+                onClick={() => handleQuotationPricingChange('with_money')}
+                disabled={isUpdating}
                 className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
                   quotationPricing === 'with_money'
                     ? 'bg-primary text-white font-bold shadow-xs'
@@ -179,7 +205,8 @@ export function InvoiceDownloadSection({
               </button>
               <button
                 type="button"
-                onClick={() => setQuotationPricing('without_money')}
+                onClick={() => handleQuotationPricingChange('without_money')}
+                disabled={isUpdating}
                 className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
                   quotationPricing === 'without_money'
                     ? 'bg-primary text-white font-bold shadow-xs'

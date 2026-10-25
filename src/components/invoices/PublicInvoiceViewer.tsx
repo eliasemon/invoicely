@@ -162,6 +162,29 @@ export function PublicInvoiceViewer({
     }
   };
 
+  const handleToggleQuotationPricing = async (newEnabled: boolean) => {
+    setQuotationWithPricing(newEnabled);
+    if (!effectiveIsOwner || !invoice?.id) return;
+
+    setIsSavingSettings(true);
+    setSettingsSavedMessage(null);
+    try {
+      await updateInvoiceSettings(invoice.id, {
+        quotation_with_pricing: newEnabled,
+      });
+      setSettingsSavedMessage(
+        `Quotation pricing mode saved: ${newEnabled ? 'With Money (visible)' : 'Without Money (hidden)'}.`
+      );
+      setTimeout(() => setSettingsSavedMessage(null), 3000);
+    } catch (err: any) {
+      console.error('Failed to save quotation pricing setting:', err);
+      setSettingsSavedMessage('Failed to save quotation pricing setting. Please try again.');
+      setTimeout(() => setSettingsSavedMessage(null), 3500);
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
   const handleSaveSettings = async () => {
     if (!effectiveIsOwner || !invoice?.id) return;
     setIsSavingSettings(true);
@@ -175,6 +198,7 @@ export function PublicInvoiceViewer({
         invoice_mode_enabled: invoiceModeEnabled,
         challan_mode_enabled: challanModeEnabled,
         quotation_mode_enabled: quotationModeEnabled,
+        quotation_with_pricing: quotationWithPricing,
         note_enabled: noteEnabled,
         note_text: noteText || null,
         template: currentTemplate,
@@ -200,6 +224,7 @@ export function PublicInvoiceViewer({
     invoice_mode_enabled: invoiceModeEnabled,
     challan_mode_enabled: challanModeEnabled,
     quotation_mode_enabled: quotationModeEnabled,
+    quotation_with_pricing: quotationWithPricing,
     note_enabled: noteEnabled,
     note_text: noteText || null,
   };
@@ -294,6 +319,7 @@ export function PublicInvoiceViewer({
           setDocumentType={setDocumentType}
           quotationWithPricing={quotationWithPricing}
           setQuotationWithPricing={setQuotationWithPricing}
+          onToggleQuotationPricing={handleToggleQuotationPricing}
           invoiceModeEnabled={invoiceModeEnabled}
           challanModeEnabled={challanModeEnabled}
           quotationModeEnabled={quotationModeEnabled}

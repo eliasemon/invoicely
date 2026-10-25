@@ -17,22 +17,24 @@ export default async function PublicInvoicePage({
   const { id } = await params;
   const sParams = searchParams ? await searchParams : {};
   const rawType = sParams.type?.toLowerCase();
-  const rawPricing = sParams.pricing?.toLowerCase();
-  const rawWithMoney = sParams.with_money?.toLowerCase();
-  const initialQuotationWithPricing =
-    rawPricing === 'without_money' ||
-    rawPricing === 'without-money' ||
-    rawPricing === 'false' ||
-    rawPricing === 'no' ||
-    rawPricing === '0' ||
-    rawWithMoney === 'false' ||
-    rawWithMoney === '0' ||
-    rawWithMoney === 'no'
-      ? false
-      : true;
-  
   const invoice = await getPublicInvoice(id);
   if (!invoice) return notFound();
+
+  const rawPricing = sParams.pricing?.toLowerCase();
+  const rawWithMoney = sParams.with_money?.toLowerCase();
+  const hasExplicitParam = rawPricing !== undefined || rawWithMoney !== undefined;
+  const initialQuotationWithPricing = hasExplicitParam
+    ? (rawPricing === 'without_money' ||
+       rawPricing === 'without-money' ||
+       rawPricing === 'false' ||
+       rawPricing === 'no' ||
+       rawPricing === '0' ||
+       rawWithMoney === 'false' ||
+       rawWithMoney === '0' ||
+       rawWithMoney === 'no'
+         ? false
+         : true)
+    : (invoice.quotation_with_pricing ?? true);
 
   // Ownership check supporting linked accounts
   let currentUserId: string | null | undefined = undefined;
@@ -82,6 +84,7 @@ export default async function PublicInvoicePage({
     status: invoice.status,
     issued_at: invoice.issued_at,
     due_date: invoice.due_date,
+    quotation_with_pricing: invoice.quotation_with_pricing ?? true,
   };
 
   const headersList = await import('next/headers').then(m => m.headers());

@@ -235,6 +235,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                 invoiceModeEnabled={invoice.invoice_mode_enabled ?? true}
                 challanModeEnabled={invoice.challan_mode_enabled ?? true}
                 quotationModeEnabled={invoice.quotation_mode_enabled ?? true}
+                quotationWithPricing={invoice.quotation_with_pricing ?? true}
               />
             </div>
           </section>

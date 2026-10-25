@@ -52,6 +52,8 @@ interface CreateInvoiceContextType {
   setChallanModeEnabled: (enabled: boolean) => void;
   quotationModeEnabled: boolean;
   setQuotationModeEnabled: (enabled: boolean) => void;
+  quotationWithPricing: boolean;
+  setQuotationWithPricing: (enabled: boolean) => void;
   noteEnabled: boolean;
   setNoteEnabled: (enabled: boolean) => void;
   noteText: string;
@@ -89,6 +91,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
   const [invoiceModeEnabled, setInvoiceModeEnabled] = useState(true);
   const [challanModeEnabled, setChallanModeEnabled] = useState(true);
   const [quotationModeEnabled, setQuotationModeEnabled] = useState(true);
+  const [quotationWithPricing, setQuotationWithPricing] = useState(true);
   const [noteEnabled, setNoteEnabled] = useState(true);
   const [noteText, setNoteText] = useState('Thank you for your business. Please make payment within the due date.');
 
@@ -132,6 +135,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     invoiceModeEnabled,
     challanModeEnabled,
     quotationModeEnabled,
+    quotationWithPricing,
     noteEnabled,
     noteText,
     invoiceStatus
@@ -180,6 +184,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
         invoiceModeEnabled: data.invoiceModeEnabled,
         challanModeEnabled: data.challanModeEnabled,
         quotationModeEnabled: data.quotationModeEnabled,
+        quotationWithPricing: data.quotationWithPricing,
         noteEnabled: data.noteEnabled,
         noteText: data.noteText,
         template: data.selectedTemplate,
@@ -225,7 +230,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost, issuedAt, dueDate, subjectEnabled, subjectInvoice, subjectChallan, subjectQuotation, invoiceModeEnabled, challanModeEnabled, quotationModeEnabled, noteEnabled, noteText]);
+  }, [clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost, issuedAt, dueDate, subjectEnabled, subjectInvoice, subjectChallan, subjectQuotation, invoiceModeEnabled, challanModeEnabled, quotationModeEnabled, quotationWithPricing, noteEnabled, noteText]);
 
   return (
     <CreateInvoiceContext.Provider value={{
@@ -253,6 +258,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
       invoiceModeEnabled, setInvoiceModeEnabled,
       challanModeEnabled, setChallanModeEnabled,
       quotationModeEnabled, setQuotationModeEnabled,
+      quotationWithPricing, setQuotationWithPricing,
       noteEnabled, setNoteEnabled,
       noteText, setNoteText,
     }}>
