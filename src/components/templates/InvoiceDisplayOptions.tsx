@@ -679,8 +679,8 @@ export function InvoiceDisplayOptions({
           )}
         </div>
       )}
-      {/* Currency Symbol on Table Items Option */}
-      {setCurrencySymbolDisplay && (
+      {/* Currency Symbol on Table Items Option (Owner Only) */}
+      {isOwner && setCurrencySymbolDisplay && (
         <div className="flex flex-col gap-2.5 bg-surface border border-outline-variant/70 rounded-xl px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm text-sm">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-2.5 sm:gap-3 min-w-0 flex-1">
@@ -692,6 +692,9 @@ export function InvoiceDisplayOptions({
                   <span className="font-semibold text-xs sm:text-sm text-on-surface">
                     Currency Symbol on Items Table
                   </span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400">
+                    Owner Only
+                  </span>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border whitespace-nowrap transition-colors ${
                     currencySymbolDisplay !== 'selected'
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400'
@@ -701,7 +704,7 @@ export function InvoiceDisplayOptions({
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-on-surface-variant leading-relaxed">
-                  Show currency symbol on every row in the item table. Uncheck to show only on summary totals below.
+                  Show currency symbol on every row in the item table. Toggle off to display it only below the table on sub-total, discount, tax, total, and balance due.
                 </p>
               </div>
             </div>

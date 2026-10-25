@@ -946,50 +946,55 @@ export function PublicInvoiceSettingsTabs({
             </div>
           )}
 
-          {/* Currency Symbol on Table Items Option */}
-          <div className="mt-3.5 flex items-start justify-between gap-3 bg-surface-container-low/70 border border-outline-variant/60 rounded-xl p-3.5 shadow-xs">
-            <div className="flex items-start gap-3 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
-                <MaterialIcon icon="attach_money" className="text-[18px]" />
-              </span>
-              <div className="min-w-0 flex-1 space-y-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold text-xs sm:text-sm text-on-surface">Currency Symbol on Table Items</span>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border whitespace-nowrap transition-colors ${
-                    currencySymbolDisplay !== 'selected'
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400'
-                      : 'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-400'
-                  }`}>
-                    {currencySymbolDisplay !== 'selected' ? 'Show on all items' : 'Only below sub-total'}
-                  </span>
+          {/* Currency Symbol on Table Items Option (Owner Only) */}
+          {isOwner && (
+            <div className="mt-3.5 flex items-start justify-between gap-3 bg-surface-container-low/70 border border-outline-variant/60 rounded-xl p-3.5 shadow-xs">
+              <div className="flex items-start gap-3 min-w-0 flex-1">
+                <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                  <MaterialIcon icon="attach_money" className="text-[18px]" />
+                </span>
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-xs sm:text-sm text-on-surface">Currency Symbol on Table Items</span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400">
+                      Owner Only
+                    </span>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border whitespace-nowrap transition-colors ${
+                      currencySymbolDisplay !== 'selected'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400'
+                        : 'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-400'
+                    }`}>
+                      {currencySymbolDisplay !== 'selected' ? 'Show on all items' : 'Only below sub-total'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-on-surface-variant leading-relaxed">
+                    Show currency symbol on every row in the item table. Toggle off to display it only below the table on sub-total, discount, tax, total, and balance due.
+                  </p>
                 </div>
-                <p className="text-[11px] sm:text-xs text-on-surface-variant leading-relaxed">
-                  Show currency symbol on every row in the item table. Uncheck to show only on summary totals below.
-                </p>
+              </div>
+
+              <div className="pt-0.5 shrink-0">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={currencySymbolDisplay !== 'selected'}
+                  onClick={() => onToggleCurrencySymbolDisplay?.(currencySymbolDisplay !== 'selected' ? 'selected' : 'all')}
+                  title={currencySymbolDisplay !== 'selected' ? "Click to show currency symbol only below subtotal" : "Click to show currency symbol on all items"}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 ${
+                    currencySymbolDisplay !== 'selected' ? 'bg-primary' : 'bg-surface-container-high'
+                  }`}
+                >
+                  <span className="sr-only">Toggle currency symbol on table items</span>
+                  <span
+                    aria-hidden="true"
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      currencySymbolDisplay !== 'selected' ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
               </div>
             </div>
-
-            <div className="pt-0.5 shrink-0">
-              <button
-                type="button"
-                role="switch"
-                aria-checked={currencySymbolDisplay !== 'selected'}
-                onClick={() => onToggleCurrencySymbolDisplay?.(currencySymbolDisplay !== 'selected' ? 'selected' : 'all')}
-                title={currencySymbolDisplay !== 'selected' ? "Click to show currency symbol only below subtotal" : "Click to show currency symbol on all items"}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 ${
-                  currencySymbolDisplay !== 'selected' ? 'bg-primary' : 'bg-surface-container-high'
-                }`}
-              >
-                <span className="sr-only">Toggle currency symbol on table items</span>
-                <span
-                  aria-hidden="true"
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                    currencySymbolDisplay !== 'selected' ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
+          )}
         </section>
 
         {/* SECTION 4: NOTES & SUBJECTS (OWNER ONLY) */}
