@@ -78,8 +78,8 @@ export class SupabaseAuthAdapter implements IAuthProvider {
   }
 
   async signInWithGoogle(): Promise<AuthUser> {
-    // Delegate to server action so that APP_BASE_URL can be securely accessed on the server
-    const res = await signInWithGoogleAction();
+    const origin = typeof window !== 'undefined' ? window.location.origin : undefined;
+    const res = await signInWithGoogleAction(origin);
     if (res?.url) {
       window.location.href = res.url;
     }
@@ -92,8 +92,8 @@ export class SupabaseAuthAdapter implements IAuthProvider {
   }
 
   async resetPassword(email: string): Promise<void> {
-    // Delegate to server action
-    await resetPasswordAction(email);
+    const origin = typeof window !== 'undefined' ? window.location.origin : undefined;
+    await resetPasswordAction(email, origin);
   }
 
   async updateProfile(data: { displayName?: string; photoURL?: string }): Promise<void> {
