@@ -16,6 +16,7 @@ import {
   InvoiceSettingsSection,
   SecuritySection
 } from '@/components/profile/ProfileSections';
+import { MessagingIntegrationsSection } from '@/components/integrations/MessagingIntegrationsSection';
 import { getProfile, updateProfile, uploadCompanyLogo, deleteCompanyLogo, uploadSignature } from '@/app/actions/profileActions';
 import { UserProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/hooks/useAuth';
@@ -374,6 +375,7 @@ export default function ProfilePage() {
             <QrCodeSection profile={profile} onChange={handleProfileChange} />
             <InvoiceSettingsSection profile={profile} onChange={handleProfileChange} />
             <SecuritySection />
+            <MessagingIntegrationsSection />
           </div>
         </div>
       </div>

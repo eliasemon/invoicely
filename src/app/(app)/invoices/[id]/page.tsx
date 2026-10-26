@@ -27,12 +27,16 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   let defaultCurrency = 'USD';
   let defaultCurrencySymbol: string | undefined = undefined;
   let canEdit = invoice.status === 'DRAFT';
+  let companyName = invoice.company_name || 'Our Company';
   try {
     const profile = await getProfile();
     if (profile) {
       defaultCurrency = profile.default_currency || 'USD';
       defaultCurrencySymbol = profile.currency_symbol || undefined;
       canEdit = canEdit || (profile.invoice_edit_enabled ?? true);
+      if (profile.company_name) {
+        companyName = profile.company_name;
+      }
     }
   } catch (e) {
     // Ignore error
@@ -232,6 +236,12 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               
               <InvoiceDownloadSection
                 invoiceId={invoice.id}
+                invoiceNumber={invoice.invoice_number}
+                customerName={invoice.client_name || ''}
+                customerPhone={invoice.client_phone || ''}
+                customerEmail={(invoice as any).client_email || ''}
+                customerWhatsapp={(invoice as any).client_whatsapp || ''}
+                companyName={companyName}
                 invoiceModeEnabled={invoice.invoice_mode_enabled ?? true}
                 challanModeEnabled={invoice.challan_mode_enabled ?? true}
                 quotationModeEnabled={invoice.quotation_mode_enabled ?? true}

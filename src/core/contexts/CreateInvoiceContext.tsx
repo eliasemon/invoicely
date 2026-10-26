@@ -20,6 +20,12 @@ interface CreateInvoiceContextType {
   setMobileNumber: (num: string) => void;
   clientAddress: string;
   setClientAddress: (address: string) => void;
+  clientEmail: string;
+  setClientEmail: (email: string) => void;
+  clientWhatsapp: string;
+  setClientWhatsapp: (whatsapp: string) => void;
+  whatsappPreferred: boolean;
+  setWhatsappPreferred: (pref: boolean) => void;
   groups: GroupData[];
   setGroups: (groups: GroupData[]) => void;
   selectedTemplate: string;
@@ -73,6 +79,9 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
   const [clientName, setClientName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [clientAddress, setClientAddress] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+  const [clientWhatsapp, setClientWhatsapp] = useState('');
+  const [whatsappPreferred, setWhatsappPreferred] = useState(false);
   const [groups, setGroups] = useState<GroupData[]>([{
     id: 'g1',
     name: 'New Group',
@@ -117,31 +126,41 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     draftIdRef.current = draftInvoiceId;
   }, [draftInvoiceId]);
 
-  // Keep latest data in ref for queued saves
-  latestDataRef.current = {
-    clientId,
-    clientName,
-    mobileNumber,
-    clientAddress,
-    groups,
-    selectedTemplate,
-    discountType,
-    discountValue,
-    shippingCost,
-    issuedAt,
-    dueDate,
-    subjectEnabled,
-    subjectInvoice,
-    subjectChallan,
-    subjectQuotation,
-    invoiceModeEnabled,
-    challanModeEnabled,
-    quotationModeEnabled,
-    quotationWithPricing,
-    noteEnabled,
-    noteText,
-    invoiceStatus
-  };
+  // Keep latest data in ref for queued saves inside useEffect
+  useEffect(() => {
+    latestDataRef.current = {
+      clientId,
+      clientName,
+      mobileNumber,
+      clientAddress,
+      clientEmail,
+      clientWhatsapp,
+      whatsappPreferred,
+      groups,
+      selectedTemplate,
+      discountType,
+      discountValue,
+      shippingCost,
+      issuedAt,
+      dueDate,
+      subjectEnabled,
+      subjectInvoice,
+      subjectChallan,
+      subjectQuotation,
+      invoiceModeEnabled,
+      challanModeEnabled,
+      quotationModeEnabled,
+      quotationWithPricing,
+      noteEnabled,
+      noteText,
+      invoiceStatus
+    };
+  }, [
+    clientId, clientName, mobileNumber, clientAddress, clientEmail, clientWhatsapp, whatsappPreferred,
+    groups, selectedTemplate, discountType, discountValue, shippingCost, issuedAt, dueDate,
+    subjectEnabled, subjectInvoice, subjectChallan, subjectQuotation, invoiceModeEnabled,
+    challanModeEnabled, quotationModeEnabled, quotationWithPricing, noteEnabled, noteText, invoiceStatus
+  ]);
 
   const triggerSave = async () => {
     if (isSavingRef.current) return;
@@ -173,6 +192,9 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
         clientName: data.clientName,
         clientPhone: data.mobileNumber,
         clientAddress: data.clientAddress,
+        clientEmail: data.clientEmail,
+        clientWhatsapp: data.clientWhatsapp,
+        whatsappPreferred: data.whatsappPreferred,
         groups: data.groups,
         discountType: data.discountType,
         discountValue: data.discountValue,
@@ -232,7 +254,7 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [clientId, clientName, mobileNumber, clientAddress, groups, selectedTemplate, discountType, discountValue, shippingCost, issuedAt, dueDate, subjectEnabled, subjectInvoice, subjectChallan, subjectQuotation, invoiceModeEnabled, challanModeEnabled, quotationModeEnabled, quotationWithPricing, noteEnabled, noteText]);
+  }, [clientId, clientName, mobileNumber, clientAddress, clientEmail, clientWhatsapp, whatsappPreferred, groups, selectedTemplate, discountType, discountValue, shippingCost, issuedAt, dueDate, subjectEnabled, subjectInvoice, subjectChallan, subjectQuotation, invoiceModeEnabled, challanModeEnabled, quotationModeEnabled, quotationWithPricing, noteEnabled, noteText]);
 
   return (
     <CreateInvoiceContext.Provider value={{
@@ -244,6 +266,9 @@ export function CreateInvoiceProvider({ children, initialCurrency, initialCurren
       clientName, setClientName,
       mobileNumber, setMobileNumber,
       clientAddress, setClientAddress,
+      clientEmail, setClientEmail,
+      clientWhatsapp, setClientWhatsapp,
+      whatsappPreferred, setWhatsappPreferred,
       groups, setGroups,
       selectedTemplate, setSelectedTemplate,
       discountType, setDiscountType,

@@ -4,7 +4,15 @@ import { supabaseAdmin, getUserId, getLinkedUserIds } from '@/lib/supabase/admin
 import { GroupData } from '@/components/create/LineItemGroup';
 import { revalidatePath } from 'next/cache';
 
-async function resolveClientId(userId: string, data: { clientId?: string, clientName?: string, clientPhone?: string, clientAddress?: string }) {
+async function resolveClientId(userId: string, data: {
+  clientId?: string;
+  clientName?: string;
+  clientPhone?: string;
+  clientAddress?: string;
+  clientEmail?: string;
+  clientWhatsapp?: string;
+  whatsappPreferred?: boolean;
+}) {
   if (data.clientId) return data.clientId;
   const trimmedName = data.clientName?.trim();
   if (!trimmedName) return null;
@@ -26,7 +34,10 @@ async function resolveClientId(userId: string, data: { clientId?: string, client
         profile_id: userId,
         name: trimmedName,
         phone: data.clientPhone?.trim() || null,
-        address: data.clientAddress?.trim() || null
+        address: data.clientAddress?.trim() || null,
+        email: data.clientEmail?.trim() || null,
+        whatsapp_phone: data.clientWhatsapp?.trim() || null,
+        whatsapp_preferred: Boolean(data.whatsappPreferred),
       })
       .select('id')
       .single();
@@ -103,6 +114,9 @@ export async function createInvoice(data: {
   clientName: string;
   clientPhone: string;
   clientAddress?: string;
+  clientEmail?: string;
+  clientWhatsapp?: string;
+  whatsappPreferred?: boolean;
   groups: GroupData[];
   discountType?: 'amount' | 'percentage';
   discountValue?: number;
@@ -237,6 +251,8 @@ export async function createInvoice(data: {
       client_name: data.clientName,
       client_phone: data.clientPhone,
       client_address: data.clientAddress || null,
+      client_email: data.clientEmail?.trim() || null,
+      client_whatsapp: data.clientWhatsapp?.trim() || null,
       status: newStatus,
       total_amount: totalAmount,
       line_items_snapshot: data.groups,
@@ -497,7 +513,7 @@ export async function searchClients(query: string) {
 
     const { data, error } = await supabaseAdmin
       .from('clients')
-      .select('id, name, phone, address')
+      .select('id, name, phone, address, email, whatsapp_phone, whatsapp_preferred')
       .eq('profile_id', userId)
       .ilike('name', `%${query}%`)
       .order('name', { ascending: true })
@@ -521,6 +537,9 @@ export async function saveDraftInvoice(data: {
   clientName?: string;
   clientPhone?: string;
   clientAddress?: string;
+  clientEmail?: string;
+  clientWhatsapp?: string;
+  whatsappPreferred?: boolean;
   groups: GroupData[];
   discountType?: 'amount' | 'percentage';
   discountValue?: number;
@@ -570,7 +589,10 @@ export async function saveDraftInvoice(data: {
       clientId: data.clientId,
       clientName: resolvedClientName,
       clientPhone: resolvedClientPhone,
-      clientAddress: data.clientAddress
+      clientAddress: data.clientAddress,
+      clientEmail: data.clientEmail,
+      clientWhatsapp: data.clientWhatsapp,
+      whatsappPreferred: data.whatsappPreferred,
     });
 
     let existingInvoice = null;
@@ -604,6 +626,8 @@ export async function saveDraftInvoice(data: {
       client_name: resolvedClientName,
       client_phone: resolvedClientPhone,
       client_address: data.clientAddress || null,
+      client_email: data.clientEmail?.trim() || null,
+      client_whatsapp: data.clientWhatsapp?.trim() || null,
       status: newStatus,
       total_amount: totalAmount,
       line_items_snapshot: data.groups || [],

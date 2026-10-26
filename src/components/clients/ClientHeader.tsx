@@ -12,6 +12,9 @@ interface ClientHeaderProps {
   name: string;
   phone: string;
   address: string;
+  email?: string;
+  whatsappPhone?: string;
+  whatsappPreferred?: boolean;
   invoiceCount: number;
   currencies: Record<string, CurrencySummary>;
 }
@@ -21,6 +24,9 @@ export function ClientHeader({
   name,
   phone,
   address,
+  email,
+  whatsappPhone,
+  whatsappPreferred,
   invoiceCount,
   currencies
 }: Readonly<ClientHeaderProps>) {
@@ -82,6 +88,31 @@ export function ClientHeader({
               </div>
             ) : (
               <div className="text-on-surface-variant font-body-md italic">No phone number recorded.</div>
+            )}
+
+            {(whatsappPhone || whatsappPreferred) && (
+              <div className="flex items-center gap-3 text-on-surface-variant">
+                <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <MaterialIcon icon="chat" className="text-[16px]" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-body-lg text-body-lg">{whatsappPhone || phone}</span>
+                  {whatsappPreferred && (
+                    <span className="text-[10px] bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      WhatsApp Preferred
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {email && (
+              <div className="flex items-center gap-3 text-on-surface-variant">
+                <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+                  <MaterialIcon icon="mail" className="text-[16px]" />
+                </div>
+                <span className="font-body-lg text-body-lg">{email}</span>
+              </div>
             )}
             
             {address ? (
@@ -167,6 +198,9 @@ export function ClientHeader({
           name={name}
           phone={phone}
           address={address}
+          email={email}
+          whatsappPhone={whatsappPhone}
+          whatsappPreferred={whatsappPreferred}
           onClose={() => setIsEditing(false)}
         />
       )}

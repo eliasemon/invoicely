@@ -85,11 +85,16 @@ export interface Invoice {
   quotation_mode_enabled?: boolean;
   quotation_with_pricing?: boolean;
 
+  client_email?: string | null;
+  client_whatsapp?: string | null;
+
   // CamelCase aliases — set by the public invoice mapping layer for template compatibility
   invoiceNumber?: string;
   clientName?: string;
   clientPhone?: string;
   clientAddress?: string | null;
+  clientEmail?: string | null;
+  clientWhatsapp?: string | null;
   amount?: number;
   amountPaid?: number;
   groups?: InvoiceGroup[];
@@ -104,8 +109,47 @@ export interface Client {
   email: string | null;
   phone: string | null;
   address: string | null;
+  whatsapp_phone?: string | null;
+  whatsapp_preferred?: boolean;
   created_at: Date | string;
   updated_at: Date | string;
+}
+
+export type MessagingProvider = 'WHATSAPP' | 'GMAIL';
+export type ConnectionStatus = 'CONNECTED' | 'DISCONNECTED' | 'CONNECTING' | 'EXPIRED' | 'FAILED';
+
+export interface ConnectedAccount {
+  id: string;
+  profile_id: string;
+  provider: MessagingProvider;
+  account_identifier: string;
+  encrypted_credentials?: string | null;
+  connection_status: ConnectionStatus;
+  connected_at?: string | Date | null;
+  disconnected_at?: string | Date | null;
+  created_at: string | Date;
+  updated_at: string | Date;
+}
+
+export type DeliveryStatus = 'PENDING' | 'SENDING' | 'SENT' | 'FAILED' | 'UNKNOWN';
+export type DeliveryChannel = 'whatsapp' | 'email';
+export type DocumentDeliveryType = 'invoice' | 'challan' | 'quotation';
+
+export interface DocumentDeliveryHistory {
+  id: string;
+  profile_id: string;
+  document_id: string;
+  document_type: DocumentDeliveryType;
+  channel: DeliveryChannel;
+  recipient: string;
+  sender_account_id?: string | null;
+  status: DeliveryStatus;
+  provider_message_id?: string | null;
+  error_code?: string | null;
+  error_message?: string | null;
+  idempotency_key?: string | null;
+  sent_at?: string | Date | null;
+  created_at: string | Date;
 }
 
 export interface UserProfile {

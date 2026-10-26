@@ -24,9 +24,12 @@ function CreateInvoiceForm() {
     clientId, setClientId,
     clientName, setClientName,
     mobileNumber, setMobileNumber,
+    clientAddress, setClientAddress,
+    clientEmail, setClientEmail,
+    clientWhatsapp, setClientWhatsapp,
+    whatsappPreferred, setWhatsappPreferred,
     groups, setGroups,
     currency, currencySymbol,
-    clientAddress, setClientAddress,
     selectedTemplate, setSelectedTemplate,
     discountType, setDiscountType,
     discountValue, setDiscountValue,
@@ -68,6 +71,8 @@ function CreateInvoiceForm() {
           setClientName(invoice.client_name || '');
           setMobileNumber(invoice.client_phone || '');
           setClientAddress(invoice.client_address || '');
+          if (invoice.client_email) setClientEmail(invoice.client_email);
+          if (invoice.client_whatsapp) setClientWhatsapp(invoice.client_whatsapp);
           setGroups((invoice.line_items_snapshot as any) || []);
           if (invoice.template) setSelectedTemplate(invoice.template);
           if (invoice.discount_type) setDiscountType(invoice.discount_type as 'amount' | 'percentage');
@@ -220,6 +225,9 @@ function CreateInvoiceForm() {
         clientName,
         clientPhone: mobileNumber,
         clientAddress,
+        clientEmail,
+        clientWhatsapp,
+        whatsappPreferred,
         groups,
         discountType,
         discountValue,
@@ -269,6 +277,9 @@ function CreateInvoiceForm() {
         clientName,
         clientPhone: mobileNumber,
         clientAddress,
+        clientEmail,
+        clientWhatsapp,
+        whatsappPreferred,
         groups,
         discountType,
         discountValue,
@@ -374,14 +385,20 @@ function CreateInvoiceForm() {
       <div className={`${currentStep === 1 ? 'block' : 'hidden md:block'} space-y-lg`}>
         <CustomerDetails 
           clientId={clientId}
-        setClientId={setClientId}
-        clientName={clientName} 
-        setClientName={setClientName} 
-        mobileNumber={mobileNumber} 
-        setMobileNumber={setMobileNumber}
-        clientAddress={clientAddress}
-        setClientAddress={setClientAddress}
-      />
+          setClientId={setClientId}
+          clientName={clientName} 
+          setClientName={setClientName} 
+          mobileNumber={mobileNumber} 
+          setMobileNumber={setMobileNumber}
+          clientAddress={clientAddress}
+          setClientAddress={setClientAddress}
+          clientEmail={clientEmail}
+          setClientEmail={setClientEmail}
+          clientWhatsapp={clientWhatsapp}
+          setClientWhatsapp={setClientWhatsapp}
+          whatsappPreferred={whatsappPreferred}
+          setWhatsappPreferred={setWhatsappPreferred}
+        />
 
         <InvoiceDates />
 

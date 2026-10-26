@@ -4,9 +4,17 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { updateInvoiceSettings } from '@/app/actions/invoiceActions';
+import { SendDocumentDialog } from '@/components/integrations/SendDocumentDialog';
+import { DocumentType } from '@/services/delivery/types';
 
 interface InvoiceDownloadSectionProps {
   invoiceId: string;
+  invoiceNumber?: string;
+  customerName?: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  customerWhatsapp?: string;
+  companyName?: string;
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
@@ -15,6 +23,12 @@ interface InvoiceDownloadSectionProps {
 
 export function InvoiceDownloadSection({
   invoiceId,
+  invoiceNumber = '',
+  customerName = '',
+  customerPhone = '',
+  customerEmail = '',
+  customerWhatsapp = '',
+  companyName = '',
   invoiceModeEnabled: initialInvoiceMode = true,
   challanModeEnabled: initialChallanMode = true,
   quotationModeEnabled: initialQuotationMode = true,
@@ -28,6 +42,15 @@ export function InvoiceDownloadSection({
   );
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Send Document Dialog state
+  const [sendDialogOpen, setSendDialogOpen] = useState<boolean>(false);
+  const [selectedDocType, setSelectedDocType] = useState<DocumentType>('invoice');
+
+  const handleOpenSendDialog = (docType: DocumentType) => {
+    setSelectedDocType(docType);
+    setSendDialogOpen(true);
+  };
 
   const handleQuotationPricingChange = async (newPricing: 'with_money' | 'without_money') => {
     setQuotationPricing(newPricing);
@@ -92,6 +115,16 @@ export function InvoiceDownloadSection({
 
   return (
     <div className="mt-4 flex flex-col gap-2.5 relative z-10">
+      {/* Primary Send Button */}
+      <button
+        type="button"
+        onClick={() => handleOpenSendDialog('invoice')}
+        className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 rounded-lg transition-all active:scale-98 font-label-md font-bold shadow-md"
+      >
+        <MaterialIcon icon="send" className="text-[18px]" />
+        <span>Send via WhatsApp / Gmail</span>
+      </button>
+
       {/* Primary: Commercial Invoice Button */}
       <div className="flex items-center gap-2">
         <Link
@@ -138,6 +171,14 @@ export function InvoiceDownloadSection({
           </Link>
           <button
             type="button"
+            onClick={() => handleOpenSendDialog('challan')}
+            title="Send Delivery Challan"
+            className="p-1.5 rounded text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <MaterialIcon icon="send" className="text-[16px]" />
+          </button>
+          <button
+            type="button"
             onClick={() => handleToggle('challan', !challanMode)}
             disabled={isUpdating}
             title={challanMode ? 'Challan public view is ON. Click to disable.' : 'Challan public view is OFF. Click to enable.'}
@@ -168,6 +209,14 @@ export function InvoiceDownloadSection({
               </span>
               <MaterialIcon icon="open_in_new" className="text-[12px] opacity-60 ml-auto shrink-0" />
             </Link>
+            <button
+              type="button"
+              onClick={() => handleOpenSendDialog('quotation')}
+              title="Send Quotation"
+              className="p-1.5 rounded text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <MaterialIcon icon="send" className="text-[16px]" />
+            </button>
             <button
               type="button"
               onClick={() => handleToggle('quotation', !quotationMode)}
@@ -225,6 +274,21 @@ export function InvoiceDownloadSection({
           {toastMessage}
         </div>
       )}
+
+      {/* Send Document Dialog */}
+      <SendDocumentDialog
+        isOpen={sendDialogOpen}
+        onClose={() => setSendDialogOpen(false)}
+        invoiceId={invoiceId}
+        invoiceNumber={invoiceNumber}
+        customerName={customerName}
+        customerPhone={customerPhone}
+        customerEmail={customerEmail}
+        customerWhatsapp={customerWhatsapp}
+        companyName={companyName}
+        initialDocumentType={selectedDocType}
+        initialQuotationWithPricing={quotationPricing === 'with_money'}
+      />
     </div>
   );
 }

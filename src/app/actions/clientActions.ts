@@ -13,8 +13,11 @@ export interface CurrencySummary {
 export interface ClientSummary {
   id: string;
   name: string;
+  email?: string;
   phone: string;
   address: string;
+  whatsappPhone?: string;
+  whatsappPreferred?: boolean;
   invoiceCount: number;
   currencies: Record<string, CurrencySummary>;
 }
@@ -52,8 +55,11 @@ export async function getClients(): Promise<ClientSummary[]> {
       clientMap.set(c.id, {
         id: c.id,
         name: c.name,
+        email: c.email || undefined,
         phone: c.phone || '',
         address: c.address || '',
+        whatsappPhone: c.whatsapp_phone || undefined,
+        whatsappPreferred: Boolean(c.whatsapp_preferred),
         invoiceCount: 0,
         currencies: {}
       });
@@ -130,8 +136,11 @@ export async function getClientSummary(clientId: string): Promise<ClientSummary 
     const summary: ClientSummary = {
       id: client.id,
       name: client.name,
+      email: client.email || undefined,
       phone: client.phone || '',
       address: client.address || '',
+      whatsappPhone: client.whatsapp_phone || undefined,
+      whatsappPreferred: Boolean(client.whatsapp_preferred),
       invoiceCount: 0,
       currencies: {}
     };
@@ -171,7 +180,14 @@ export async function getClientSummary(clientId: string): Promise<ClientSummary 
   }
 }
 
-export async function updateClient(id: string, data: { name: string, phone?: string, address?: string, email?: string }) {
+export async function updateClient(id: string, data: {
+  name: string;
+  phone?: string;
+  address?: string;
+  email?: string;
+  whatsappPhone?: string;
+  whatsappPreferred?: boolean;
+}) {
   const userId = await getUserId();
   if (!userId) throw new Error('Not authenticated');
 
@@ -184,6 +200,8 @@ export async function updateClient(id: string, data: { name: string, phone?: str
       phone: data.phone || null,
       address: data.address || null,
       email: data.email || null,
+      whatsapp_phone: data.whatsappPhone || null,
+      whatsapp_preferred: Boolean(data.whatsappPreferred),
       updated_at: new Date().toISOString()
     })
     .eq('id', id)

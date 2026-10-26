@@ -66,6 +66,9 @@ export default async function ClientDetailsPage(
         name={clientSummary.name}
         phone={clientSummary.phone}
         address={clientSummary.address}
+        email={clientSummary.email}
+        whatsappPhone={clientSummary.whatsappPhone}
+        whatsappPreferred={clientSummary.whatsappPreferred}
         invoiceCount={clientSummary.invoiceCount}
         currencies={clientSummary.currencies}
       />

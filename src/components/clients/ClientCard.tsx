@@ -8,6 +8,9 @@ interface ClientCardProps {
   name: string;
   phone?: string | null;
   address?: string | null;
+  email?: string | null;
+  whatsappPhone?: string | null;
+  whatsappPreferred?: boolean;
   invoiceCount?: number;
   currencies?: Record<string, CurrencySummary> | null;
 }
@@ -17,6 +20,9 @@ export function ClientCard({
   name,
   phone = '',
   address = '',
+  email = '',
+  whatsappPhone = '',
+  whatsappPreferred = false,
   invoiceCount = 0,
   currencies = {}
 }: Readonly<ClientCardProps>) {
@@ -44,6 +50,17 @@ export function ClientCard({
               <div className="flex items-center gap-1.5 text-on-surface-variant">
                 <MaterialIcon icon="call" className="text-[16px]" />
                 <span className="font-body-md text-body-md">{safePhone}</span>
+                {whatsappPreferred && (
+                  <span className="text-[10px] bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold px-1.5 py-0.2 rounded border border-emerald-500/20" title="Prefers WhatsApp">
+                    WA
+                  </span>
+                )}
+              </div>
+            )}
+            {email && (
+              <div className="flex items-center gap-1.5 text-on-surface-variant text-xs truncate">
+                <MaterialIcon icon="mail" className="text-[14px]" />
+                <span className="truncate">{email}</span>
               </div>
             )}
           </div>

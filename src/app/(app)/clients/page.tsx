@@ -38,6 +38,9 @@ export default async function ClientsPage() {
             name={client.name}
             phone={client.phone}
             address={client.address}
+            email={client.email}
+            whatsappPhone={client.whatsappPhone}
+            whatsappPreferred={client.whatsappPreferred}
             invoiceCount={client.invoiceCount}
             currencies={client.currencies}
           />
