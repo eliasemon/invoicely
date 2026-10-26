@@ -7,7 +7,7 @@ import { normalizePhoneNumber } from '@/lib/phone';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 
-const SESSIONS_DIR = process.env.WHATSAPP_SESSION_PATH || path.resolve(process.cwd(), '.whatsapp-sessions');
+const SESSIONS_DIR = process.env.WHATSAPP_SESSION_PATH || path.join(/*turbopackIgnore: true*/ process.cwd(), '.whatsapp-sessions');
 
 // Ensure sessions directory exists with safe permissions
 if (!fs.existsSync(SESSIONS_DIR)) {
