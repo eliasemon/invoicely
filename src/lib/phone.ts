@@ -91,3 +91,33 @@ export function isValidEmail(email?: string | null): boolean {
   if (!email || !email.trim()) return false;
   return validateEmail(email).isValid;
 }
+
+/**
+ * Perfectly sanitizes an email address:
+ * - Trims whitespace
+ * - Converts to lowercase
+ * - Returns null if empty or invalid format
+ */
+export function sanitizeEmail(email?: string | null): string | null {
+  if (!email) return null;
+  const trimmed = email.trim().toLowerCase();
+  if (!trimmed) return null;
+  return isValidEmail(trimmed) ? trimmed : null;
+}
+
+/**
+ * Perfectly sanitizes a phone number:
+ * - Trims whitespace
+ * - If valid, returns normalized E.164 (e.g. +8801712345678)
+ * - Returns null if empty string
+ */
+export function sanitizePhone(phone?: string | null, defaultCountry: string = 'BD'): string | null {
+  if (!phone) return null;
+  const trimmed = phone.trim();
+  if (!trimmed) return null;
+  const normalized = normalizePhoneNumber(trimmed, defaultCountry);
+  if (normalized.isValid && normalized.e164) {
+    return normalized.e164;
+  }
+  return trimmed;
+}

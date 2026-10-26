@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
 import { updateInvoiceSettings } from '@/app/actions/invoiceActions';
 import { SendDocumentDialog } from '@/components/integrations/SendDocumentDialog';
-import { DocumentType } from '@/services/delivery/types';
+import { ShareDocumentType } from '@/lib/documentSharing';
 
 interface InvoiceDownloadSectionProps {
   invoiceId: string;
@@ -15,6 +15,17 @@ interface InvoiceDownloadSectionProps {
   customerEmail?: string;
   customerWhatsapp?: string;
   companyName?: string;
+  subtotal?: number;
+  discountAmount?: number;
+  shippingCost?: number;
+  totalAmount?: number;
+  amountPaid?: number;
+  remainingAmount?: number;
+  currency?: string;
+  currencySymbol?: string;
+  status?: string;
+  issueDate?: string;
+  dueDate?: string;
   invoiceModeEnabled?: boolean;
   challanModeEnabled?: boolean;
   quotationModeEnabled?: boolean;
@@ -29,6 +40,17 @@ export function InvoiceDownloadSection({
   customerEmail = '',
   customerWhatsapp = '',
   companyName = '',
+  subtotal = 0,
+  discountAmount = 0,
+  shippingCost = 0,
+  totalAmount = 0,
+  amountPaid = 0,
+  remainingAmount = 0,
+  currency = 'USD',
+  currencySymbol = '$',
+  status = 'UNPAID',
+  issueDate = '',
+  dueDate = '',
   invoiceModeEnabled: initialInvoiceMode = true,
   challanModeEnabled: initialChallanMode = true,
   quotationModeEnabled: initialQuotationMode = true,
@@ -45,9 +67,9 @@ export function InvoiceDownloadSection({
 
   // Send Document Dialog state
   const [sendDialogOpen, setSendDialogOpen] = useState<boolean>(false);
-  const [selectedDocType, setSelectedDocType] = useState<DocumentType>('invoice');
+  const [selectedDocType, setSelectedDocType] = useState<ShareDocumentType>('invoice');
 
-  const handleOpenSendDialog = (docType: DocumentType) => {
+  const handleOpenSendDialog = (docType: ShareDocumentType) => {
     setSelectedDocType(docType);
     setSendDialogOpen(true);
   };
@@ -115,15 +137,28 @@ export function InvoiceDownloadSection({
 
   return (
     <div className="mt-4 flex flex-col gap-2.5 relative z-10">
-      {/* Primary Send Button */}
-      <button
-        type="button"
-        onClick={() => handleOpenSendDialog('invoice')}
-        className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 rounded-lg transition-all active:scale-98 font-label-md font-bold shadow-md"
-      >
-        <MaterialIcon icon="send" className="text-[18px]" />
-        <span>Send via WhatsApp / Gmail</span>
-      </button>
+      {/* Primary Action: Share Document via WhatsApp / Email */}
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={() => handleOpenSendDialog('invoice')}
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-all active:scale-98 font-label-md font-bold shadow-sm"
+          title="Share via WhatsApp"
+        >
+          <MaterialIcon icon="chat" className="text-[18px]" />
+          <span>WhatsApp</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleOpenSendDialog('invoice')}
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-all active:scale-98 font-label-md font-bold shadow-sm"
+          title="Share via Email"
+        >
+          <MaterialIcon icon="mail" className="text-[18px]" />
+          <span>Email</span>
+        </button>
+      </div>
 
       {/* Primary: Commercial Invoice Button */}
       <div className="flex items-center gap-2">
@@ -172,10 +207,10 @@ export function InvoiceDownloadSection({
           <button
             type="button"
             onClick={() => handleOpenSendDialog('challan')}
-            title="Send Delivery Challan"
-            className="p-1.5 rounded text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            title="Share Delivery Challan"
+            className="p-1.5 rounded text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1 text-xs"
           >
-            <MaterialIcon icon="send" className="text-[16px]" />
+            <MaterialIcon icon="share" className="text-[16px]" />
           </button>
           <button
             type="button"
@@ -212,10 +247,10 @@ export function InvoiceDownloadSection({
             <button
               type="button"
               onClick={() => handleOpenSendDialog('quotation')}
-              title="Send Quotation"
-              className="p-1.5 rounded text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              title="Share Quotation"
+              className="p-1.5 rounded text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1 text-xs"
             >
-              <MaterialIcon icon="send" className="text-[16px]" />
+              <MaterialIcon icon="share" className="text-[16px]" />
             </button>
             <button
               type="button"
@@ -275,7 +310,7 @@ export function InvoiceDownloadSection({
         </div>
       )}
 
-      {/* Send Document Dialog */}
+      {/* Share Document Dialog */}
       <SendDocumentDialog
         isOpen={sendDialogOpen}
         onClose={() => setSendDialogOpen(false)}
@@ -286,6 +321,17 @@ export function InvoiceDownloadSection({
         customerEmail={customerEmail}
         customerWhatsapp={customerWhatsapp}
         companyName={companyName}
+        subtotal={subtotal}
+        discountAmount={discountAmount}
+        shippingCost={shippingCost}
+        totalAmount={totalAmount}
+        amountPaid={amountPaid}
+        remainingAmount={remainingAmount}
+        currency={currency}
+        currencySymbol={currencySymbol}
+        status={status}
+        issueDate={issueDate}
+        dueDate={dueDate}
         initialDocumentType={selectedDocType}
         initialQuotationWithPricing={quotationPricing === 'with_money'}
       />

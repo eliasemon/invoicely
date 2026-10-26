@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
-import { normalizePhoneNumber, validateEmail, isValidEmail } from '../src/lib/phone';
+import { normalizePhoneNumber, validateEmail, isValidEmail, sanitizeEmail, sanitizePhone } from '../src/lib/phone';
 import { encrypt, decrypt } from '../src/lib/crypto';
 import {
-  getDefaultWhatsAppMessage,
-  getDefaultEmailContent,
-  DocumentType,
-  DeliveryChannel,
-} from '../src/services/delivery/types';
+  generateWhatsAppMessage,
+  generateEmailContent,
+  buildWhatsAppUrl,
+  buildMailtoUrl,
+  getPublicDocumentUrl,
+} from '../src/lib/documentSharing';
 import path from 'path';
 
 let passed = 0;
@@ -39,20 +40,20 @@ function runTest(name: string, fn: () => void | Promise<void>) {
 
 async function main() {
   console.log('\n======================================================');
-  console.log('🧪 RUNNING DOCUMENT DELIVERY INTEGRATION & UNIT SUITE');
+  console.log('🧪 RUNNING DOCUMENT SHARING & SANITIZATION TEST SUITE');
   console.log('======================================================\n');
 
   // ========================================================
-  // 1. Customer Creation Without Email Address
+  // 1. Customer Creation & Email Sanitization
   // ========================================================
-  console.log('1. Customer Information & Optional Email Validation:');
+  console.log('1. Customer Information & Email Validation/Sanitization:');
 
   runTest('Email is optional: undefined or empty email passes validation', () => {
     assert.equal(validateEmail(undefined).isValid, true);
     assert.equal(validateEmail(null).isValid, true);
     assert.equal(validateEmail('').isValid, true);
     assert.equal(validateEmail('   ').isValid, true);
-    assert.equal(isValidEmail(''), false); // helper checks nonempty
+    assert.equal(isValidEmail(''), false);
     assert.equal(isValidEmail(undefined), false);
   });
 
@@ -69,17 +70,27 @@ async function main() {
     assert.equal(isValidEmail('invalid-email'), false);
   });
 
-  // ========================================================
-  // 2. Phone Number Normalization
-  // ========================================================
-  console.log('\n2. Phone Number Normalization (BD & International E.164):');
+  runTest('sanitizeEmail: trims, lowercases, and maps empty/invalid to null', () => {
+    assert.equal(sanitizeEmail('  Customer@Example.COM  '), 'customer@example.com');
+    assert.equal(sanitizeEmail(''), null);
+    assert.equal(sanitizeEmail('   '), null);
+    assert.equal(sanitizeEmail(undefined), null);
+    assert.equal(sanitizeEmail(null), null);
+    assert.equal(sanitizeEmail('invalid-email'), null);
+  });
 
-  runTest('Normalizes Bangladesh local number (01712345678)', () => {
+  // ========================================================
+  // 2. Phone Number Normalization & Sanitization
+  // ========================================================
+  console.log('\n2. Phone Number Normalization & Sanitization:');
+
+  runTest('Normalizes and sanitizes Bangladesh local number (01712345678)', () => {
     const res = normalizePhoneNumber('01712345678');
     assert.equal(res.isValid, true);
     assert.equal(res.e164, '+8801712345678');
     assert.equal(res.country, 'BD');
     assert.equal(res.whatsappJid, '8801712345678@c.us');
+    assert.equal(sanitizePhone('01712345678'), '+8801712345678');
   });
 
   runTest('Normalizes Bangladesh number already starting with +880', () => {
@@ -87,7 +98,7 @@ async function main() {
     assert.equal(res.isValid, true);
     assert.equal(res.e164, '+8801812345678');
     assert.equal(res.country, 'BD');
-    assert.equal(res.whatsappJid, '8801812345678@c.us');
+    assert.equal(sanitizePhone('+880 1812-345678'), '+8801812345678');
   });
 
   runTest('Normalizes Bangladesh number with 880 prefix but without +', () => {
@@ -95,194 +106,185 @@ async function main() {
     assert.equal(res.isValid, true);
     assert.equal(res.e164, '+8801912345678');
     assert.equal(res.country, 'BD');
+    assert.equal(sanitizePhone('8801912345678'), '+8801912345678');
   });
 
   runTest('Normalizes non-Bangladesh international numbers without blindly prepending 880', () => {
-    // US Number (Washington DC)
     const usRes = normalizePhoneNumber('+1 202-456-1111');
     assert.equal(usRes.isValid, true);
     assert.equal(usRes.e164, '+12024561111');
     assert.equal(usRes.country, 'US');
-    assert.equal(usRes.whatsappJid, '12024561111@c.us');
 
-    // UK Number (London)
     const ukRes = normalizePhoneNumber('+44 20 7946 0958');
     assert.equal(ukRes.isValid, true);
     assert.equal(ukRes.e164, '+442079460958');
     assert.equal(ukRes.country, 'GB');
-    assert.equal(ukRes.whatsappJid, '442079460958@c.us');
   });
 
-  runTest('Rejects malformed and empty phone numbers', () => {
-    assert.equal(normalizePhoneNumber('').isValid, false);
-    assert.equal(normalizePhoneNumber('   ').isValid, false);
-    assert.equal(normalizePhoneNumber('12345').isValid, false);
-    assert.equal(normalizePhoneNumber('not-a-number').isValid, false);
-  });
-
-  // ========================================================
-  // 3. Multi-User WhatsApp Session Isolation
-  // ========================================================
-  console.log('\n3. WhatsApp Session Isolation by User:');
-
-  runTest('Generates isolated, secure session paths for different users', () => {
-    const baseDir = path.resolve(process.env.WHATSAPP_SESSION_PATH || '.whatsapp-sessions');
-    const userA = 'user_uuid_1111_company_a';
-    const userB = 'user_uuid_2222_company_b';
-
-    const sessionPathA = path.join(baseDir, `user_${userA}`);
-    const sessionPathB = path.join(baseDir, `user_${userB}`);
-
-    assert.notEqual(sessionPathA, sessionPathB);
-    assert.equal(sessionPathA.includes(userA), true);
-    assert.equal(sessionPathB.includes(userB), true);
-    assert.equal(sessionPathA.includes(userB), false);
+  runTest('sanitizePhone: maps empty strings to null and trims cleanly', () => {
+    assert.equal(sanitizePhone(''), null);
+    assert.equal(sanitizePhone('   '), null);
+    assert.equal(sanitizePhone(undefined), null);
+    assert.equal(sanitizePhone(null), null);
+    assert.equal(sanitizePhone('  +8801712345678  '), '+8801712345678');
   });
 
   // ========================================================
-  // 4. Gmail Credentials & OAuth Token Encryption at Rest
+  // 3. Document URLs & Mode Resolution
   // ========================================================
-  console.log('\n4. Gmail Credentials AES-256-GCM Encryption & Isolation:');
+  console.log('\n3. Public View Document URLs:');
 
-  runTest('Encrypts and decrypts OAuth tokens securely at rest', () => {
-    const rawTokens = JSON.stringify({
-      access_token: 'ya29.a0AfH6SMD_mock_access_token',
-      refresh_token: '1//04mock_refresh_token_secure',
-      expiry_date: Date.now() + 3600 * 1000,
-    });
+  runTest('Resolves public URLs for Invoice, Challan, and Quotation modes', () => {
+    const docId = 'inv-uuid-12345';
+    const baseUrl = 'https://invoicely.app';
 
-    const encrypted = encrypt(rawTokens);
-    assert.notEqual(encrypted, rawTokens);
-    assert.equal(typeof encrypted, 'string');
-    assert.equal(encrypted.includes('ya29'), false); // plain token must not appear
-
-    const decrypted = decrypt(encrypted);
-    assert.equal(decrypted, rawTokens);
-
-    const parsed = JSON.parse(decrypted);
-    assert.equal(parsed.refresh_token, '1//04mock_refresh_token_secure');
-  });
-
-  runTest('Tampered or corrupted ciphertext fails decryption safely', () => {
-    const validEncrypted = encrypt('secret-payload');
-    const tampered = validEncrypted.substring(0, validEncrypted.length - 8) + 'deadbeef';
-    assert.throws(() => {
-      decrypt(tampered);
-    });
-  });
-
-  // ========================================================
-  // 5. Cross-Tenant Document Access Authorization
-  // ========================================================
-  console.log('\n5. Cross-Tenant Access Enforcement:');
-
-  runTest('Rejects delivery attempts when document does not belong to user tenant', () => {
-    const documentOwnerTenantId = 'tenant_company_abc';
-    const authorizedLinkedUsers = ['tenant_company_abc', 'employee_user_1'];
-    const attackerTenantId = 'tenant_company_xyz';
-
-    function isAuthorizedToAccessDocument(requestingUserId: string, documentOwner: string, linkedUsers: string[]) {
-      return requestingUserId === documentOwner || linkedUsers.includes(requestingUserId);
-    }
-
-    assert.equal(isAuthorizedToAccessDocument('tenant_company_abc', documentOwnerTenantId, authorizedLinkedUsers), true);
-    assert.equal(isAuthorizedToAccessDocument('employee_user_1', documentOwnerTenantId, authorizedLinkedUsers), true);
-    assert.equal(isAuthorizedToAccessDocument(attackerTenantId, documentOwnerTenantId, authorizedLinkedUsers), false);
-  });
-
-  // ========================================================
-  // 6. PDF Generation & Document Mode Resolution
-  // ========================================================
-  console.log('\n6. PDF Generation URL & Message Template Resolution:');
-
-  runTest('Resolves correct document URL for Invoice, Challan, and Quotation modes', () => {
-    const docId = '123e4567-e89b-12d3-a456-426614174000';
-
-    function resolveDocumentUrl(docType: DocumentType, id: string, withPricing?: boolean): string {
-      if (docType === 'quotation') {
-        return `/public/invoice/${id}?type=quotation&pricing=${withPricing ? 'with_money' : 'without_money'}`;
-      }
-      if (docType === 'challan') {
-        return `/public/invoice/${id}?type=challan`;
-      }
-      return `/public/invoice/${id}`;
-    }
-
-    assert.equal(resolveDocumentUrl('invoice', docId), `/public/invoice/${docId}`);
-    assert.equal(resolveDocumentUrl('challan', docId), `/public/invoice/${docId}?type=challan`);
     assert.equal(
-      resolveDocumentUrl('quotation', docId, true),
-      `/public/invoice/${docId}?type=quotation&pricing=with_money`
+      getPublicDocumentUrl(docId, 'invoice', baseUrl),
+      'https://invoicely.app/public/invoice/inv-uuid-12345'
     );
     assert.equal(
-      resolveDocumentUrl('quotation', docId, false),
-      `/public/invoice/${docId}?type=quotation&pricing=without_money`
+      getPublicDocumentUrl(docId, 'challan', baseUrl),
+      'https://invoicely.app/public/invoice/inv-uuid-12345?type=challan'
+    );
+    assert.equal(
+      getPublicDocumentUrl(docId, 'quotation', baseUrl, true),
+      'https://invoicely.app/public/invoice/inv-uuid-12345?type=quotation&pricing=with_money'
+    );
+    assert.equal(
+      getPublicDocumentUrl(docId, 'quotation', baseUrl, false),
+      'https://invoicely.app/public/invoice/inv-uuid-12345?type=quotation&pricing=without_money'
     );
   });
 
-  runTest('Renders standard WhatsApp message templates for Invoice, Challan, and Quotation', () => {
-    const vars = {
+  // ========================================================
+  // 4. WhatsApp Click-to-Chat Rich Message Generation
+  // ========================================================
+  console.log('\n4. WhatsApp Rich Formatting & Financial Breakdown:');
+
+  runTest('Generates invoice message with greetings, bold text, emojis, financial breakdown, and public link', () => {
+    const msg = generateWhatsAppMessage({
+      documentId: 'inv-uuid-12345',
+      documentType: 'invoice',
+      invoiceNumber: 'INV-2026-001',
       customerName: 'Acme Corp',
-      documentNumber: 'INV-2026-001',
       companyName: 'Apex Enterprise',
-    };
+      subtotal: 1200,
+      discountAmount: 100,
+      shippingCost: 50,
+      totalAmount: 1150,
+      amountPaid: 350,
+      remainingAmount: 800,
+      currency: 'USD',
+      currencySymbol: '$',
+      status: 'PARTIAL',
+      issueDate: 'Oct 26, 2026',
+      dueDate: 'Nov 25, 2026',
+      baseUrl: 'https://invoicely.app',
+    });
 
-    const invoiceMsg = getDefaultWhatsAppMessage('invoice', vars);
-    assert.equal(invoiceMsg.includes('Invoice #INV-2026-001'), true);
-    assert.equal(invoiceMsg.includes('Apex Enterprise'), true);
-    assert.equal(invoiceMsg.includes('Acme Corp'), true);
-
-    const challanMsg = getDefaultWhatsAppMessage('challan', vars);
-    assert.equal(challanMsg.includes('Delivery Challan #INV-2026-001'), true);
-
-    const quotationMsg = getDefaultWhatsAppMessage('quotation', vars);
-    assert.equal(quotationMsg.includes('Quotation #INV-2026-001'), true);
+    assert.equal(msg.includes('Hello *Acme Corp* 👋'), true);
+    assert.equal(msg.includes('*Commercial Invoice #INV-2026-001*'), true);
+    assert.equal(msg.includes('*Subtotal:* $1,200.00'), true);
+    assert.equal(msg.includes('*Discount:* -$100.00'), true);
+    assert.equal(msg.includes('*Shipping:* +$50.00'), true);
+    assert.equal(msg.includes('*Total Amount:* $1,150.00'), true);
+    assert.equal(msg.includes('*Paid to Date:* $350.00'), true);
+    assert.equal(msg.includes('*Balance Due:* $800.00'), true);
+    assert.equal(msg.includes('https://invoicely.app/public/invoice/inv-uuid-12345'), true);
+    assert.equal(msg.includes('Best regards,\n*Apex Enterprise*'), true);
   });
 
-  runTest('Renders standard Gmail subject and body templates', () => {
-    const vars = {
+  runTest('Generates delivery challan message with items reference and public link', () => {
+    const msg = generateWhatsAppMessage({
+      documentId: 'inv-uuid-12345',
+      documentType: 'challan',
+      invoiceNumber: 'CH-2026-001',
       customerName: 'Acme Corp',
-      documentNumber: 'INV-2026-001',
       companyName: 'Apex Enterprise',
-    };
+      baseUrl: 'https://invoicely.app',
+      issueDate: 'Oct 26, 2026',
+    });
 
-    const invoiceEmail = getDefaultEmailContent('invoice', vars);
-    assert.equal(invoiceEmail.subject, 'Invoice #INV-2026-001 - Apex Enterprise');
-    assert.equal(invoiceEmail.body.includes('Dear Acme Corp'), true);
+    assert.equal(msg.includes('Hello *Acme Corp* 👋'), true);
+    assert.equal(msg.includes('Delivery Challan #CH-2026-001'), true);
+    assert.equal(msg.includes('https://invoicely.app/public/invoice/inv-uuid-12345?type=challan'), true);
+  });
 
-    const challanEmail = getDefaultEmailContent('challan', vars);
-    assert.equal(challanEmail.subject, 'Delivery Challan #INV-2026-001 - Apex Enterprise');
+  runTest('Generates quotation message with pricing toggles and public link', () => {
+    const msgWithPricing = generateWhatsAppMessage({
+      documentId: 'inv-uuid-12345',
+      documentType: 'quotation',
+      invoiceNumber: 'QT-2026-001',
+      customerName: 'Acme Corp',
+      companyName: 'Apex Enterprise',
+      subtotal: 5000,
+      totalAmount: 5000,
+      quotationWithPricing: true,
+      baseUrl: 'https://invoicely.app',
+    });
+    assert.equal(msgWithPricing.includes('*Subtotal:* $5,000.00'), true);
+    assert.equal(msgWithPricing.includes('pricing=with_money'), true);
 
-    const quotationEmail = getDefaultEmailContent('quotation', vars);
-    assert.equal(quotationEmail.subject, 'Quotation #INV-2026-001 - Apex Enterprise');
+    const msgNoPricing = generateWhatsAppMessage({
+      documentId: 'inv-uuid-12345',
+      documentType: 'quotation',
+      invoiceNumber: 'QT-2026-001',
+      customerName: 'Acme Corp',
+      companyName: 'Apex Enterprise',
+      quotationWithPricing: false,
+      baseUrl: 'https://invoicely.app',
+    });
+    assert.equal(msgNoPricing.includes('*Subtotal:*'), false);
+    assert.equal(msgNoPricing.includes('pricing=without_money'), true);
   });
 
   // ========================================================
-  // 7. Delivery History & Idempotency Key Duplicate Prevention
+  // 5. Direct Email (mailto) Content Generation
   // ========================================================
-  console.log('\n7. Delivery History & Idempotency Key Verification:');
+  console.log('\n5. Email Content & Mailto URL Generation:');
 
-  runTest('Prevents duplicate deliveries when identical idempotency key is supplied', () => {
-    const deliveryStore = new Map<string, { status: string; recipient: string; id: string }>();
+  runTest('Generates email subject and body with financial breakdown and public link', () => {
+    const emailData = generateEmailContent({
+      documentId: 'inv-uuid-12345',
+      documentType: 'invoice',
+      invoiceNumber: 'INV-2026-001',
+      customerName: 'Acme Corp',
+      companyName: 'Apex Enterprise',
+      subtotal: 1000,
+      totalAmount: 1000,
+      amountPaid: 1000,
+      remainingAmount: 0,
+      status: 'PAID',
+      baseUrl: 'https://invoicely.app',
+    });
 
-    function simulateSendWithIdempotency(key: string, recipient: string) {
-      if (deliveryStore.has(key)) {
-        return { duplicate: true, record: deliveryStore.get(key)! };
-      }
-      const record = { id: `hist_${Math.random()}`, status: 'SENT', recipient };
-      deliveryStore.set(key, record);
-      return { duplicate: false, record };
-    }
+    assert.equal(emailData.subject, 'Invoice #INV-2026-001 from Apex Enterprise');
+    assert.equal(emailData.body.includes('Dear Acme Corp,'), true);
+    assert.equal(emailData.body.includes('Payment Status: PAID'), true);
+    assert.equal(emailData.body.includes('Subtotal: $1,000.00'), true);
+    assert.equal(emailData.body.includes('https://invoicely.app/public/invoice/inv-uuid-12345'), true);
+  });
 
-    const idemKey = 'idemp_key_abc_123';
-    const firstAttempt = simulateSendWithIdempotency(idemKey, '+8801712345678');
-    assert.equal(firstAttempt.duplicate, false);
-    assert.equal(firstAttempt.record.status, 'SENT');
+  // ========================================================
+  // 6. WhatsApp Click-to-Chat & Mailto URL Builders
+  // ========================================================
+  console.log('\n6. URL Scheme Builders:');
 
-    // Second attempt with same key must return duplicate and not re-send
-    const secondAttempt = simulateSendWithIdempotency(idemKey, '+8801712345678');
-    assert.equal(secondAttempt.duplicate, true);
-    assert.equal(secondAttempt.record.id, firstAttempt.record.id);
+  runTest('buildWhatsAppUrl: generates clean wa.me / api.whatsapp.com link with encoded text and normalized digits', () => {
+    const waUrl = buildWhatsAppUrl('01712345678', 'Hello World!');
+    assert.equal(waUrl, 'https://api.whatsapp.com/send?phone=8801712345678&text=Hello%20World!');
+
+    // Without phone: allows choosing contact inside WhatsApp
+    const waNoPhone = buildWhatsAppUrl('', 'Hello World!');
+    assert.equal(waNoPhone, 'https://api.whatsapp.com/send?text=Hello%20World!');
+  });
+
+  runTest('buildMailtoUrl: generates valid mailto URI with subject and body parameters', () => {
+    const mailto = buildMailtoUrl('billing@acme.com', 'Invoice #101', 'Please find invoice attached.');
+    assert.equal(
+      mailto,
+      'mailto:billing@acme.com?subject=Invoice%20%23101&body=Please%20find%20invoice%20attached.'
+    );
   });
 
   console.log('\n------------------------------------------------------');

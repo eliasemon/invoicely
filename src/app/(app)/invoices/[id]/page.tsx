@@ -242,6 +242,17 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                 customerEmail={(invoice as any).client_email || ''}
                 customerWhatsapp={(invoice as any).client_whatsapp || ''}
                 companyName={companyName}
+                subtotal={subtotal}
+                discountAmount={discountAmount}
+                shippingCost={shippingCost}
+                totalAmount={totalAmount}
+                amountPaid={Number(invoice.amount_paid || 0)}
+                remainingAmount={remainingAmount}
+                currency={finalCurrency}
+                currencySymbol={finalCurrencySymbol}
+                status={invoice.status}
+                issueDate={dayjs(invoice.issued_at || invoice.created_at).format('MMM D, YYYY')}
+                dueDate={invoice.due_date ? dayjs(invoice.due_date).format('MMM D, YYYY') : undefined}
                 invoiceModeEnabled={invoice.invoice_mode_enabled ?? true}
                 challanModeEnabled={invoice.challan_mode_enabled ?? true}
                 quotationModeEnabled={invoice.quotation_mode_enabled ?? true}

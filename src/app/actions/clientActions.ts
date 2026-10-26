@@ -1,6 +1,7 @@
 'use server';
 
 import { supabaseAdmin, getUserId, getLinkedUserIds } from '@/lib/supabase/admin';
+import { sanitizeEmail, sanitizePhone } from '@/lib/phone';
 
 export interface CurrencySummary {
   currency: string;
@@ -193,14 +194,20 @@ export async function updateClient(id: string, data: {
 
   const linkedIds = getLinkedUserIds(userId);
 
+  const sanitizedName = data.name.trim();
+  const sanitizedPhone = sanitizePhone(data.phone);
+  const sanitizedAddress = data.address?.trim() || null;
+  const sanitizedEmail = sanitizeEmail(data.email);
+  const sanitizedWhatsapp = sanitizePhone(data.whatsappPhone);
+
   const { error } = await supabaseAdmin
     .from('clients')
     .update({
-      name: data.name,
-      phone: data.phone || null,
-      address: data.address || null,
-      email: data.email || null,
-      whatsapp_phone: data.whatsappPhone || null,
+      name: sanitizedName,
+      phone: sanitizedPhone,
+      address: sanitizedAddress,
+      email: sanitizedEmail,
+      whatsapp_phone: sanitizedWhatsapp,
       whatsapp_preferred: Boolean(data.whatsappPreferred),
       updated_at: new Date().toISOString()
     })

@@ -3,6 +3,7 @@
 import { supabaseAdmin, getUserId, getLinkedUserIds } from '@/lib/supabase/admin';
 import { GroupData } from '@/components/create/LineItemGroup';
 import { revalidatePath } from 'next/cache';
+import { sanitizeEmail, sanitizePhone } from '@/lib/phone';
 
 async function resolveClientId(userId: string, data: {
   clientId?: string;
@@ -28,15 +29,20 @@ async function resolveClientId(userId: string, data: {
       
     if (existing && existing.length > 0) return existing[0].id;
     
+    const sanitizedPhone = sanitizePhone(data.clientPhone);
+    const sanitizedAddress = data.clientAddress?.trim() || null;
+    const sanitizedEmail = sanitizeEmail(data.clientEmail);
+    const sanitizedWhatsapp = sanitizePhone(data.clientWhatsapp);
+
     const { data: newClient } = await supabaseAdmin
       .from('clients')
       .insert({
         profile_id: userId,
         name: trimmedName,
-        phone: data.clientPhone?.trim() || null,
-        address: data.clientAddress?.trim() || null,
-        email: data.clientEmail?.trim() || null,
-        whatsapp_phone: data.clientWhatsapp?.trim() || null,
+        phone: sanitizedPhone,
+        address: sanitizedAddress,
+        email: sanitizedEmail,
+        whatsapp_phone: sanitizedWhatsapp,
         whatsapp_preferred: Boolean(data.whatsappPreferred),
       })
       .select('id')
@@ -248,11 +254,11 @@ export async function createInvoice(data: {
 
   const payload = {
       client_id: resolvedClientId,
-      client_name: data.clientName,
-      client_phone: data.clientPhone,
-      client_address: data.clientAddress || null,
-      client_email: data.clientEmail?.trim() || null,
-      client_whatsapp: data.clientWhatsapp?.trim() || null,
+      client_name: data.clientName?.trim() || '',
+      client_phone: sanitizePhone(data.clientPhone) || data.clientPhone?.trim() || '',
+      client_address: data.clientAddress?.trim() || null,
+      client_email: sanitizeEmail(data.clientEmail),
+      client_whatsapp: sanitizePhone(data.clientWhatsapp),
       status: newStatus,
       total_amount: totalAmount,
       line_items_snapshot: data.groups,
@@ -623,11 +629,11 @@ export async function saveDraftInvoice(data: {
 
     const payload: any = {
       client_id: resolvedClientId,
-      client_name: resolvedClientName,
-      client_phone: resolvedClientPhone,
-      client_address: data.clientAddress || null,
-      client_email: data.clientEmail?.trim() || null,
-      client_whatsapp: data.clientWhatsapp?.trim() || null,
+      client_name: resolvedClientName?.trim() || '',
+      client_phone: sanitizePhone(resolvedClientPhone) || resolvedClientPhone?.trim() || '',
+      client_address: data.clientAddress?.trim() || null,
+      client_email: sanitizeEmail(data.clientEmail),
+      client_whatsapp: sanitizePhone(data.clientWhatsapp),
       status: newStatus,
       total_amount: totalAmount,
       line_items_snapshot: data.groups || [],
