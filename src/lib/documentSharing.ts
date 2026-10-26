@@ -41,15 +41,13 @@ export function getPublicDocumentUrl(
   documentId: string,
   documentType: ShareDocumentType,
   baseUrl = '',
-  quotationWithPricing = true
+  _quotationWithPricing = true
 ): string {
   const host = baseUrl || (typeof window !== 'undefined' ? window.location.origin : '');
   const cleanHost = host.replace(/\/$/, '');
 
   if (documentType === 'quotation') {
-    return `${cleanHost}/public/invoice/${documentId}?type=quotation&pricing=${
-      quotationWithPricing ? 'with_money' : 'without_money'
-    }`;
+    return `${cleanHost}/public/invoice/${documentId}?type=quotation`;
   }
   if (documentType === 'challan') {
     return `${cleanHost}/public/invoice/${documentId}?type=challan`;

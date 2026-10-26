@@ -37,6 +37,9 @@ export interface SendDocumentDialogProps {
   dueDate?: string;
   initialDocumentType?: ShareDocumentType;
   initialQuotationWithPricing?: boolean;
+  invoiceModeEnabled?: boolean;
+  challanModeEnabled?: boolean;
+  quotationModeEnabled?: boolean;
 }
 
 export function SendDocumentDialog({
@@ -62,10 +65,23 @@ export function SendDocumentDialog({
   dueDate = '',
   initialDocumentType = 'invoice',
   initialQuotationWithPricing = true,
+  invoiceModeEnabled = true,
+  challanModeEnabled = true,
+  quotationModeEnabled = true,
 }: SendDocumentDialogProps) {
   const [documentType, setDocumentType] = useState<ShareDocumentType>(initialDocumentType);
   const [quotationWithPricing, setQuotationWithPricing] = useState<boolean>(initialQuotationWithPricing);
   const [activeChannel, setActiveChannel] = useState<'whatsapp' | 'email'>('whatsapp');
+
+  // Check if current document type public view is active
+  const isDocTypePublic = (type: ShareDocumentType) => {
+    if (type === 'invoice') return invoiceModeEnabled;
+    if (type === 'challan') return challanModeEnabled;
+    if (type === 'quotation') return quotationModeEnabled;
+    return true;
+  };
+
+  const isCurrentDocTypeDisabled = !isDocTypePublic(documentType);
 
   // Recipient inputs
   const defaultPhone = customerWhatsapp || customerPhone || '';
@@ -83,13 +99,37 @@ export function SendDocumentDialog({
   // Sync state whenever opened
   useEffect(() => {
     if (isOpen) {
-      setDocumentType(initialDocumentType);
+      let resolvedType = initialDocumentType;
+      const isInitialEnabled =
+        resolvedType === 'invoice'
+          ? invoiceModeEnabled
+          : resolvedType === 'challan'
+          ? challanModeEnabled
+          : quotationModeEnabled;
+
+      if (!isInitialEnabled) {
+        if (invoiceModeEnabled) resolvedType = 'invoice';
+        else if (challanModeEnabled) resolvedType = 'challan';
+        else if (quotationModeEnabled) resolvedType = 'quotation';
+      }
+
+      setDocumentType(resolvedType);
       setQuotationWithPricing(initialQuotationWithPricing);
       setRecipientPhone(customerWhatsapp || customerPhone || '');
       setRecipientEmail(customerEmail || '');
       setCopied(false);
     }
-  }, [isOpen, initialDocumentType, initialQuotationWithPricing, customerWhatsapp, customerPhone, customerEmail]);
+  }, [
+    isOpen,
+    initialDocumentType,
+    initialQuotationWithPricing,
+    customerWhatsapp,
+    customerPhone,
+    customerEmail,
+    invoiceModeEnabled,
+    challanModeEnabled,
+    quotationModeEnabled,
+  ]);
 
   // Regenerate message template when params change
   useEffect(() => {
@@ -236,7 +276,7 @@ export function SendDocumentDialog({
               <button
                 type="button"
                 onClick={() => setDocumentType('invoice')}
-                className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-label-md font-medium transition-all ${
+                className={`relative flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-label-md font-medium transition-all ${
                   documentType === 'invoice'
                     ? 'bg-primary text-on-primary border-primary shadow-sm'
                     : 'bg-surface-container-low border-outline-variant text-on-surface hover:bg-surface-container'
@@ -244,12 +284,17 @@ export function SendDocumentDialog({
               >
                 <MaterialIcon icon="receipt_long" className="text-[18px]" />
                 <span>Invoice</span>
+                {!invoiceModeEnabled && (
+                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                    Off
+                  </span>
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => setDocumentType('challan')}
-                className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-label-md font-medium transition-all ${
+                className={`relative flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-label-md font-medium transition-all ${
                   documentType === 'challan'
                     ? 'bg-primary text-on-primary border-primary shadow-sm'
                     : 'bg-surface-container-low border-outline-variant text-on-surface hover:bg-surface-container'
@@ -257,12 +302,17 @@ export function SendDocumentDialog({
               >
                 <MaterialIcon icon="local_shipping" className="text-[18px]" />
                 <span>Challan</span>
+                {!challanModeEnabled && (
+                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                    Off
+                  </span>
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => setDocumentType('quotation')}
-                className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-label-md font-medium transition-all ${
+                className={`relative flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-label-md font-medium transition-all ${
                   documentType === 'quotation'
                     ? 'bg-primary text-on-primary border-primary shadow-sm'
                     : 'bg-surface-container-low border-outline-variant text-on-surface hover:bg-surface-container'
@@ -270,43 +320,42 @@ export function SendDocumentDialog({
               >
                 <MaterialIcon icon="request_quote" className="text-[18px]" />
                 <span>Quotation</span>
+                {!quotationModeEnabled && (
+                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                    Off
+                  </span>
+                )}
               </button>
             </div>
 
-            {/* Quotation Pricing Option */}
+            {/* Quotation Pricing Display (Determined by owner's invoice setting) */}
             {documentType === 'quotation' && (
               <div className="mt-2.5 p-3 rounded-xl bg-surface-container border border-outline-variant flex items-center justify-between text-body-sm">
                 <span className="text-on-surface font-medium flex items-center gap-1.5">
                   <MaterialIcon icon="payments" className="text-[16px] text-primary" />
                   Quotation Format:
                 </span>
-                <div className="flex gap-1.5 bg-surface-container-low p-1 rounded-lg border border-outline-variant/50">
-                  <button
-                    type="button"
-                    onClick={() => setQuotationWithPricing(true)}
-                    className={`px-2.5 py-1 rounded text-label-sm font-semibold transition-all ${
-                      quotationWithPricing
-                        ? 'bg-primary text-on-primary shadow-xs'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                  >
-                    With Pricing
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setQuotationWithPricing(false)}
-                    className={`px-2.5 py-1 rounded text-label-sm font-semibold transition-all ${
-                      !quotationWithPricing
-                        ? 'bg-primary text-on-primary shadow-xs'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                  >
-                    Without Pricing
-                  </button>
-                </div>
+                <span className="text-label-sm font-semibold px-2.5 py-1 rounded-md bg-surface border border-outline-variant/60 text-primary">
+                  {quotationWithPricing ? 'With Pricing (Amounts Visible)' : 'Without Pricing (Amounts Hidden)'}
+                </span>
               </div>
             )}
           </div>
+
+          {/* Public View Disabled Warning */}
+          {isCurrentDocTypeDisabled && (
+            <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3 text-amber-700 dark:text-amber-300 animate-in fade-in">
+              <MaterialIcon icon="warning" className="text-[20px] text-amber-500 shrink-0 mt-0.5" />
+              <div className="text-body-xs">
+                <p className="font-bold text-label-sm">
+                  Public view is turned off for {documentType === 'challan' ? 'Delivery Challan' : documentType === 'quotation' ? 'Quotation' : 'Commercial Invoice'}
+                </p>
+                <p className="mt-0.5 text-on-surface-variant">
+                  Sending via WhatsApp and Email is deactivated because customers cannot open or download this document while its public view is turned off. Please enable public view in Document Options to activate delivery.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Share Channel Tabs */}
           <div>
@@ -501,7 +550,17 @@ export function SendDocumentDialog({
               <button
                 type="button"
                 onClick={handleSendWhatsApp}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-label-md font-bold shadow-md hover:bg-emerald-500 transition-all active:scale-95"
+                disabled={isCurrentDocTypeDisabled}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-label-md font-bold transition-all ${
+                  isCurrentDocTypeDisabled
+                    ? 'bg-emerald-600/50 cursor-not-allowed opacity-60'
+                    : 'bg-emerald-600 shadow-md hover:bg-emerald-500 active:scale-95 cursor-pointer'
+                }`}
+                title={
+                  isCurrentDocTypeDisabled
+                    ? 'Public view is turned off. Enable public view to send.'
+                    : 'Open in WhatsApp'
+                }
               >
                 <MaterialIcon icon="chat" className="text-[18px]" />
                 <span>Open in WhatsApp</span>
@@ -510,7 +569,17 @@ export function SendDocumentDialog({
               <button
                 type="button"
                 onClick={handleSendEmail}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-label-md font-bold shadow-md hover:bg-blue-500 transition-all active:scale-95"
+                disabled={isCurrentDocTypeDisabled}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-label-md font-bold transition-all ${
+                  isCurrentDocTypeDisabled
+                    ? 'bg-blue-600/50 cursor-not-allowed opacity-60'
+                    : 'bg-blue-600 shadow-md hover:bg-blue-500 active:scale-95 cursor-pointer'
+                }`}
+                title={
+                  isCurrentDocTypeDisabled
+                    ? 'Public view is turned off. Enable public view to send.'
+                    : 'Open Email App'
+                }
               >
                 <MaterialIcon icon="mail" className="text-[18px]" />
                 <span>Open Email App</span>

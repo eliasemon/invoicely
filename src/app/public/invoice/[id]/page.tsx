@@ -20,22 +20,6 @@ export default async function PublicInvoicePage({
   const invoice = await getPublicInvoice(id);
   if (!invoice) return notFound();
 
-  const rawPricing = sParams.pricing?.toLowerCase();
-  const rawWithMoney = sParams.with_money?.toLowerCase();
-  const hasExplicitParam = rawPricing !== undefined || rawWithMoney !== undefined;
-  const initialQuotationWithPricing = hasExplicitParam
-    ? (rawPricing === 'without_money' ||
-       rawPricing === 'without-money' ||
-       rawPricing === 'false' ||
-       rawPricing === 'no' ||
-       rawPricing === '0' ||
-       rawWithMoney === 'false' ||
-       rawWithMoney === '0' ||
-       rawWithMoney === 'no'
-         ? false
-         : true)
-    : (invoice.quotation_with_pricing ?? true);
-
   // Ownership check supporting linked accounts
   let currentUserId: string | null | undefined = undefined;
   try {
@@ -49,10 +33,19 @@ export default async function PublicInvoicePage({
     getLinkedUserIds(currentUserId).includes(invoice.profile_id)
   );
 
+  // Priority: The quotation pricing state chosen by the invoice owner is authoritative.
+  // Neither customer requests nor query parameters can override the owner's decision.
+  const initialQuotationWithPricing = invoice.quotation_with_pricing ?? true;
+
   // Check mode permissions: if public user, fallback to allowed mode
   const invoiceModeEnabled = invoice.invoice_mode_enabled ?? true;
   const challanModeEnabled = invoice.challan_mode_enabled ?? true;
   const quotationModeEnabled = invoice.quotation_mode_enabled ?? true;
+
+  // If public viewer and all public document modes are turned off, deny access
+  if (!isOwner && !invoiceModeEnabled && !challanModeEnabled && !quotationModeEnabled) {
+    return notFound();
+  }
 
   let initialDocumentType: DocumentType;
   if (rawType === 'quotation' && (isOwner || quotationModeEnabled)) {

@@ -300,6 +300,10 @@ export function PublicInvoiceViewer({
     }
   };
 
+  const authoritativeQuotationPricing = effectiveIsOwner
+    ? quotationWithPricing
+    : (invoice.quotation_with_pricing ?? true);
+
   const effectiveInvoice = {
     ...invoice,
     issued_at: issuedAt,
@@ -312,7 +316,7 @@ export function PublicInvoiceViewer({
     invoice_mode_enabled: invoiceModeEnabled,
     challan_mode_enabled: challanModeEnabled,
     quotation_mode_enabled: quotationModeEnabled,
-    quotation_with_pricing: quotationWithPricing,
+    quotation_with_pricing: authoritativeQuotationPricing,
     note_enabled: noteEnabled,
     note_text: noteText || null,
     currency_symbol_display: currencySymbolDisplay,
@@ -614,7 +618,7 @@ export function PublicInvoiceViewer({
                 isChallan={isChallan}
                 isQuotation={isQuotation}
                 documentType={documentType}
-                showPricing={documentType === 'quotation' ? quotationWithPricing : true}
+                showPricing={documentType === 'quotation' ? authoritativeQuotationPricing : true}
                 textSize={textSize}
                 overallTextSize={overallTextSize}
               />
@@ -758,7 +762,10 @@ export function PublicInvoiceViewer({
         issueDate={issuedAt || invoice.issued_at || invoice.created_at || ''}
         dueDate={dueDate || invoice.due_date || ''}
         initialDocumentType={documentType as ShareDocumentType}
-        initialQuotationWithPricing={quotationWithPricing}
+        initialQuotationWithPricing={authoritativeQuotationPricing}
+        invoiceModeEnabled={invoiceModeEnabled}
+        challanModeEnabled={challanModeEnabled}
+        quotationModeEnabled={quotationModeEnabled}
       />
 
       {/* Dedicated Print Container */}
@@ -774,7 +781,7 @@ export function PublicInvoiceViewer({
           isChallan={isChallan}
           isQuotation={isQuotation}
           documentType={documentType}
-          showPricing={documentType === 'quotation' ? quotationWithPricing : true}
+          showPricing={documentType === 'quotation' ? authoritativeQuotationPricing : true}
           textSize={textSize}
           overallTextSize={overallTextSize}
         />

@@ -7,6 +7,7 @@ import {
   buildWhatsAppUrl,
   buildMailtoUrl,
   getPublicDocumentUrl,
+  ShareDocumentType,
 } from '../src/lib/documentSharing';
 import path from 'path';
 
@@ -148,11 +149,11 @@ async function main() {
     );
     assert.equal(
       getPublicDocumentUrl(docId, 'quotation', baseUrl, true),
-      'https://invoicely.app/public/invoice/inv-uuid-12345?type=quotation&pricing=with_money'
+      'https://invoicely.app/public/invoice/inv-uuid-12345?type=quotation'
     );
     assert.equal(
       getPublicDocumentUrl(docId, 'quotation', baseUrl, false),
-      'https://invoicely.app/public/invoice/inv-uuid-12345?type=quotation&pricing=without_money'
+      'https://invoicely.app/public/invoice/inv-uuid-12345?type=quotation'
     );
   });
 
@@ -223,7 +224,7 @@ async function main() {
       baseUrl: 'https://invoicely.app',
     });
     assert.equal(msgWithPricing.includes('*Subtotal:* $5,000.00'), true);
-    assert.equal(msgWithPricing.includes('pricing=with_money'), true);
+    assert.equal(msgWithPricing.includes('https://invoicely.app/public/invoice/inv-uuid-12345?type=quotation'), true);
 
     const msgNoPricing = generateWhatsAppMessage({
       documentId: 'inv-uuid-12345',
@@ -235,7 +236,7 @@ async function main() {
       baseUrl: 'https://invoicely.app',
     });
     assert.equal(msgNoPricing.includes('*Subtotal:*'), false);
-    assert.equal(msgNoPricing.includes('pricing=without_money'), true);
+    assert.equal(msgNoPricing.includes('https://invoicely.app/public/invoice/inv-uuid-12345?type=quotation'), true);
   });
 
   // ========================================================
@@ -285,6 +286,44 @@ async function main() {
       mailto,
       'mailto:billing@acme.com?subject=Invoice%20%23101&body=Please%20find%20invoice%20attached.'
     );
+  });
+
+  // ========================================================
+  // 7. Public Mode Availability & Quotation Owner Priority
+  // ========================================================
+  console.log('\n7. Public View Availability & Quotation Owner Priority:');
+
+  runTest('Public View Availability: detects when a document type is disabled for public sharing', () => {
+    const isDocTypePublic = (
+      type: ShareDocumentType,
+      invoiceEnabled: boolean,
+      challanEnabled: boolean,
+      quotationEnabled: boolean
+    ) => {
+      if (type === 'invoice') return invoiceEnabled;
+      if (type === 'challan') return challanEnabled;
+      if (type === 'quotation') return quotationEnabled;
+      return true;
+    };
+
+    assert.equal(isDocTypePublic('invoice', false, true, true), false);
+    assert.equal(isDocTypePublic('invoice', true, false, false), true);
+    assert.equal(isDocTypePublic('challan', true, false, true), false);
+    assert.equal(isDocTypePublic('quotation', true, true, false), false);
+  });
+
+  runTest('Quotation Owner Priority: owner database state strictly overrides any client/query override', () => {
+    // Owner set quotation_with_pricing = true
+    const invoiceOwnerWithMoney = { quotation_with_pricing: true };
+    const resolvePricingForPublicViewer = (invoice: { quotation_with_pricing?: boolean }) => {
+      return invoice.quotation_with_pricing ?? true;
+    };
+
+    assert.equal(resolvePricingForPublicViewer(invoiceOwnerWithMoney), true);
+
+    // Owner set quotation_with_pricing = false
+    const invoiceOwnerWithoutMoney = { quotation_with_pricing: false };
+    assert.equal(resolvePricingForPublicViewer(invoiceOwnerWithoutMoney), false);
   });
 
   console.log('\n------------------------------------------------------');

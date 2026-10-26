@@ -135,15 +135,29 @@ export function InvoiceDownloadSection({
     }
   };
 
+  const anyPublicEnabled = invoiceMode || challanMode || quotationMode;
+  const defaultShareDocType: ShareDocumentType = invoiceMode
+    ? 'invoice'
+    : challanMode
+    ? 'challan'
+    : quotationMode
+    ? 'quotation'
+    : 'invoice';
+
   return (
     <div className="mt-4 flex flex-col gap-2.5 relative z-10">
       {/* Primary Action: Share Document via WhatsApp / Email */}
       <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
-          onClick={() => handleOpenSendDialog('invoice')}
-          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-all active:scale-98 font-label-md font-bold shadow-sm"
-          title="Share via WhatsApp"
+          onClick={() => handleOpenSendDialog(defaultShareDocType)}
+          disabled={!anyPublicEnabled}
+          className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg transition-all font-label-md font-bold shadow-sm ${
+            !anyPublicEnabled
+              ? 'bg-emerald-600/50 text-white/60 cursor-not-allowed opacity-60'
+              : 'bg-emerald-600 hover:bg-emerald-500 text-white active:scale-98 cursor-pointer'
+          }`}
+          title={anyPublicEnabled ? 'Share via WhatsApp' : 'Public view is disabled for all document formats.'}
         >
           <MaterialIcon icon="chat" className="text-[18px]" />
           <span>WhatsApp</span>
@@ -151,9 +165,14 @@ export function InvoiceDownloadSection({
 
         <button
           type="button"
-          onClick={() => handleOpenSendDialog('invoice')}
-          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-all active:scale-98 font-label-md font-bold shadow-sm"
-          title="Share via Email"
+          onClick={() => handleOpenSendDialog(defaultShareDocType)}
+          disabled={!anyPublicEnabled}
+          className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg transition-all font-label-md font-bold shadow-sm ${
+            !anyPublicEnabled
+              ? 'bg-blue-600/50 text-white/60 cursor-not-allowed opacity-60'
+              : 'bg-blue-600 hover:bg-blue-500 text-white active:scale-98 cursor-pointer'
+          }`}
+          title={anyPublicEnabled ? 'Share via Email' : 'Public view is disabled for all document formats.'}
         >
           <MaterialIcon icon="mail" className="text-[18px]" />
           <span>Email</span>
@@ -207,8 +226,13 @@ export function InvoiceDownloadSection({
           <button
             type="button"
             onClick={() => handleOpenSendDialog('challan')}
-            title="Share Delivery Challan"
-            className="p-1.5 rounded text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1 text-xs"
+            disabled={!challanMode}
+            title={challanMode ? 'Share Delivery Challan' : 'Public view is disabled for Delivery Challan'}
+            className={`p-1.5 rounded transition-colors flex items-center gap-1 text-xs ${
+              challanMode
+                ? 'text-white/80 hover:text-white hover:bg-white/10 cursor-pointer active:scale-95'
+                : 'text-white/30 cursor-not-allowed opacity-40'
+            }`}
           >
             <MaterialIcon icon="share" className="text-[16px]" />
           </button>
@@ -232,7 +256,7 @@ export function InvoiceDownloadSection({
         <div className="flex flex-col gap-2 p-1.5 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition-colors">
           <div className="flex items-center justify-between gap-2">
             <Link
-              href={`/public/invoice/${invoiceId}?type=quotation&pricing=${quotationPricing}`}
+              href={`/public/invoice/${invoiceId}?type=quotation`}
               target="_blank"
               className="flex-1 min-w-0 flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 text-white rounded-md transition-all active:scale-95 font-label-sm text-xs"
               title={`Open and download quotation (${quotationPricing === 'with_money' ? 'With Pricing' : 'Without Pricing'})`}
@@ -247,8 +271,13 @@ export function InvoiceDownloadSection({
             <button
               type="button"
               onClick={() => handleOpenSendDialog('quotation')}
-              title="Share Quotation"
-              className="p-1.5 rounded text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1 text-xs"
+              disabled={!quotationMode}
+              title={quotationMode ? 'Share Quotation' : 'Public view is disabled for Quotation'}
+              className={`p-1.5 rounded transition-colors flex items-center gap-1 text-xs ${
+                quotationMode
+                  ? 'text-white/80 hover:text-white hover:bg-white/10 cursor-pointer active:scale-95'
+                  : 'text-white/30 cursor-not-allowed opacity-40'
+              }`}
             >
               <MaterialIcon icon="share" className="text-[16px]" />
             </button>
@@ -334,6 +363,9 @@ export function InvoiceDownloadSection({
         dueDate={dueDate}
         initialDocumentType={selectedDocType}
         initialQuotationWithPricing={quotationPricing === 'with_money'}
+        invoiceModeEnabled={invoiceMode}
+        challanModeEnabled={challanMode}
+        quotationModeEnabled={quotationMode}
       />
     </div>
   );
