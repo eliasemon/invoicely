@@ -29,6 +29,7 @@ export interface GeneratePdfOptions {
   documentType: DocumentType;
   quotationWithPricing?: boolean;
   filename?: string;
+  paperSize?: 'a4' | 'a5' | 'thermal';
 }
 
 export interface GeneratedPdf {
@@ -37,15 +38,15 @@ export interface GeneratedPdf {
 }
 
 /**
- * Generates an A4 PDF Buffer for an Invoice, Challan, or Quotation by rendering the application's
+ * Generates an A4, A5, or Thermal PDF Buffer for an Invoice, Challan, or Quotation by rendering the application's
  * public document view with Playwright / Chromium in print media mode.
  */
 export async function generateDocumentPdf(options: GeneratePdfOptions): Promise<GeneratedPdf> {
-  const { documentId, documentType, quotationWithPricing = true } = options;
+  const { documentId, documentType, quotationWithPricing = true, paperSize = 'a4' } = options;
 
   const baseUrl = process.env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const pricingParam = quotationWithPricing ? 'with_money' : 'without_money';
-  const targetUrl = `${baseUrl}/public/invoice/${documentId}?type=${documentType}&pricing=${pricingParam}`;
+  const targetUrl = `${baseUrl}/public/invoice/${documentId}?type=${documentType}&pricing=${pricingParam}&paper=${paperSize}`;
 
   const executablePath = getExecutablePath();
   const launchOptions: any = {
@@ -70,9 +71,8 @@ export async function generateDocumentPdf(options: GeneratePdfOptions): Promise<
     // Emulate print CSS styles
     await page.emulateMedia({ media: 'print' });
 
-    // Generate A4 PDF buffer
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
+    // Build PDF options according to paperSize
+    const pdfConfig: any = {
       printBackground: true,
       margin: {
         top: '0mm',
@@ -80,7 +80,19 @@ export async function generateDocumentPdf(options: GeneratePdfOptions): Promise<
         bottom: '0mm',
         left: '0mm',
       },
-    });
+    };
+
+    if (paperSize === 'a5') {
+      pdfConfig.format = 'A5';
+    } else if (paperSize === 'thermal') {
+      pdfConfig.width = '80mm';
+      // Thermal paper continuous height or content-fit
+    } else {
+      pdfConfig.format = 'A4';
+    }
+
+    // Generate PDF buffer
+    const pdfBuffer = await page.pdf(pdfConfig);
 
     const prefix = documentType === 'challan' ? 'Challan' : documentType === 'quotation' ? 'Quotation' : 'Invoice';
     const filename = options.filename || `${prefix}-${documentId.slice(0, 8)}.pdf`;

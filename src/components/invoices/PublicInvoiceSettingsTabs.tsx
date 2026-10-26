@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { DocumentType, TextSize, formatDate, isoToDateInput, dateInputToISO } from '@/components/templates/templateUtils';
+import { DocumentType, TextSize, PaperSize, formatDate, isoToDateInput, dateInputToISO } from '@/components/templates/templateUtils';
 import { TemplateSelector } from '@/components/templates/TemplateSelector';
 
 interface PublicInvoiceSettingsTabsProps {
@@ -16,6 +16,10 @@ interface PublicInvoiceSettingsTabsProps {
   quotationModeEnabled: boolean;
   onToggleModeAvailability?: (mode: 'invoice' | 'challan' | 'quotation', enabled: boolean) => void;
   isUpdatingMode?: boolean;
+
+  // Paper Size
+  paperSize?: PaperSize;
+  setPaperSize?: (size: PaperSize) => void;
 
   // Templates
   currentTemplate: string;
@@ -75,6 +79,8 @@ export function PublicInvoiceSettingsTabs({
   quotationModeEnabled,
   onToggleModeAvailability,
   isUpdatingMode = false,
+  paperSize = 'a4',
+  setPaperSize,
   currentTemplate,
   onSelectTemplate,
   templateSavedNotification,
@@ -171,6 +177,7 @@ export function PublicInvoiceSettingsTabs({
       id: 'section-doc-sizing',
       label: 'Display & Sizing',
       icon: 'format_size',
+      badge: paperSize === 'thermal' ? '3" Thermal' : paperSize.toUpperCase(),
     },
     ...(isOwner
       ? [
@@ -786,15 +793,109 @@ export function PublicInvoiceSettingsTabs({
           id="section-doc-sizing"
           className="scroll-mt-32 bg-surface border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs transition-all"
         >
+          {/* Paper Size & Print Format */}
+          <div className="mb-6 pb-6 border-b border-outline-variant/60">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h2 className="font-semibold text-sm sm:text-base text-on-surface flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <MaterialIcon icon="description" className="text-[18px]" />
+                  </span>
+                  <span>Paper Size & Print Layout</span>
+                </h2>
+                <p className="text-xs text-on-surface-variant mt-0.5">
+                  Select your target paper format. Templates and tables reorganize proportionally for each paper size.
+                </p>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 uppercase">
+                {paperSize === 'thermal' ? '3" Thermal POS' : paperSize.toUpperCase()}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Option 1: A4 */}
+              <button
+                type="button"
+                onClick={() => setPaperSize?.('a4')}
+                className={`flex flex-col text-left p-3.5 rounded-xl border-2 transition-all cursor-pointer ${
+                  paperSize === 'a4'
+                    ? 'border-primary bg-primary/5 shadow-sm ring-2 ring-primary/10'
+                    : 'border-outline-variant/60 bg-surface hover:border-outline-variant hover:bg-surface-container-low'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                    <MaterialIcon icon="article" className="text-[16px] text-primary" />
+                    A4 Paper
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">
+                    210 × 297 mm
+                  </span>
+                </div>
+                <p className="text-[11px] text-on-surface-variant leading-relaxed">
+                  Full-page standard for corporate billing, formal quotations & multi-item statements.
+                </p>
+              </button>
+
+              {/* Option 2: A5 */}
+              <button
+                type="button"
+                onClick={() => setPaperSize?.('a5')}
+                className={`flex flex-col text-left p-3.5 rounded-xl border-2 transition-all cursor-pointer ${
+                  paperSize === 'a5'
+                    ? 'border-primary bg-primary/5 shadow-sm ring-2 ring-primary/10'
+                    : 'border-outline-variant/60 bg-surface hover:border-outline-variant hover:bg-surface-container-low'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                    <MaterialIcon icon="feed" className="text-[16px] text-primary" />
+                    A5 Paper
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">
+                    148 × 210 mm
+                  </span>
+                </div>
+                <p className="text-[11px] text-on-surface-variant leading-relaxed">
+                  Compact half-page format reorganized for counter sales, delivery vouchers & fast prints.
+                </p>
+              </button>
+
+              {/* Option 3: 3" Thermal POS */}
+              <button
+                type="button"
+                onClick={() => setPaperSize?.('thermal')}
+                className={`flex flex-col text-left p-3.5 rounded-xl border-2 transition-all cursor-pointer ${
+                  paperSize === 'thermal'
+                    ? 'border-primary bg-primary/5 shadow-sm ring-2 ring-primary/10'
+                    : 'border-outline-variant/60 bg-surface hover:border-outline-variant hover:bg-surface-container-low'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                    <MaterialIcon icon="receipt" className="text-[16px] text-primary" />
+                    3" Thermal POS
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">
+                    80 mm roll
+                  </span>
+                </div>
+                <p className="text-[11px] text-on-surface-variant leading-relaxed">
+                  Universal high-contrast receipt layout for thermal POS, Bluetooth & kitchen printers.
+                </p>
+              </button>
+            </div>
+          </div>
+
           <div className="mb-4">
-            <h2 className="font-semibold text-sm sm:text-base text-on-surface flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                <MaterialIcon icon="format_size" className="text-[18px]" />
+            <h3 className="font-semibold text-xs sm:text-sm text-on-surface flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                <MaterialIcon icon="format_size" className="text-[16px]" />
               </span>
               <span>Typography & Layout Density</span>
-            </h2>
+            </h3>
             <p className="text-xs text-on-surface-variant mt-0.5">
-              Fine-tune document fonts and row heights to fit single-page A4 printing.
+              Fine-tune document fonts and row heights to fit single-page printing.
             </p>
           </div>
 

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { TemplateProps } from "./templateUtils";
+import { TemplateProps, PaperSize } from "./templateUtils";
 import { ModernTemplate } from "./ModernTemplate";
 import { ElegantTemplate } from "./ElegantTemplate";
 import { CorporateTemplate } from "./CorporateTemplate";
@@ -16,6 +16,7 @@ import { FintechA4Template } from "./FintechA4Template";
 import { RedClassicGroupedTemplate } from "./RedClassicGroupedTemplate";
 import { SleekAccentTemplate } from "./SleekAccentTemplate";
 import { ModernPurpleTemplate } from "./ModernPurpleTemplate";
+import { UniversalThermalTemplate } from "./UniversalThermalTemplate";
 
 interface InvoiceTemplateRendererProps extends TemplateProps {
   templateId?: string;
@@ -38,6 +39,7 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
   "red-classic-grouped": RedClassicGroupedTemplate,
   "sleek-accent": SleekAccentTemplate,
   "modern-purple": ModernPurpleTemplate,
+  "universal-thermal": UniversalThermalTemplate,
 };
 
 export function InvoiceTemplateRenderer({
@@ -54,9 +56,14 @@ export function InvoiceTemplateRenderer({
   showPricing = true,
   textSize = 'normal',
   overallTextSize = 'normal',
+  paperSize = 'a4',
 }: InvoiceTemplateRendererProps) {
-  const TemplateComponent =
-    TEMPLATE_MAP[templateId || "modern-template"] || ModernTemplate;
+  const isThermal = paperSize === 'thermal' || templateId === 'universal-thermal';
+  const effectivePaperSize: PaperSize = isThermal ? 'thermal' : paperSize === 'a5' ? 'a5' : 'a4';
+
+  const TemplateComponent = isThermal
+    ? UniversalThermalTemplate
+    : TEMPLATE_MAP[templateId || "modern-template"] || ModernTemplate;
 
   // Resolve document type flags
   const effectiveChallan = Boolean(isChallan || documentType === 'challan');
@@ -91,8 +98,17 @@ export function InvoiceTemplateRenderer({
       }
     : null;
 
+  const printWidthClass =
+    effectivePaperSize === 'thermal'
+      ? 'print:w-[80mm] print:max-w-[80mm]'
+      : effectivePaperSize === 'a5'
+      ? 'print:w-[148mm] print:max-w-[148mm]'
+      : 'print:w-[210mm] print:max-w-[210mm]';
+
   return (
-    <div className={`flex flex-col w-full print:block print:w-[210mm] print:p-0 print:m-0 pdf-density-${textSize} pdf-content-${overallTextSize}`}>
+    <div
+      className={`flex flex-col w-full print:block ${printWidthClass} print:p-0 print:m-0 pdf-density-${textSize} pdf-content-${overallTextSize}`}
+    >
       <TemplateComponent
         invoice={invoice}
         profile={normalizedProfile}
@@ -106,6 +122,7 @@ export function InvoiceTemplateRenderer({
         showPricing={showPricing}
         textSize={textSize}
         overallTextSize={overallTextSize}
+        paperSize={effectivePaperSize}
       />
     </div>
   );

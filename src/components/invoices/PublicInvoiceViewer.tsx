@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { InvoiceTemplateRenderer } from '@/components/templates/InvoiceTemplateRenderer';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { DocumentType, TextSize, DEFAULT_NOTE_TEXT } from '@/components/templates/templateUtils';
+import { DocumentType, TextSize, PaperSize, DEFAULT_NOTE_TEXT } from '@/components/templates/templateUtils';
 import { updateInvoiceSettings, checkIsInvoiceOwner } from '@/app/actions/invoiceActions';
 import { useAuth } from '@/hooks/useAuth';
 import { PublicInvoiceHeader } from './PublicInvoiceHeader';
@@ -17,6 +17,7 @@ interface PublicInvoiceViewerProps {
   templateId?: string;
   initialDocumentType?: DocumentType;
   initialQuotationWithPricing?: boolean;
+  initialPaperSize?: PaperSize;
   isOwner?: boolean;
 }
 
@@ -27,6 +28,7 @@ export function PublicInvoiceViewer({
   templateId,
   initialDocumentType = 'invoice',
   initialQuotationWithPricing = true,
+  initialPaperSize = 'a4',
   isOwner = false,
 }: PublicInvoiceViewerProps) {
   const { user } = useAuth();
@@ -51,12 +53,30 @@ export function PublicInvoiceViewer({
   const [showGroupTotals, setShowGroupTotals] = useState(false);
   const [documentType, setDocumentType] = useState<DocumentType>(initialDocumentType);
   const [quotationWithPricing, setQuotationWithPricing] = useState<boolean>(initialQuotationWithPricing);
+  const [paperSize, setPaperSize] = useState<PaperSize>(initialPaperSize);
   const [textSize, setTextSize] = useState<TextSize>('normal');
   const [overallTextSize, setOverallTextSize] = useState<TextSize>('normal');
   const [currentTemplate, setCurrentTemplate] = useState(invoice.template || templateId || 'sleek-accent');
   const [templateSavedNotification, setTemplateSavedNotification] = useState<string | null>(null);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  // Sync initialPaperSize if prop changes
+  useEffect(() => {
+    if (initialPaperSize) {
+      setPaperSize(initialPaperSize);
+    }
+  }, [initialPaperSize]);
+
+  // Sync data-paper attributes on html and body for print styles
+  useEffect(() => {
+    document.documentElement.setAttribute('data-paper', paperSize);
+    document.body.setAttribute('data-paper', paperSize);
+    return () => {
+      document.documentElement.removeAttribute('data-paper');
+      document.body.removeAttribute('data-paper');
+    };
+  }, [paperSize]);
 
   // Sync initialDocumentType if prop changes
   useEffect(() => {
@@ -144,7 +164,7 @@ export function PublicInvoiceViewer({
         : 'Invoice';
     const num = invoice.invoiceNumber || invoice.invoice_number || 'document';
     const prevTitle = document.title;
-    document.title = `${docTitle}-${num}`;
+    document.title = `${docTitle}-${num}-${paperSize.toUpperCase()}`;
     window.print();
     setTimeout(() => {
       document.title = prevTitle;
@@ -332,13 +352,15 @@ export function PublicInvoiceViewer({
   const isChallan = documentType === 'challan';
   const isQuotation = documentType === 'quotation';
 
+  const baseTargetWidth = paperSize === 'thermal' ? 302 : paperSize === 'a5' ? 559 : 794;
+
   const calculateFitZoom = useCallback(() => {
     if (!previewViewportRef.current) return;
     const viewportWidth = previewViewportRef.current.clientWidth;
     const padding = 32; // 16px each side
-    const fitZoom = (viewportWidth - padding) / 794;
+    const fitZoom = (viewportWidth - padding) / baseTargetWidth;
     setPreviewZoom(Math.max(0.15, Math.min(fitZoom, 2.0)));
-  }, []);
+  }, [baseTargetWidth]);
 
   useEffect(() => {
     if (!previewInvoiceRef.current) return;
@@ -423,6 +445,8 @@ export function PublicInvoiceViewer({
       <PublicInvoiceHeader
         invoiceNumber={invoice.invoiceNumber || invoice.invoice_number}
         documentType={documentType}
+        paperSize={paperSize}
+        setPaperSize={setPaperSize}
         isOwner={effectiveIsOwner}
         onPrint={handlePrint}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
@@ -434,8 +458,50 @@ export function PublicInvoiceViewer({
         id="section-doc-preview"
         className="w-full max-w-full overflow-x-hidden flex flex-col items-center pt-3 sm:pt-6 pb-28 sm:pb-32 print:p-0"
       >
-        {/* Sticky Action Toolbar for Preview (Zoom, Doc Text Resizer, Row Text Resizer, Settings & Print) */}
+        {/* Sticky Action Toolbar for Preview (Paper Size, Zoom, Doc Text Resizer, Row Text Resizer, Settings & Print) */}
         <div className="hidden md:flex sticky top-16 z-20 mb-4 items-center gap-2 bg-surface/90 backdrop-blur-md shadow-md p-1.5 rounded-xl border border-outline-variant/50 print:hidden flex-wrap justify-center">
+          {/* Paper Size Selector Pills */}
+          <div className="flex items-center gap-1 bg-surface-container-high/60 p-0.5 rounded-lg border border-outline-variant/40">
+            <button
+              type="button"
+              onClick={() => setPaperSize('a4')}
+              className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+                paperSize === 'a4'
+                  ? 'bg-primary text-on-primary shadow-xs'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+              title="A4 Full Page (210×297mm)"
+            >
+              A4
+            </button>
+            <button
+              type="button"
+              onClick={() => setPaperSize('a5')}
+              className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+                paperSize === 'a5'
+                  ? 'bg-primary text-on-primary shadow-xs'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+              title="A5 Half Page (148×210mm)"
+            >
+              A5
+            </button>
+            <button
+              type="button"
+              onClick={() => setPaperSize('thermal')}
+              className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+                paperSize === 'thermal'
+                  ? 'bg-primary text-on-primary shadow-xs'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+              title="3-inch Thermal POS Receipt (80mm)"
+            >
+              3" Thermal
+            </button>
+          </div>
+
+          <div className="w-px bg-outline-variant/50 h-5"></div>
+
           {/* Zoom Controls */}
           <div className="flex items-center gap-1">
             <button 
@@ -588,7 +654,7 @@ export function PublicInvoiceViewer({
           <div 
             style={{ 
               height: `${previewInvoiceHeight * previewZoom}px`,
-              width: previewViewportRef.current ? `${Math.max(previewViewportRef.current.clientWidth, 794 * previewZoom)}px` : '100%',
+              width: previewViewportRef.current ? `${Math.max(previewViewportRef.current.clientWidth, baseTargetWidth * previewZoom)}px` : '100%',
               position: 'relative' 
             }} 
             className="transition-all duration-200 mx-auto"
@@ -598,7 +664,7 @@ export function PublicInvoiceViewer({
               ref={previewInvoiceRef}
               style={{
                 width: previewViewportRef.current ? `${previewViewportRef.current.clientWidth / previewZoom}px` : '100%',
-                minWidth: '794px',
+                minWidth: `${baseTargetWidth}px`,
                 transform: `scale(${previewZoom})`,
                 transformOrigin: 'top left',
                 position: 'absolute',
@@ -621,6 +687,7 @@ export function PublicInvoiceViewer({
                 showPricing={documentType === 'quotation' ? authoritativeQuotationPricing : true}
                 textSize={textSize}
                 overallTextSize={overallTextSize}
+                paperSize={paperSize}
               />
             </div>
           </div>
@@ -698,6 +765,8 @@ export function PublicInvoiceViewer({
               quotationModeEnabled={quotationModeEnabled}
               onToggleModeAvailability={handleToggleModeAvailability}
               isUpdatingMode={isSavingSettings}
+              paperSize={paperSize}
+              setPaperSize={setPaperSize}
               currentTemplate={currentTemplate}
               onSelectTemplate={handleTemplateChange}
               templateSavedNotification={templateSavedNotification}
@@ -769,7 +838,15 @@ export function PublicInvoiceViewer({
       />
 
       {/* Dedicated Print Container */}
-      <div className="hidden print:block w-[210mm] mx-auto bg-white border-none shadow-none m-0 p-0">
+      <div
+        className={`hidden print:block ${
+          paperSize === 'thermal'
+            ? 'w-[80mm] max-w-[80mm]'
+            : paperSize === 'a5'
+            ? 'w-[148mm] max-w-[148mm]'
+            : 'w-[210mm] max-w-[210mm]'
+        } mx-auto bg-white border-none shadow-none m-0 p-0`}
+      >
         <InvoiceTemplateRenderer 
           templateId={currentTemplate} 
           invoice={effectiveInvoice} 
@@ -784,8 +861,16 @@ export function PublicInvoiceViewer({
           showPricing={documentType === 'quotation' ? authoritativeQuotationPricing : true}
           textSize={textSize}
           overallTextSize={overallTextSize}
+          paperSize={paperSize}
         />
       </div>
+
+      <style jsx global>{`
+        @page {
+          size: ${paperSize === 'thermal' ? '80mm auto' : paperSize === 'a5' ? 'A5 portrait' : 'A4 portrait'};
+          margin: 0;
+        }
+      `}</style>
     </div>
   );
 }

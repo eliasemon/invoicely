@@ -71,6 +71,18 @@ export const getWireframeForTemplateInternal = (id: string) => {
             </div>
           </div>
         );
+      case 'universal-thermal':
+        return (
+          <div className="w-full h-full p-2 flex flex-col gap-1 bg-white border-dashed border-x border-gray-300">
+            <div className="w-8 h-2 mx-auto bg-gray-900 rounded"></div>
+            <div className="w-12 h-1.5 mx-auto bg-gray-300 rounded"></div>
+            <div className="w-full border-b border-dashed border-gray-300 my-0.5"></div>
+            <div className="w-full h-1 bg-gray-200 rounded"></div>
+            <div className="w-full h-1 bg-gray-200 rounded"></div>
+            <div className="w-full border-b border-dashed border-gray-300 my-0.5"></div>
+            <div className="w-8 h-2 ml-auto bg-gray-800 rounded"></div>
+          </div>
+        );
       default:
         // Generic wireframe
         return (
@@ -107,6 +119,7 @@ export const availableTemplates: TemplateOption[] = [
   { id: 'sleek-accent', name: 'Sleek Accent', wireframe: getWireframeForTemplateInternal('sleek-accent') },
   { id: 'modern-purple', name: 'Modern Purple', wireframe: getWireframeForTemplateInternal('modern-purple') },
   { id: 'enterprise-a4', name: 'Enterprise (A4)', wireframe: getWireframeForTemplateInternal('enterprise-a4') },
+  { id: 'universal-thermal', name: 'Thermal POS (3")', wireframe: getWireframeForTemplateInternal('universal-thermal') },
 ];
 
 import { useRef } from 'react';

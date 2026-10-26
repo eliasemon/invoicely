@@ -3,6 +3,7 @@ import { Invoice } from '@/core/ports/database.types';
 export type DocumentType = 'invoice' | 'challan' | 'quotation';
 export type TextSize = 'compact' | 'normal' | 'large';
 export type CurrencySymbolDisplay = 'all' | 'selected';
+export type PaperSize = 'a4' | 'a5' | 'thermal';
 
 export interface TemplateProps {
   invoice: Invoice;
@@ -44,6 +45,7 @@ export interface TemplateProps {
   showPricing?: boolean;
   textSize?: TextSize;
   overallTextSize?: TextSize;
+  paperSize?: PaperSize;
 }
 
 export const DEFAULT_NOTE_TEXT = 'Thank you for your business. Please make payment within the due date.';

@@ -3,7 +3,7 @@ import { getUserId, getLinkedUserIds } from '@/lib/supabase/admin';
 import { PublicInvoiceViewer } from '@/components/invoices/PublicInvoiceViewer';
 import { notFound } from 'next/navigation';
 
-import { DocumentType } from '@/components/templates/templateUtils';
+import { DocumentType, PaperSize } from '@/components/templates/templateUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,11 +12,13 @@ export default async function PublicInvoicePage({
   searchParams 
 }: { 
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ type?: string; pricing?: string; with_money?: string }>;
+  searchParams?: Promise<{ type?: string; pricing?: string; with_money?: string; paper?: string }>;
 }) {
   const { id } = await params;
   const sParams = searchParams ? await searchParams : {};
   const rawType = sParams.type?.toLowerCase();
+  const rawPaper = sParams.paper?.toLowerCase();
+  const initialPaperSize: PaperSize = rawPaper === 'a5' ? 'a5' : rawPaper === 'thermal' ? 'thermal' : 'a4';
   const invoice = await getPublicInvoice(id);
   if (!invoice) return notFound();
 
@@ -88,7 +90,7 @@ export default async function PublicInvoicePage({
   const publicUrl = `${baseUrl}/public/invoice/${id}`;
 
   return (
-    <div className="bg-surface-container-lowest min-h-screen flex flex-col overflow-x-hidden w-full max-w-full print:block print:bg-white print:min-h-0 print:p-0 print:m-0 print:w-[210mm]">
+    <div className="bg-surface-container-lowest min-h-screen flex flex-col overflow-x-hidden w-full max-w-full print:block print:bg-white print:min-h-0 print:p-0 print:m-0 print:w-full print:max-w-none">
       <div className="flex-1 w-full max-w-full overflow-x-hidden pb-28 md:pb-20 print:py-0 print:px-0 print:m-0 print:block print:w-full">
         <PublicInvoiceViewer 
           templateId={invoice.template} 
@@ -97,6 +99,7 @@ export default async function PublicInvoicePage({
           publicUrl={publicUrl}
           initialDocumentType={initialDocumentType}
           initialQuotationWithPricing={initialQuotationWithPricing}
+          initialPaperSize={initialPaperSize}
           isOwner={isOwner}
         />
       </div>

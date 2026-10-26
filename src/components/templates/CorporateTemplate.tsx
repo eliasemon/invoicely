@@ -28,6 +28,7 @@ export function CorporateTemplate({
   isQuotation,
   documentType,
   showPricing,
+  paperSize,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
@@ -49,6 +50,277 @@ export function CorporateTemplate({
   const items = getAllItems(invoice);
   const subject = getSubjectForDoc(invoice, documentType);
   const noteText = getNoteText(invoice);
+
+  const isA5 = paperSize === 'a5';
+
+  if (isA5) {
+    return (
+      <div
+        className="min-h-screen py-4 bg-[#f8f9ff] text-[#0b1c30] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[148mm]"
+        style={{ fontFamily: "Hanken Grotesk, sans-serif" }}
+      >
+        <div className="flex justify-center items-start print:p-0 print:m-0 print:block print:w-[148mm] max-w-full overflow-hidden print:overflow-visible">
+          <div className="w-full max-w-[148mm] min-w-0 min-h-[210mm] mx-auto print:w-[148mm] print:max-w-[148mm] print:mx-0 print:min-h-[210mm]">
+            {!isPreview && (
+              <div className="flex flex-row justify-between items-center gap-2 bg-white p-3 rounded-lg border border-[#c6c6cd] shadow-xs mb-2 print:hidden">
+                <div>
+                  <h2 className="text-xs font-semibold text-black" style={{ fontFamily: "Work Sans, sans-serif" }}>
+                    {docTitle} #{invoice.invoiceNumber} (A5)
+                  </h2>
+                  <p className="text-[10px] text-[#45464d]">Corporate Template • A5 Compact</p>
+                </div>
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0058be] text-white rounded-lg text-[11px] font-semibold shadow-xs cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[15px]">download</span>
+                  Print PDF (A5)
+                </button>
+              </div>
+            )}
+
+            {/* A5 Corporate Article */}
+            <article className="bg-white w-full shadow-xs border border-[#c6c6cd] overflow-hidden print:shadow-none print:rounded-none print:border-none flex flex-col justify-between min-h-[210mm]">
+              <div>
+                <div className="h-1.5 w-full bg-[#0058be]"></div>
+                <div className="p-2.5 sm:p-3 print:p-2">
+                  {/* Header Box */}
+                  <div className="border border-[#c6c6cd] p-2 mb-2 flex flex-col gap-1.5 relative">
+                    {!isPricingHidden && !isQuotationDoc && invoice.status && (
+                      <div
+                        className={`absolute -top-2.5 -right-2 px-2 py-0.2 rounded text-[9px] font-bold uppercase flex items-center gap-1 shadow-xs ${
+                          invoice.status === "PAID"
+                            ? "bg-[#e8f5e9] border border-[#a5d6a7] text-[#2e7d32]"
+                            : "bg-[#fff3e0] border border-[#ffcc80] text-[#e65100]"
+                        }`}
+                      >
+                        {invoice.status}
+                      </div>
+                    )}
+
+                    {/* Logo & Title */}
+                    <div className="flex justify-between items-center gap-2">
+                      <div>
+                        {profile?.company_logo ? (
+                          <img
+                            alt="Logo"
+                            className="max-h-8 max-w-[130px] object-contain"
+                            src={profile.company_logo}
+                          />
+                        ) : (
+                          <div className="text-[9px] text-[#45464d] uppercase tracking-widest font-bold">
+                            From
+                          </div>
+                        )}
+                      </div>
+                      <h1
+                        className="text-lg leading-tight font-bold text-black uppercase tracking-tight"
+                        style={{ fontFamily: "Work Sans, sans-serif" }}
+                      >
+                        {docTitle}
+                      </h1>
+                    </div>
+
+                    <div className="h-[1px] bg-[#c6c6cd] w-full"></div>
+
+                    {/* Details row */}
+                    <div className="flex justify-between items-start gap-2 text-[9.5px]">
+                      <div>
+                        <h2 className="font-bold text-black leading-tight">
+                          {profile?.company_name || "Your Company"}
+                        </h2>
+                        {((invoice.brand_voice_enabled ?? profile?.brand_voice_enabled ?? true) && (invoice.brand_voice || profile?.brand_voice)) && (
+                          <p className="text-[9px] text-[#565e74] italic mt-0.5">
+                            {invoice.brand_voice || profile?.brand_voice}
+                          </p>
+                        )}
+                        <p className="text-[#45464d] whitespace-pre-line mt-0.5 text-[9px] leading-tight" style={{ fontFamily: "Geist, monospace" }}>
+                          {profile?.company_address || ""}
+                          {profile?.email ? ` • ${profile.email}` : ""}
+                          {profile?.phone ? ` • ${profile.phone}` : ""}
+                        </p>
+                      </div>
+
+                      <div className="text-right shrink-0" style={{ fontFamily: "Geist, monospace" }}>
+                        <p className="font-bold text-[10px]">#{invoice.invoiceNumber}</p>
+                        <p className="text-[#45464d] text-[9px]">Issued: {formatDate(issueDate)}</p>
+                        {!isPricingHidden && !isQuotationDoc && (
+                          <p className="text-[#45464d] text-[9px]">Due: {formatDate(dueDate)}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Client Info */}
+                  <div className="border border-[#c6c6cd] p-2 mb-2 flex justify-between items-start text-[10px]">
+                    <div>
+                      <span className="text-[9px] uppercase font-bold text-[#76777d]">{clientLabel}:</span>
+                      <h3 className="font-bold text-xs text-black mt-0.5">{invoice.clientName}</h3>
+                      <p className="text-[#45464d] whitespace-pre-line text-[9.5px] leading-tight">
+                        {invoice.clientAddress || invoice.clientPhone}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Subject */}
+                  {subject && (
+                    <div className="mb-2 text-[9.5px] text-[#45464d] bg-[#f8faff] px-2 py-1 rounded border border-[#dce9ff]/70 flex items-center gap-1.5">
+                      <span className="font-bold text-[#0058be] uppercase text-[9px]">Subject:</span>
+                      <span className="font-medium text-[#2b303b] truncate">{subject}</span>
+                    </div>
+                  )}
+
+                  {/* Table */}
+                  <div className="border border-[#c6c6cd] overflow-hidden mb-2">
+                    <table className="w-full text-left border-collapse text-[9.5px]">
+                      <thead>
+                        <tr className="bg-[#f0f4f9] border-b border-[#c6c6cd] text-[9px] uppercase text-[#45464d]">
+                          <th className="py-1 px-1.5 border-r border-[#c6c6cd] w-8">#</th>
+                          <th className="py-1 px-1.5 border-r border-[#c6c6cd]">Description</th>
+                          <th className="py-1 px-1.5 border-r border-[#c6c6cd] text-center w-14">Qty</th>
+                          {!isPricingHidden && (
+                            <>
+                              <th className="py-1 px-1.5 border-r border-[#c6c6cd] text-right w-16">Price</th>
+                              <th className="py-1 px-1.5 text-right w-16">Total</th>
+                            </>
+                          )}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#c6c6cd]">
+                        {(() => {
+                          let runningIdx = 0;
+                          return (invoice.groups || [{ items }]).map((group: any, gIdx: number) => (
+                            <React.Fragment key={gIdx}>
+                              {group.name && showGroups && (
+                                <tr className="bg-[#eef3f9]">
+                                  <td colSpan={isPricingHidden ? 3 : 5} className="py-0.5 px-1.5 font-bold text-[9px] uppercase text-[#0058be]">
+                                    {group.name}
+                                  </td>
+                                </tr>
+                              )}
+                              {group.items.map((item: any, iIdx: number) => {
+                                runningIdx++;
+                                const itemTotal = (item.isFlatRate ? 1 : item.quantity) * item.unitPrice;
+                                return (
+                                  <tr key={iIdx} className="template-item-row hover:bg-[#f8f9ff]/50">
+                                    <td className="py-1 px-1.5 border-r border-[#c6c6cd] text-center font-mono text-[9px]">{runningIdx}</td>
+                                    <td className="py-1 px-1.5 border-r border-[#c6c6cd] font-semibold text-black">{item.name}</td>
+                                    <td className="py-1 px-1.5 border-r border-[#c6c6cd] text-center font-mono text-[9px]">
+                                      {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                                    </td>
+                                    {!isPricingHidden && (
+                                      <>
+                                        <td className="py-1 px-1.5 border-r border-[#c6c6cd] text-right font-mono text-[9px]">
+                                          {formatMoney(item.unitPrice, itemSym)}
+                                        </td>
+                                        <td className="py-1 px-1.5 text-right font-mono text-[9px] font-bold text-black">
+                                          {formatMoney(itemTotal, itemSym)}
+                                        </td>
+                                      </>
+                                    )}
+                                  </tr>
+                                );
+                              })}
+                            </React.Fragment>
+                          ));
+                        })()}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Totals */}
+                  {!isPricingHidden && (
+                    <div className="flex justify-end mb-2 template-totals-block">
+                      <div className="w-1/2 border border-[#c6c6cd] bg-[#f8fafc] p-1.5 text-[9.5px] space-y-1">
+                        <div className="flex justify-between text-[#45464d]">
+                          <span>Subtotal:</span>
+                          <span className="font-mono">{formatMoney(subtotal, sym)}</span>
+                        </div>
+                        {discountAmount > 0 && (
+                          <div className="flex justify-between text-[#45464d]">
+                            <span>Discount {invoice.discount_type === "percentage" ? `(${invoice.discount_value}%)` : ""}:</span>
+                            <span className="font-mono">-{formatMoney(discountAmount, sym)}</span>
+                          </div>
+                        )}
+                        {shippingCost > 0 && (
+                          <div className="flex justify-between text-[#45464d]">
+                            <span>Shipping:</span>
+                            <span className="font-mono">+{formatMoney(shippingCost, sym)}</span>
+                          </div>
+                        )}
+                        <div className="border-t border-[#c6c6cd] pt-1 flex justify-between font-bold text-xs bg-[#0058be] text-white p-1 rounded">
+                          <span>{isQuotationDoc ? "Quotation Total:" : "Total:"}</span>
+                          <span className="font-mono">{formatMoney(total, sym)}</span>
+                        </div>
+                        {amountPaid > 0 && !isQuotationDoc && (
+                          <>
+                            <div className="flex justify-between text-[#45464d]">
+                              <span>Paid:</span>
+                              <span className="font-mono text-green-700">{formatMoney(amountPaid, sym)}</span>
+                            </div>
+                            <div className="flex justify-between font-bold text-[10px] text-[#0058be] border-t border-[#c6c6cd] pt-0.5">
+                              <span>Due:</span>
+                              <span className="font-mono">{formatMoney(balanceDue, sym)}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bottom Section */}
+              <div className="p-2.5 sm:p-3 print:p-2 border-t border-[#c6c6cd] bg-[#f8f9ff] text-[9px] template-bottom-section">
+                {noteText && (
+                  <div className="mb-1 text-[9px] text-[#45464d] template-nb-note">
+                    <strong className="text-black">N.B:</strong> {noteText}
+                  </div>
+                )}
+                <div className="grid grid-cols-2 gap-2 items-end">
+                  <div>
+                    {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) && (
+                      <div className="text-[8.5px] text-[#45464d] space-y-0.5">
+                        <p className="font-bold text-black uppercase">Bank Info</p>
+                        <p>{invoice.bank_name || profile?.bank_name}</p>
+                        {(invoice.bank_account_number || profile?.bank_account_number) && (
+                          <p className="font-mono">A/C: {invoice.bank_account_number || profile?.bank_account_number}</p>
+                        )}
+                      </div>
+                    )}
+                    {profile?.qr_code_enabled && publicUrl && (
+                      <div className="mt-1">
+                        <QRCodeSVG value={publicUrl} size={38} />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col items-end">
+                    {(profile?.signature_enabled ?? true) &&
+                      (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name) && (
+                        <div className="flex flex-col items-end min-w-[110px]">
+                          {(invoice.signature_url || profile?.signature_url) && (
+                            <img
+                              src={invoice.signature_url || profile?.signature_url || undefined}
+                              alt="Signature"
+                              className="h-6 mb-0.5 object-contain"
+                            />
+                          )}
+                          <div className="w-28 border-b border-[#c6c6cd] mb-0.5"></div>
+                          <p className="text-[8.5px] text-[#76777d]">
+                            {invoice.signatory_name || profile?.signatory_name || (isChallanDoc ? "Received By" : "Authorized Signatory")}
+                          </p>
+                        </div>
+                      )}
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

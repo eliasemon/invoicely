@@ -209,6 +209,40 @@ export function InvoiceDownloadSection({
         </button>
       </div>
 
+      {/* Quick Paper Format Shortcuts */}
+      <div className="flex items-center justify-between gap-1.5 px-2 py-1.5 bg-white/5 rounded-lg border border-white/10 text-[11px]">
+        <span className="text-white/60 font-medium text-[10px] uppercase tracking-wider flex items-center gap-1">
+          <MaterialIcon icon="print" className="text-[13px]" />
+          Paper:
+        </span>
+        <div className="flex items-center gap-1">
+          <Link
+            href={`/public/invoice/${invoiceId}?paper=a4`}
+            target="_blank"
+            className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] transition-colors"
+            title="Open in A4 size"
+          >
+            A4
+          </Link>
+          <Link
+            href={`/public/invoice/${invoiceId}?paper=a5`}
+            target="_blank"
+            className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] transition-colors"
+            title="Open in A5 size"
+          >
+            A5
+          </Link>
+          <Link
+            href={`/public/invoice/${invoiceId}?paper=thermal`}
+            target="_blank"
+            className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] transition-colors"
+            title="Open in 3-inch Thermal POS size"
+          >
+            3" Thermal
+          </Link>
+        </div>
+      </div>
+
       {/* Format Actions: Challan & Quotation */}
       <div className="flex flex-col gap-2">
         {/* Challan Card */}

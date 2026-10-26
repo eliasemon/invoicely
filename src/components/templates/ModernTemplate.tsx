@@ -26,6 +26,7 @@ export function ModernTemplate({
   isQuotation,
   documentType,
   showPricing,
+  paperSize,
 }: TemplateProps) {
   const isChallanDoc = Boolean(isChallan || documentType === 'challan');
   const isQuotationDoc = Boolean(isQuotation || documentType === 'quotation');
@@ -46,6 +47,275 @@ export function ModernTemplate({
   const balanceDue = Math.max(0, total - amountPaid);
   const subject = getSubjectForDoc(invoice, documentType);
   const noteText = getNoteText(invoice);
+
+  const isA5 = paperSize === 'a5';
+
+  if (isA5) {
+    return (
+      <div
+        className="min-h-screen py-4 bg-[#f8f9ff] text-[#0b1c30] print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[148mm]"
+        style={{ fontFamily: "Hanken Grotesk, sans-serif" }}
+      >
+        {!isPreview && (
+          <div className="max-w-[148mm] mx-auto mb-2 flex flex-row justify-between items-center gap-2 print:hidden px-1">
+            <span
+              className="text-xs font-bold text-black"
+              style={{ fontFamily: "Work Sans, sans-serif" }}
+            >
+              Invorio (A5)
+            </span>
+            <button
+              onClick={() => window.print()}
+              className="px-3 py-1.5 border border-[#c6c6cd] rounded-lg text-[11px] hover:bg-[#eff4ff] transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[15px]">download</span>
+              Download / Print PDF (A5)
+            </button>
+          </div>
+        )}
+
+        {/* Invoice Paper A5 */}
+        <div className="max-w-[148mm] w-full min-h-[210mm] mx-auto bg-white rounded-lg shadow-[0px_2px_12px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col justify-between print:shadow-none print:rounded-none print:border-none print:w-[148mm] print:max-w-[148mm] print:mx-0 print:min-h-[210mm] print:my-0">
+          <div>
+            {/* Reorganized Top Banner for A5 */}
+            <div className="bg-[#0058be] text-white p-3 print:p-2.5 flex justify-between items-start gap-2">
+              <div className="flex-1 min-w-0">
+                {profile?.company_logo && (
+                  <img
+                    alt="Logo"
+                    className="max-h-9 max-w-[120px] bg-white p-0.5 rounded mb-1.5 object-contain"
+                    src={profile.company_logo}
+                  />
+                )}
+                <h2
+                  className="text-xs font-semibold leading-tight truncate"
+                  style={{ fontFamily: "Work Sans, sans-serif" }}
+                >
+                  {profile?.company_name || "Your Company"}
+                </h2>
+                {((invoice.brand_voice_enabled ?? profile?.brand_voice_enabled ?? true) && (invoice.brand_voice || profile?.brand_voice)) && (
+                  <p className="text-[9.5px] text-blue-200/90 italic truncate">
+                    {invoice.brand_voice || profile?.brand_voice}
+                  </p>
+                )}
+                <div className="text-[9px] text-blue-100/80 mt-1 space-y-0.5" style={{ fontFamily: "Geist, monospace" }}>
+                  {profile?.email && <p className="truncate">{profile.email}</p>}
+                  {profile?.phone && <p>{profile.phone}</p>}
+                  {profile?.company_address && <p className="line-clamp-2">{profile.company_address}</p>}
+                </div>
+              </div>
+
+              {/* Meta Right */}
+              <div className="text-right shrink-0">
+                <p className="text-[9px] uppercase tracking-wider text-blue-200">
+                  {docTitle}
+                </p>
+                <p className="text-sm font-bold text-white tracking-tight">
+                  {invoice.invoiceNumber || invoice.id?.substring(0, 8).toUpperCase()}
+                </p>
+                <div className="text-[9.5px] text-blue-100/90 mt-1 space-y-0.5">
+                  <p>Issued: {formatDate(issueDate)}</p>
+                  {!isPricingHidden && !isQuotationDoc && (
+                    <p>Due: {formatDate(dueDate)}</p>
+                  )}
+                </div>
+                {!isPricingHidden && !isQuotationDoc && invoice.status && (
+                  <div
+                    className={`mt-1.5 inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+                      invoice.status === "PAID"
+                        ? "bg-emerald-400 text-emerald-950"
+                        : "bg-amber-300 text-amber-950"
+                    }`}
+                  >
+                    {invoice.status}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="p-3 print:p-2.5">
+              {/* Client Info & Subject */}
+              <div className="flex justify-between items-start gap-2 mb-2">
+                <div>
+                  <p className="text-[9px] uppercase text-[#76777d] font-semibold">{clientLabel}</p>
+                  <h3 className="text-xs font-bold text-[#0b1c30]">{invoice.clientName}</h3>
+                  <p className="text-[10px] text-[#45464d] whitespace-pre-line leading-tight">
+                    {invoice.clientAddress || invoice.clientPhone}
+                  </p>
+                </div>
+              </div>
+
+              {subject && (
+                <div className="mb-2 text-[10px] text-[#45464d] bg-[#f8faff] px-2 py-1 rounded border border-[#dce9ff]/70 flex items-center gap-1.5">
+                  <span className="font-semibold text-[#1a2b3c] uppercase text-[9px]">Subject:</span>
+                  <span className="font-medium text-[#2b303b] truncate">{subject}</span>
+                </div>
+              )}
+
+              {/* Items Table */}
+              <div className="mb-2">
+                <div className="flex justify-between text-[9px] uppercase font-bold text-[#76777d] border-b border-[#dce9ff] pb-1 mb-1">
+                  <span className="text-left"># Description</span>
+                  <span>{isPricingHidden ? 'Qty' : 'Amount'}</span>
+                </div>
+
+                {(() => {
+                  let runningIdx = 0;
+                  return invoice.groups?.map((group: any, gIdx: number) => (
+                    <div key={gIdx} className="mb-2">
+                      {group.name && (
+                        <h4 className="font-bold text-[10.5px] text-[#0058be] mb-0.5">{group.name}</h4>
+                      )}
+                      {group.items.map((item: any, iIdx: number) => {
+                        runningIdx++;
+                        return (
+                          <div
+                            key={iIdx}
+                            className="template-item-row flex justify-between items-start mb-1 text-[10px]"
+                          >
+                            <div className="flex items-start gap-1.5 pr-2 text-left">
+                              <span className="text-[9.5px] font-mono text-[#0058be] font-bold min-w-[14px]">
+                                {runningIdx}.
+                              </span>
+                              <div>
+                                <h4 className="font-semibold text-[10.5px] text-left leading-tight">{item.name}</h4>
+                                <p className="text-[9px] text-[#45464d]" style={{ fontFamily: "Geist, monospace" }}>
+                                  Qty: {item.isFlatRate ? '-' : `${item.quantity} ${item.unit || ''}`.trim()}
+                                  {!isPricingHidden && ` × ${formatMoney(item.unitPrice, itemSym)}`}
+                                </p>
+                              </div>
+                            </div>
+                            {!isPricingHidden && (
+                              <p className="text-[10px] whitespace-nowrap font-medium" style={{ fontFamily: "Geist, monospace" }}>
+                                {formatMoney((item.isFlatRate ? 1 : item.quantity) * item.unitPrice, itemSym)}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      {showGroupTotals && !isPricingHidden && (
+                        <div className="flex justify-between items-center px-1.5 py-0.5 bg-slate-50 border-t border-slate-100">
+                          <span className="text-[8.5px] font-medium text-slate-400 uppercase">Subtotal</span>
+                          <span className="text-[9.5px] font-medium text-slate-600" style={{ fontFamily: "Geist, monospace" }}>
+                            {formatMoney(
+                              group.items.reduce(
+                                (sum: number, item: any) => sum + (item.isFlatRate ? 1 : item.quantity) * item.unitPrice,
+                                0
+                              ),
+                              itemSym
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ));
+                })()}
+              </div>
+
+              {/* Totals Block */}
+              {!isPricingHidden && (
+                <div className="border-t border-[#dce9ff] pt-1.5 mt-1.5 template-totals-block">
+                  <div className="flex justify-end mb-1">
+                    <div className="w-1/2 flex justify-between text-[10px]">
+                      <span className="text-[#76777d]">Subtotal</span>
+                      <span style={{ fontFamily: "Geist, monospace" }}>{formatMoney(subtotal, sym)}</span>
+                    </div>
+                  </div>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-end mb-1">
+                      <div className="w-1/2 flex justify-between text-[10px]">
+                        <span className="text-[#76777d]">Discount {invoice.discount_type === "percentage" ? `(${invoice.discount_value}%)` : ""}</span>
+                        <span style={{ fontFamily: "Geist, monospace" }}>-{formatMoney(discountAmount, sym)}</span>
+                      </div>
+                    </div>
+                  )}
+                  {shippingCost > 0 && (
+                    <div className="flex justify-end mb-1">
+                      <div className="w-1/2 flex justify-between text-[10px]">
+                        <span className="text-[#76777d]">Shipping</span>
+                        <span style={{ fontFamily: "Geist, monospace" }}>+{formatMoney(shippingCost, sym)}</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex justify-end">
+                    <div className="w-3/5 bg-[#131b2e] py-1.5 px-3 rounded-lg flex justify-between items-center text-white">
+                      <span className="text-[9px] uppercase tracking-wider text-[#bec6e0]">{isQuotationDoc ? "Quotation Total" : "Total"}</span>
+                      <span className="text-xs font-bold" style={{ fontFamily: "Work Sans, sans-serif" }}>{formatMoney(total, sym)}</span>
+                    </div>
+                  </div>
+                  {amountPaid > 0 && !isQuotationDoc && (
+                    <>
+                      <div className="flex justify-end mt-1">
+                        <div className="w-3/5 py-1 px-3 flex justify-between items-center text-[10px]">
+                          <span className="text-[#76777d]">Paid</span>
+                          <span className="font-medium text-green-600" style={{ fontFamily: "Geist, monospace" }}>{formatMoney(amountPaid, sym)}</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-end">
+                        <div className="w-3/5 bg-[#eff6ff] py-1.5 px-3 rounded-lg flex justify-between items-center border border-[#bfdbfe]">
+                          <span className="text-[9px] uppercase tracking-wider text-[#1e40af]">Due</span>
+                          <span className="text-xs font-bold text-[#1e40af]" style={{ fontFamily: "Work Sans, sans-serif" }}>{formatMoney(balanceDue, sym)}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Section: Bank, Notes, Signature, QR for A5 */}
+          <div className="p-3 print:p-2.5 border-t border-[#dce9ff] bg-[#fafcff] template-bottom-section">
+            {noteText && (
+              <div className="mb-1.5 text-[9px] text-[#45464d] text-left template-nb-note">
+                <strong className="text-black">N.B:</strong> {noteText}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-2 items-end">
+              <div>
+                {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) && (
+                  <div className="text-[9px] text-[#45464d] space-y-0.5">
+                    <p className="font-bold uppercase text-[8.5px] text-[#76777d]">Bank Details</p>
+                    <p className="font-semibold text-black">{invoice.bank_name || profile?.bank_name}</p>
+                    {(invoice.bank_account_number || profile?.bank_account_number) && (
+                      <p className="font-mono">A/C: {invoice.bank_account_number || profile?.bank_account_number}</p>
+                    )}
+                  </div>
+                )}
+                {profile?.qr_code_enabled && publicUrl && (
+                  <div className="mt-1.5">
+                    <QRCodeSVG value={publicUrl} size={42} />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col items-end">
+                {(profile?.signature_enabled ?? true) &&
+                  (invoice.signature_url || profile?.signature_url || invoice.signatory_name || profile?.signatory_name) && (
+                    <div className="flex flex-col items-end min-w-[120px]">
+                      {(invoice.signature_url || profile?.signature_url) && (
+                        <img
+                          src={invoice.signature_url || profile?.signature_url || undefined}
+                          alt="Signature"
+                          className="h-6 mb-1 object-contain"
+                        />
+                      )}
+                      <div className="w-full border-b border-[#c6c6cd] mb-0.5"></div>
+                      <p className="text-[9px] text-[#76777d]">
+                        {invoice.signatory_name || profile?.signatory_name || (isChallanDoc ? "Received By" : "Authorized Signatory")}
+                      </p>
+                    </div>
+                  )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
