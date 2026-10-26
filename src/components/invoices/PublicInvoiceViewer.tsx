@@ -7,6 +7,8 @@ import { updateInvoiceSettings, checkIsInvoiceOwner } from '@/app/actions/invoic
 import { useAuth } from '@/hooks/useAuth';
 import { PublicInvoiceHeader } from './PublicInvoiceHeader';
 import { PublicInvoiceSettingsTabs } from './PublicInvoiceSettingsTabs';
+import { SendDocumentDialog } from '@/components/integrations/SendDocumentDialog';
+import { ShareDocumentType } from '@/lib/documentSharing';
 
 interface PublicInvoiceViewerProps {
   invoice: any;
@@ -54,6 +56,7 @@ export function PublicInvoiceViewer({
   const [currentTemplate, setCurrentTemplate] = useState(invoice.template || templateId || 'sleek-accent');
   const [templateSavedNotification, setTemplateSavedNotification] = useState<string | null>(null);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Sync initialDocumentType if prop changes
   useEffect(() => {
@@ -389,6 +392,28 @@ export function PublicInvoiceViewer({
 
 
 
+  // Financial breakdown calculations for sharing dialog
+  const invoiceGroups: any[] = invoice?.groups || [];
+  const computedSubtotal = invoiceGroups.reduce((acc: number, g: any) => {
+    const items = g?.items || [];
+    return acc + items.reduce((itemAcc: number, item: any) => {
+      const unitPrice = Number(item?.unitPrice || 0);
+      const qty = Number(item?.quantity || 1);
+      const isFlatRate = Boolean(item?.isFlatRate);
+      return itemAcc + (isFlatRate ? unitPrice : qty * unitPrice);
+    }, 0);
+  }, 0);
+
+  const discountType = invoice?.discount_type || 'percentage';
+  const discountVal = Number(invoice?.discount_value || 0);
+  const computedDiscountAmount = discountType === 'percentage'
+    ? (computedSubtotal * discountVal) / 100
+    : discountVal;
+  const computedShippingCost = Number(invoice?.shipping_cost || 0);
+  const computedTotalAmount = Math.max(0, computedSubtotal - computedDiscountAmount + computedShippingCost);
+  const paidAmount = Number(invoice?.amount_paid || 0);
+  const computedRemainingAmount = Math.max(0, computedTotalAmount - paidAmount);
+
   return (
     <div className="w-full flex flex-col items-center">
       <PublicInvoiceHeader
@@ -397,6 +422,7 @@ export function PublicInvoiceViewer({
         isOwner={effectiveIsOwner}
         onPrint={handlePrint}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
+        onOpenShare={() => setIsShareModalOpen(true)}
       />
 
       {/* PRIMARY VIEW: INVOICE PREVIEW CANVAS (Clean, not stacked below settings on same scroll) */}
@@ -525,6 +551,19 @@ export function PublicInvoiceViewer({
 
           <div className="w-px bg-outline-variant/50 h-5"></div>
 
+          {/* Share Document Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsShareModalOpen(true)}
+            className="px-3 h-8 flex items-center gap-1.5 bg-surface-container-high hover:bg-surface-container-highest text-primary rounded-lg text-xs font-semibold transition-all cursor-pointer active:scale-95 border border-primary/25 shadow-xs"
+            title="Share Document via WhatsApp or Email"
+          >
+            <MaterialIcon icon="share" className="text-[16px]" />
+            <span>Share</span>
+          </button>
+
+          <div className="w-px bg-outline-variant/50 h-5"></div>
+
           {/* Print / Download Button */}
           <button
             onClick={handlePrint}
@@ -611,6 +650,16 @@ export function PublicInvoiceViewer({
 
           <button
             type="button"
+            onClick={() => setIsShareModalOpen(true)}
+            className="shrink-0 bg-surface border border-outline-variant hover:border-primary text-primary hover:bg-surface-container rounded-xl px-3 sm:px-3.5 h-12 flex items-center justify-center gap-1.5 font-bold text-xs sm:text-sm cursor-pointer active:scale-[0.98] transition-all shadow-xs"
+            title="Share Document via WhatsApp or Email"
+          >
+            <MaterialIcon icon="share" className="text-[19px]" />
+            <span className="hidden sm:inline">Share</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handlePrint}
             className="shrink-0 bg-primary text-on-primary hover:bg-primary/90 shadow-md rounded-xl px-4 sm:px-5 h-12 flex items-center justify-center gap-2 font-bold text-xs sm:text-sm cursor-pointer active:scale-[0.98] transition-all"
             title="Print or Save as PDF"
@@ -627,7 +676,7 @@ export function PublicInvoiceViewer({
           role="dialog"
           aria-modal="true"
           aria-label="Document Settings"
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end transition-opacity duration-300 print:hidden"
+          className="fixed inset-0 z-[9990] bg-black/60 backdrop-blur-xs flex flex-col justify-end transition-opacity duration-300 print:hidden"
           onClick={() => setIsSettingsModalOpen(false)}
         >
           <div
@@ -685,6 +734,32 @@ export function PublicInvoiceViewer({
           </div>
         </div>
       )}
+
+      {/* Share Document Dialog */}
+      <SendDocumentDialog
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        invoiceId={invoice.id}
+        invoiceNumber={invoice.invoiceNumber || invoice.invoice_number || ''}
+        customerName={invoice.client_name || ''}
+        customerPhone={invoice.client_phone || ''}
+        customerEmail={invoice.client_email || ''}
+        customerWhatsapp={invoice.client_whatsapp || ''}
+        companyName={profile?.businessName || profile?.business_name || profile?.full_name || 'Our Company'}
+        subtotal={computedSubtotal}
+        discountAmount={computedDiscountAmount}
+        shippingCost={computedShippingCost}
+        totalAmount={computedTotalAmount}
+        amountPaid={paidAmount}
+        remainingAmount={computedRemainingAmount}
+        currency={invoice.currency || 'USD'}
+        currencySymbol={invoice.currency_symbol || '$'}
+        status={invoice.status || 'UNPAID'}
+        issueDate={issuedAt || invoice.issued_at || invoice.created_at || ''}
+        dueDate={dueDate || invoice.due_date || ''}
+        initialDocumentType={documentType as ShareDocumentType}
+        initialQuotationWithPricing={quotationWithPricing}
+      />
 
       {/* Dedicated Print Container */}
       <div className="hidden print:block w-[210mm] mx-auto bg-white border-none shadow-none m-0 p-0">

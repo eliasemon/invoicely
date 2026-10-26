@@ -9,6 +9,7 @@ interface PublicInvoiceHeaderProps {
   isOwner?: boolean;
   onPrint?: () => void;
   onOpenSettings?: () => void;
+  onOpenShare?: () => void;
 }
 
 export function PublicInvoiceHeader({
@@ -17,6 +18,7 @@ export function PublicInvoiceHeader({
   isOwner = false,
   onPrint,
   onOpenSettings,
+  onOpenShare,
 }: PublicInvoiceHeaderProps) {
   const docTitle =
     documentType === 'challan'
@@ -60,6 +62,18 @@ export function PublicInvoiceHeader({
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {onOpenShare && (
+            <button
+              type="button"
+              onClick={onOpenShare}
+              className="px-3 sm:px-3.5 py-2 bg-surface border border-outline-variant hover:border-primary text-on-surface hover:text-primary font-body-sm text-xs sm:text-sm font-semibold rounded-lg flex items-center gap-1.5 active:scale-95 transition-all shadow-xs cursor-pointer"
+              title="Share Document via WhatsApp or Email"
+            >
+              <MaterialIcon icon="share" className="text-[18px] text-primary" />
+              <span className="hidden sm:inline">Share</span>
+            </button>
+          )}
+
           {onOpenSettings && (
             <button
               type="button"
