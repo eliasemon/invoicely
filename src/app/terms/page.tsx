@@ -95,7 +95,7 @@ export default function TermsOfServicePage() {
           <li>You will safeguard your login credentials (email, password, SSO tokens) and not disclose them to unauthorized third parties.</li>
         </ul>
         <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed">
-          You are solely responsible for all actions taken under your account. You must notify us immediately at <a href="mailto:security@invorio.app" className="text-primary underline">security@invorio.app</a> if you suspect unauthorized access or security compromises.
+          You are solely responsible for all actions taken under your account. You must notify us immediately at <a href="mailto:eliasemon0025@gmail.com" className="text-primary underline">eliasemon0025@gmail.com</a> if you suspect unauthorized access or security compromises.
         </p>
       </section>
 
@@ -261,7 +261,7 @@ export default function TermsOfServicePage() {
           <h2 className="text-xl md:text-2xl font-bold text-primary m-0">Termination & Account Suspension</h2>
         </div>
         <p className="text-sm md:text-base text-on-surface leading-relaxed">
-          <strong>By You:</strong> You may terminate these Terms at any time by deleting your account through your profile settings or by contacting <a href="mailto:support@invorio.app" className="text-primary underline">support@invorio.app</a>.
+          <strong>By You:</strong> You may terminate these Terms at any time by deleting your account through your profile settings or by contacting <a href="mailto:eliasemon0025@gmail.com" className="text-primary underline">eliasemon0025@gmail.com</a>.
         </p>
         <p className="text-sm md:text-base text-on-surface leading-relaxed">
           <strong>By Invorio:</strong> We reserve the right to suspend or terminate your account immediately without prior notice if:
@@ -327,7 +327,7 @@ export default function TermsOfServicePage() {
           <h2 className="text-xl md:text-2xl font-bold text-primary m-0">Dispute Resolution & Binding Arbitration</h2>
         </div>
         <p className="text-sm md:text-base text-on-surface leading-relaxed">
-          <strong>Mandatory Informal Resolution:</strong> Before initiating formal proceedings, you and Invorio agree to attempt to resolve any dispute, controversy, or claim amicably by contacting <a href="mailto:legal@invorio.app" className="text-primary underline">legal@invorio.app</a> for at least thirty (30) days.
+          <strong>Mandatory Informal Resolution:</strong> Before initiating formal proceedings, you and Invorio agree to attempt to resolve any dispute, controversy, or claim amicably by contacting <a href="mailto:eliasemon0025@gmail.com" className="text-primary underline">eliasemon0025@gmail.com</a> for at least thirty (30) days.
         </p>
         <p className="text-xs md:text-sm text-on-surface leading-relaxed">
           <strong>Binding Arbitration:</strong> If the dispute is not resolved informally, it shall be settled by binding individual arbitration conducted by the American Arbitration Association (AAA) under its Commercial Arbitration Rules.
@@ -362,9 +362,8 @@ export default function TermsOfServicePage() {
         </p>
         <div className="p-5 rounded-2xl bg-surface-container border border-outline-variant/30 space-y-2 text-xs md:text-sm">
           <div className="font-bold text-primary text-base">Invorio Inc. — Legal Counsel Department</div>
-          <div><strong>Email:</strong> <a href="mailto:legal@invorio.app" className="text-primary underline">legal@invorio.app</a></div>
-          <div><strong>Support Desk:</strong> <a href="mailto:support@invorio.app" className="text-primary underline">support@invorio.app</a></div>
-          <div><strong>Mailing Address:</strong> Invorio Legal Operations, 100 Montgomery St, Suite 1400, San Francisco, CA 94104, USA</div>
+          <div><strong>Email:</strong> <a href="mailto:eliasemon0025@gmail.com" className="text-primary underline">eliasemon0025@gmail.com</a></div>
+          <div><strong>Physical Address:</strong> Invorio Legal Operations, Akhaura-3450, Brahmanbaira, Bangladesh</div>
         </div>
       </section>
     </LegalPageShell>

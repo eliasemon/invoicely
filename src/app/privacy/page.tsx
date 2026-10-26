@@ -115,7 +115,7 @@ export default function PrivacyPolicyPage() {
           </div>
         </div>
         <p className="text-xs text-on-surface-variant">
-          If you are an enterprise or European economic entity requiring a signed Data Processing Addendum (DPA) incorporating Standard Contractual Clauses (SCCs), please contact our legal team at <a href="mailto:legal@invorio.app" className="text-primary underline">legal@invorio.app</a>.
+          If you are an enterprise or European economic entity requiring a signed Data Processing Addendum (DPA) incorporating Standard Contractual Clauses (SCCs), please contact our legal team at <a href="mailto:eliasemon0025@gmail.com" className="text-primary underline">eliasemon0025@gmail.com</a>.
         </p>
       </section>
 
@@ -434,7 +434,7 @@ export default function PrivacyPolicyPage() {
         </div>
 
         <p className="text-xs md:text-sm text-on-surface leading-relaxed">
-          To exercise any of these rights, email our Data Protection Officer at <a href="mailto:privacy@invorio.app" className="text-primary font-semibold underline">privacy@invorio.app</a>. We respond to all verified requests within 30 days without fee.
+          To exercise any of these rights, email our Data Protection Officer at <a href="mailto:eliasemon0025@gmail.com" className="text-primary font-semibold underline">eliasemon0025@gmail.com</a>. We respond to all verified requests within 30 days without fee.
         </p>
       </section>
 
@@ -482,11 +482,10 @@ export default function PrivacyPolicyPage() {
         </p>
         <div className="p-5 rounded-2xl bg-surface-container border border-outline-variant/30 space-y-2 text-xs md:text-sm">
           <div className="font-bold text-primary text-base">Invorio Inc. — Privacy & Compliance Office</div>
-          <div><strong>Email:</strong> <a href="mailto:privacy@invorio.app" className="text-primary underline">privacy@invorio.app</a></div>
-          <div><strong>Legal Desk:</strong> <a href="mailto:legal@invorio.app" className="text-primary underline">legal@invorio.app</a></div>
-          <div><strong>Physical Address:</strong> Invorio Legal Operations, 100 Montgomery St, Suite 1400, San Francisco, CA 94104, USA</div>
+          <div><strong>Email:</strong> <a href="mailto:eliasemon0025@gmail.com" className="text-primary underline">eliasemon0025@gmail.com</a></div>
+          <div><strong>Physical Address:</strong> Invorio Legal Operations, Akhaura-3450, Brahmanbaira, Bangladesh</div>
           <div className="text-on-surface-variant pt-2 border-t border-outline-variant/20 text-xs">
-            For general technical assistance, please visit the <Link href="/dashboard" className="text-primary underline">Dashboard</Link> or reach out to <a href="mailto:support@invorio.app" className="text-primary underline">support@invorio.app</a>.
+            For general technical assistance, please visit the <Link href="/dashboard" className="text-primary underline">Dashboard</Link> or reach out to <a href="mailto:eliasemon0025@gmail.com" className="text-primary underline">eliasemon0025@gmail.com</a>.
           </div>
         </div>
       </section>

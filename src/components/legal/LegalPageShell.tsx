@@ -419,10 +419,10 @@ export function LegalPageShell({
                 Have specific compliance, enterprise DPA, or regulatory questions? Reach our Data Protection Officer directly.
               </p>
               <a
-                href="mailto:legal@invorio.app"
+                href="mailto:eliasemon0025@gmail.com"
                 className="w-full py-2 px-3 rounded-lg border border-outline-variant text-center block text-xs font-semibold text-primary hover:bg-surface-container transition-colors"
               >
-                legal@invorio.app
+                eliasemon0025@gmail.com
               </a>
             </div>
           </aside>
@@ -444,7 +444,7 @@ export function LegalPageShell({
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <a
-                    href="mailto:legal@invorio.app"
+                    href="mailto:eliasemon0025@gmail.com"
                     className="px-4 py-2 bg-primary text-on-primary rounded-lg text-xs font-medium hover:bg-primary-container transition-colors shadow-xs"
                   >
                     Contact Legal Team
@@ -485,7 +485,7 @@ export function LegalPageShell({
               <Link href="/terms" className={`hover:text-primary transition-colors ${currentDoc === 'terms' ? 'text-primary font-bold' : ''}`}>
                 Terms of Service
               </Link>
-              <a href="mailto:support@invorio.app" className="hover:text-primary transition-colors">Contact Support</a>
+              <a href="mailto:eliasemon0025@gmail.com" className="hover:text-primary transition-colors">Contact Support</a>
             </nav>
 
             <div className="text-xs text-on-surface-variant text-center md:text-right">
