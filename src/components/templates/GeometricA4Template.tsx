@@ -318,17 +318,15 @@ export function GeometricA4Template({
           )}
         </div>
 
-        {/* N.B. Note - Immediately below table/totals, above bank details */}
-        {noteText && (
-          <div className="px-6 print:px-6 mb-2 relative z-10">
-            <div className="pt-2 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left break-inside-avoid template-nb-note">
+        {/* Bank Details & Signature Section */}
+        <div className="p-6 pt-0 print:p-6 print:pt-0 relative z-10 template-bottom-section">
+          {/* N.B. Note - Immediately above bank details */}
+          {noteText && (
+            <div className="mb-3 pt-2 border-t border-[#e2e8f0] text-[10px] text-[#475569] whitespace-pre-line text-left break-inside-avoid template-nb-note">
               <strong className="text-[#1e293b]">N.B:</strong> {noteText}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Bank Details & Signature Section */}
-        <div className="p-6 pt-0 print:p-6 print:pt-0 relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#e2e8f0] pt-4 items-start">
             {/* Bank Details - Only in Invoice Mode */}
             {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (

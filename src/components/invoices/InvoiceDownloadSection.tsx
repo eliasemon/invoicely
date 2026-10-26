@@ -97,105 +97,105 @@ export function InvoiceDownloadSection({
         <Link
           href={`/public/invoice/${invoiceId}`}
           target="_blank"
-          className="flex-1 flex items-center justify-between px-3 py-2 bg-secondary text-on-secondary hover:opacity-90 rounded-lg transition-all active:scale-98 font-label-sm shadow-sm"
+          className="flex-1 min-w-0 flex items-center justify-between px-3 py-2 bg-secondary text-on-secondary hover:opacity-90 rounded-lg transition-all active:scale-98 font-label-sm shadow-sm"
           title="Open and download commercial invoice"
         >
-          <span className="flex items-center gap-2">
-            <MaterialIcon icon="receipt_long" className="text-[18px]" />
-            <span className="font-semibold text-xs sm:text-sm">Download / Print Invoice</span>
+          <span className="flex items-center gap-2 min-w-0">
+            <MaterialIcon icon="receipt_long" className="text-[18px] shrink-0" />
+            <span className="font-semibold text-xs sm:text-sm truncate">Download / Print Invoice</span>
           </span>
-          <MaterialIcon icon="open_in_new" className="text-[14px] opacity-80" />
+          <MaterialIcon icon="open_in_new" className="text-[14px] opacity-80 shrink-0 ml-1.5" />
         </Link>
         <button
           type="button"
           onClick={() => handleToggle('invoice', !invoiceMode)}
           disabled={isUpdating}
           title={invoiceMode ? 'Public view is ON. Click to disable for clients.' : 'Public view is OFF. Click to enable for clients.'}
-          className={`flex items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
+          className={`shrink-0 flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-semibold border transition-all cursor-pointer active:scale-95 ${
             invoiceMode
               ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400/40 hover:bg-emerald-500/30'
               : 'bg-amber-500/20 text-amber-200 border-amber-400/40 hover:bg-amber-500/30'
           }`}
         >
-          <span className={`w-1.5 h-1.5 rounded-full ${invoiceMode ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
-          <span>{invoiceMode ? 'Public: On' : 'Public: Off'}</span>
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${invoiceMode ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+          <span className="whitespace-nowrap">{invoiceMode ? 'Public: On' : 'Public: Off'}</span>
         </button>
       </div>
 
-      {/* Grid: Challan & Quotation Buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      {/* Format Actions: Challan & Quotation */}
+      <div className="flex flex-col gap-2">
         {/* Challan Card */}
-        <div className="flex items-center gap-1.5 p-1 bg-white/5 rounded-lg border border-white/10">
+        <div className="flex items-center justify-between gap-2 p-1.5 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition-colors">
           <Link
             href={`/public/invoice/${invoiceId}?type=challan`}
             target="_blank"
-            className="flex-1 flex items-center gap-1.5 px-2 py-1.5 hover:bg-white/10 text-white rounded-md transition-all active:scale-95 font-label-sm text-xs"
+            className="flex-1 min-w-0 flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 text-white rounded-md transition-all active:scale-95 font-label-sm text-xs"
             title="Open and download delivery challan"
           >
-            <MaterialIcon icon="local_shipping" className="text-[16px] text-primary-container" />
-            <span className="font-medium truncate">Challan</span>
-            <MaterialIcon icon="open_in_new" className="text-[12px] opacity-60 ml-auto" />
+            <MaterialIcon icon="local_shipping" className="text-[16px] text-primary-container shrink-0" />
+            <span className="font-medium truncate">Delivery Challan</span>
+            <MaterialIcon icon="open_in_new" className="text-[12px] opacity-60 ml-auto shrink-0" />
           </Link>
           <button
             type="button"
             onClick={() => handleToggle('challan', !challanMode)}
             disabled={isUpdating}
             title={challanMode ? 'Challan public view is ON. Click to disable.' : 'Challan public view is OFF. Click to enable.'}
-            className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold border transition-all cursor-pointer active:scale-95 ${
+            className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[11px] font-semibold border transition-all cursor-pointer active:scale-95 ${
               challanMode
                 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 hover:bg-emerald-500/30'
                 : 'bg-amber-500/20 text-amber-300 border-amber-400/40 hover:bg-amber-500/30'
             }`}
           >
-            <span className={`w-1.5 h-1.5 rounded-full ${challanMode ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
-            <span>{challanMode ? 'On' : 'Off'}</span>
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${challanMode ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+            <span className="whitespace-nowrap">{challanMode ? 'On' : 'Off'}</span>
           </button>
         </div>
 
         {/* Quotation Card */}
-        <div className="flex flex-col gap-1.5 p-1.5 bg-white/5 rounded-lg border border-white/10">
-          <div className="flex items-center gap-1.5">
+        <div className="flex flex-col gap-2 p-1.5 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition-colors">
+          <div className="flex items-center justify-between gap-2">
             <Link
               href={`/public/invoice/${invoiceId}?type=quotation&pricing=${quotationPricing}`}
               target="_blank"
-              className="flex-1 flex items-center gap-1.5 px-2 py-1.5 hover:bg-white/10 text-white rounded-md transition-all active:scale-95 font-label-sm text-xs"
-              title={`Open and download quotation (${quotationPricing === 'with_money' ? 'With Money' : 'Without Money'})`}
+              className="flex-1 min-w-0 flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 text-white rounded-md transition-all active:scale-95 font-label-sm text-xs"
+              title={`Open and download quotation (${quotationPricing === 'with_money' ? 'With Pricing' : 'Without Pricing'})`}
             >
-              <MaterialIcon icon="request_quote" className="text-[16px] text-tertiary-fixed-dim" />
+              <MaterialIcon icon="request_quote" className="text-[16px] text-tertiary-fixed-dim shrink-0" />
               <span className="font-medium truncate">Quotation</span>
-              <span className="text-[10px] text-white/80 bg-white/10 px-1.5 py-0.5 rounded font-medium">
-                {quotationPricing === 'with_money' ? 'With Money' : 'Without Money'}
+              <span className="shrink-0 text-[10px] text-white/80 bg-white/10 px-1.5 py-0.5 rounded font-medium">
+                {quotationPricing === 'with_money' ? 'With Pricing' : 'No Pricing'}
               </span>
-              <MaterialIcon icon="open_in_new" className="text-[12px] opacity-60 ml-auto" />
+              <MaterialIcon icon="open_in_new" className="text-[12px] opacity-60 ml-auto shrink-0" />
             </Link>
             <button
               type="button"
               onClick={() => handleToggle('quotation', !quotationMode)}
               disabled={isUpdating}
               title={quotationMode ? 'Quotation public view is ON. Click to disable.' : 'Quotation public view is OFF. Click to enable.'}
-              className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold border transition-all cursor-pointer active:scale-95 ${
+              className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[11px] font-semibold border transition-all cursor-pointer active:scale-95 ${
                 quotationMode
                   ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 hover:bg-emerald-500/30'
                   : 'bg-amber-500/20 text-amber-300 border-amber-400/40 hover:bg-amber-500/30'
               }`}
             >
-              <span className={`w-1.5 h-1.5 rounded-full ${quotationMode ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
-              <span>{quotationMode ? 'On' : 'Off'}</span>
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${quotationMode ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+              <span className="whitespace-nowrap">{quotationMode ? 'On' : 'Off'}</span>
             </button>
           </div>
 
           {/* Pricing Toggle for Quotation */}
-          <div className="flex items-center justify-between px-2 py-1 bg-black/25 rounded border border-white/5 text-[11px]">
-            <span className="text-white/70 flex items-center gap-1 text-[10px] uppercase font-semibold tracking-wider">
+          <div className="flex items-center justify-between gap-2 px-2 py-1.5 bg-black/25 rounded border border-white/5 text-[11px]">
+            <span className="text-white/70 flex items-center gap-1 text-[10px] uppercase font-semibold tracking-wider shrink-0">
               <MaterialIcon icon="payments" className="text-[14px] text-white/60" />
               <span>Pricing:</span>
             </span>
-            <div className="flex items-center gap-1 bg-white/10 p-0.5 rounded text-[10px] font-medium">
+            <div className="flex items-center gap-1 bg-white/10 p-0.5 rounded text-[10px] font-medium shrink-0">
               <button
                 type="button"
                 onClick={() => handleQuotationPricingChange('with_money')}
                 disabled={isUpdating}
-                className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded transition-all cursor-pointer whitespace-nowrap ${
                   quotationPricing === 'with_money'
                     ? 'bg-primary text-white font-bold shadow-xs'
                     : 'text-white/70 hover:text-white'
@@ -207,7 +207,7 @@ export function InvoiceDownloadSection({
                 type="button"
                 onClick={() => handleQuotationPricingChange('without_money')}
                 disabled={isUpdating}
-                className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded transition-all cursor-pointer whitespace-nowrap ${
                   quotationPricing === 'without_money'
                     ? 'bg-primary text-white font-bold shadow-xs'
                     : 'text-white/70 hover:text-white'

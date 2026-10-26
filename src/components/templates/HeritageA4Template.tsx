@@ -348,101 +348,104 @@ export function HeritageA4Template({
           </div>
         </div>
 
-        {/* N.B. Note - Immediately below table/totals, above bank details */}
-        {noteText && (
-          <div className="mb-3 pt-2 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-line text-left break-inside-avoid template-nb-note">
-            <strong className="text-[#78350f]">N.B:</strong> {noteText}
-          </div>
-        )}
-
-        {/* Bank Details & Signature Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t-2 border-[#b45309] pt-4 items-start">
-          {/* Bank Details - Only in Invoice Mode */}
-          {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
-            <div>
-              <h4 className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
-                PAYMENT INSTRUCTIONS
-              </h4>
-              <div
-                className="text-xs text-[#92400e] space-y-0.5"
-                style={{ fontFamily: "Geist, monospace" }}
-              >
-                <p>
-                  <span className="font-semibold text-[#78350f]">Bank:</span>{" "}
-                  {invoice.bank_name || profile?.bank_name}
-                </p>
-                {(invoice.bank_account_holder || profile?.bank_account_holder) && (
-                  <p>
-                    <span className="font-semibold text-[#78350f]">Holder:</span>{" "}
-                    {invoice.bank_account_holder || profile?.bank_account_holder}
-                  </p>
-                )}
-                {(invoice.bank_account_number || profile?.bank_account_number) && (
-                  <p>
-                    <span className="font-semibold text-[#78350f]">Account:</span>{" "}
-                    {invoice.bank_account_number || profile?.bank_account_number}
-                  </p>
-                )}
-                {(invoice.bank_swift || profile?.bank_swift) && (
-                  <p>
-                    <span className="font-semibold text-[#78350f]">SWIFT:</span>{" "}
-                    {invoice.bank_swift || profile?.bank_swift}
-                  </p>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div>
-              {invoice.notes && (
-                <div>
-                  <h4 className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
-                    NOTES
-                  </h4>
-                  <p className="text-xs text-[#92400e]">{invoice.notes}</p>
-                </div>
-              )}
+        {/* Bottom Section: N.B. Note, Bank Details & Signature, Terms */}
+        <div className="w-full template-bottom-section">
+          {/* N.B. Note - Immediately above bank details */}
+          {noteText && (
+            <div className="mb-3 pt-2 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-line text-left break-inside-avoid template-nb-note">
+              <strong className="text-[#78350f]">N.B:</strong> {noteText}
             </div>
           )}
 
-          {/* Signature */}
-          <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
-            {(profile?.signature_enabled ?? true) &&
-              (invoice.signature_url ||
-                profile?.signature_url ||
-                invoice.signatory_name ||
-                profile?.signatory_name) && (
-                <div className="flex flex-col items-end print:items-end">
-                  {(invoice.signature_url || profile?.signature_url) && (
-                    <img
-                      src={
-                        invoice.signature_url ||
-                        profile?.signature_url ||
-                        undefined
-                      }
-                      alt="Signature"
-                      className="h-10 mb-2 object-contain"
-                    />
-                  )}
-                  <div className="w-36 border-b border-[#b45309] mb-1"></div>
-                  <p className="text-[11px] text-[#78350f] font-semibold">
-                    {invoice.signatory_name ||
-                      profile?.signatory_name ||
-                      (isChallanDoc ? "Received By" : "Authorized Signatory")}
+          {/* Bank Details & Signature Section */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t-2 border-[#b45309] pt-4 items-start">
+            {/* Bank Details - Only in Invoice Mode */}
+            {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
+              <div>
+                <h4 className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
+                  PAYMENT INSTRUCTIONS
+                </h4>
+                <div
+                  className="text-xs text-[#92400e] space-y-0.5"
+                  style={{ fontFamily: "Geist, monospace" }}
+                >
+                  <p>
+                    <span className="font-semibold text-[#78350f]">Bank:</span>{" "}
+                    {invoice.bank_name || profile?.bank_name}
                   </p>
+                  {(invoice.bank_account_holder || profile?.bank_account_holder) && (
+                    <p>
+                      <span className="font-semibold text-[#78350f]">Holder:</span>{" "}
+                      {invoice.bank_account_holder || profile?.bank_account_holder}
+                    </p>
+                  )}
+                  {(invoice.bank_account_number || profile?.bank_account_number) && (
+                    <p>
+                      <span className="font-semibold text-[#78350f]">Account:</span>{" "}
+                      {invoice.bank_account_number || profile?.bank_account_number}
+                    </p>
+                  )}
+                  {(invoice.bank_swift || profile?.bank_swift) && (
+                    <p>
+                      <span className="font-semibold text-[#78350f]">SWIFT:</span>{" "}
+                      {invoice.bank_swift || profile?.bank_swift}
+                    </p>
+                  )}
                 </div>
-              )}
-          </div>
-        </div>
+              </div>
+            ) : (
+              <div>
+                {invoice.notes && (
+                  <div>
+                    <h4 className="text-[10px] uppercase font-bold text-[#b45309] tracking-wider mb-1">
+                      NOTES
+                    </h4>
+                    <p className="text-xs text-[#92400e]">{invoice.notes}</p>
+                  </div>
+                )}
+              </div>
+            )}
 
-        {/* Footer Terms */}
-        {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-          <div className="mt-2 pt-2 print:mt-1.5 print:pt-1 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-wrap break-inside-avoid">
-            <p className="font-semibold text-[#78350f] mb-0.5">
-              Terms & Conditions
-            </p>
-            <p>{invoice.terms_and_conditions || profile?.terms_and_conditions}</p>
+            {/* Signature */}
+            <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
+              {(profile?.signature_enabled ?? true) &&
+                (invoice.signature_url ||
+                  profile?.signature_url ||
+                  invoice.signatory_name ||
+                  profile?.signatory_name) && (
+                  <div className="flex flex-col items-end print:items-end">
+                    {(invoice.signature_url || profile?.signature_url) && (
+                      <img
+                        src={
+                          invoice.signature_url ||
+                          profile?.signature_url ||
+                          undefined
+                        }
+                        alt="Signature"
+                        className="h-10 mb-2 object-contain"
+                      />
+                    )}
+                    <div className="w-36 border-b border-[#b45309] mb-1"></div>
+                    <p className="text-[11px] text-[#78350f] font-semibold">
+                      {invoice.signatory_name ||
+                        profile?.signatory_name ||
+                        (isChallanDoc ? "Received By" : "Authorized Signatory")}
+                    </p>
+                  </div>
+                )}
+            </div>
           </div>
-        )}
+
+          {/* Footer Terms */}
+          {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
+            <div className="mt-2 pt-2 print:mt-1.5 print:pt-1 border-t border-[#d97706]/30 text-[10px] text-[#92400e] whitespace-pre-wrap break-inside-avoid">
+              <p className="font-semibold text-[#78350f] mb-0.5">
+                Terms & Conditions
+              </p>
+              <p>{invoice.terms_and_conditions || profile?.terms_and_conditions}</p>
+            </div>
+          )}
+        </div>
 
 
       </div>

@@ -66,7 +66,8 @@ export function RedClassicGroupedTemplate({
       className="min-h-screen py-8 bg-gray-100 print:bg-white print:p-0 print:m-0 print:min-h-0 print:w-[210mm]"
       style={{ fontFamily: "Arial, sans-serif" }}
     >
-      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-black shadow-xl overflow-hidden print:shadow-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 p-4 sm:p-5 print:p-4 relative">
+      <div className="max-w-[210mm] w-full min-h-[297mm] mx-auto bg-white text-black shadow-xl overflow-hidden print:shadow-none print:w-[210mm] print:max-w-[210mm] print:mx-0 print:min-h-[297mm] print:my-0 p-4 sm:p-5 print:p-4 relative flex flex-col justify-between">
+        <div>
         {/* Header section */}
         <div className="flex flex-row items-start justify-between mb-2.5 pb-2.5 border-b-4 border-[#8b0000]">
           <div className="flex items-start gap-4">
@@ -335,36 +336,40 @@ export function RedClassicGroupedTemplate({
           </div>
         )}
 
-        {/* N.B. Note */}
-        {noteText ? (
-          <div className="mb-3 text-[11px] break-inside-avoid template-nb-note">
-            <p className="font-bold mb-0.5">N.B:</p>
-            <p className="text-gray-800 whitespace-pre-line">{noteText}</p>
-          </div>
-        ) : null}
+        </div>
 
-        {/* Terms & Conditions */}
-        {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-          <div className="mb-3 text-[11px] break-inside-avoid">
-            <p className="font-bold mb-0.5">Terms & Conditions:</p>
-            <p className="text-gray-800 whitespace-pre-line">
-              {invoice.terms_and_conditions || profile?.terms_and_conditions}
-            </p>
-          </div>
-        )}
+        {/* Bottom Section: N.B. Note, Bank Details, Terms, Footer */}
+        <div className="w-full template-bottom-section">
+          {/* N.B. Note - Immediately above Bank Details */}
+          {noteText ? (
+            <div className="mb-3 text-[11px] break-inside-avoid template-nb-note">
+              <p className="font-bold mb-0.5">N.B:</p>
+              <p className="text-gray-800 whitespace-pre-line">{noteText}</p>
+            </div>
+          ) : null}
 
-        {/* Bank Details - Only in Invoice Mode */}
-        {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) && (
-          <div className="mb-4 text-[11px]">
-            <p className="font-bold mb-0.5">Bank Details:</p>
-            <p className="text-gray-800">
-              <span className="font-semibold">{invoice.bank_name || profile?.bank_name}</span>
-              <br />
-              {invoice.bank_account_holder || profile?.bank_account_holder} • {invoice.bank_account_number || profile?.bank_account_number}
-              {invoice.bank_swift || profile?.bank_swift ? ` • SWIFT: ${invoice.bank_swift || profile?.bank_swift}` : ""}
-            </p>
-          </div>
-        )}
+          {/* Bank Details - Only in Invoice Mode */}
+          {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) && (
+            <div className="mb-4 text-[11px]">
+              <p className="font-bold mb-0.5">Bank Details:</p>
+              <p className="text-gray-800">
+                <span className="font-semibold">{invoice.bank_name || profile?.bank_name}</span>
+                <br />
+                {invoice.bank_account_holder || profile?.bank_account_holder} • {invoice.bank_account_number || profile?.bank_account_number}
+                {invoice.bank_swift || profile?.bank_swift ? ` • SWIFT: ${invoice.bank_swift || profile?.bank_swift}` : ""}
+              </p>
+            </div>
+          )}
+
+          {/* Terms & Conditions */}
+          {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
+            <div className="mb-3 text-[11px] break-inside-avoid">
+              <p className="font-bold mb-0.5">Terms & Conditions:</p>
+              <p className="text-gray-800 whitespace-pre-line">
+                {invoice.terms_and_conditions || profile?.terms_and_conditions}
+              </p>
+            </div>
+          )}
 
         {/* Footer info */}
         <div className="mt-8 w-full">
@@ -409,6 +414,7 @@ export function RedClassicGroupedTemplate({
               )}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

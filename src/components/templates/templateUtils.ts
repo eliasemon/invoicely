@@ -65,6 +65,30 @@ export function formatDate(date: Date | string): string {
   }
 }
 
+export function isoToDateInput(dateStr?: string | Date | null): string {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  } catch {
+    return '';
+  }
+}
+
+export function dateInputToISO(dateString: string): string {
+  if (!dateString) return '';
+  const parts = dateString.split('-').map(Number);
+  if (parts.length < 3 || isNaN(parts[0]) || isNaN(parts[1]) || isNaN(parts[2])) return '';
+  const [year, month, day] = parts;
+  // Use local midday to avoid timezone day boundary shifts across timezones
+  const d = new Date(year, month - 1, day, 12, 0, 0);
+  return d.toISOString();
+}
+
 export function formatMoney(amount: number, symbol: string = '$'): string {
   return `${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
@@ -179,7 +203,7 @@ export function numberToWords(num: number): string {
   return words.trim();
 }
 
-export function formatQuantity(item: any): string {
+export function formatQuantity(item: { isFlatRate?: boolean; quantity: number; unit?: string }): string {
   if (item.isFlatRate) return '-';
   return `${item.quantity} ${item.unit || ''}`.trim();
 }

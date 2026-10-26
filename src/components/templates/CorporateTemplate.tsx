@@ -451,17 +451,19 @@ export function CorporateTemplate({
                 </div>
               )}
 
-              {/* N.B. Note - Immediately below table/totals, above bank details */}
-              {noteText && (
-                <div className="border-t border-[#c6c6cd] pt-2 mt-2 mb-2 text-left print:pt-1.5 print:mt-1.5 print:mb-1.5 break-inside-avoid template-nb-note">
-                  <div className="text-[11px] text-[#45464d] whitespace-pre-line" style={{ fontFamily: "Geist, monospace" }}>
-                    <strong className="text-black">N.B:</strong> {noteText}
+              {/* Bottom Section: N.B. Note, Bank Details & Signature, Terms */}
+              <div className="template-bottom-section">
+                {/* N.B. Note - Immediately above bank details */}
+                {noteText && (
+                  <div className="border-t border-[#c6c6cd] pt-2 mt-2 mb-2 text-left print:pt-1.5 print:mt-1.5 print:mb-1.5 break-inside-avoid template-nb-note">
+                    <div className="text-[11px] text-[#45464d] whitespace-pre-line" style={{ fontFamily: "Geist, monospace" }}>
+                      <strong className="text-black">N.B:</strong> {noteText}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Bank Details & Signature Section */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2 border-t border-[#c6c6cd] pt-2.5 print:gap-2 print:mb-1.5 print:pt-2 items-start break-inside-avoid template-bottom-section">
+                {/* Bank Details & Signature Section */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2 border-t border-[#c6c6cd] pt-2.5 print:gap-2 print:mb-1.5 print:pt-2 items-start break-inside-avoid">
                 {/* Bank Details - Only in Invoice Mode */}
                 {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (
                   <div>
@@ -551,8 +553,7 @@ export function CorporateTemplate({
                   </div>
                 </div>
               )}
-
-
+              </div>
             </div>
           </article>
         </div>

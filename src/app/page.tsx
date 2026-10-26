@@ -244,13 +244,12 @@ export default async function LandingPage() {
             <MaterialIcon icon="account_balance_wallet" filled /> Invorio
           </div>
           <nav className="flex flex-wrap justify-center gap-md">
-            <Link href="#" className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Product</Link>
-            <Link href="#" className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Features</Link>
-            <Link href="#" className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Security</Link>
-            <Link href="#" className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link href="/templates" className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Templates</Link>
+            <Link href="/privacy" className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Terms of Service</Link>
           </nav>
           <div className="font-label-sm text-label-sm text-on-surface-variant text-center md:text-right">
-            © 2024 Invorio Inc. All rights reserved.
+            © {new Date().getFullYear()} Invorio Inc. All rights reserved.
           </div>
         </div>
       </footer>

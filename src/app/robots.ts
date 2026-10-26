@@ -4,7 +4,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
-      allow: ['/', '/templates'],
+      allow: ['/', '/templates', '/privacy', '/terms'],
       disallow: ['/dashboard', '/onboarding', '/api/', '/preview'],
     },
     sitemap: `${process.env.APP_BASE_URL || 'https://invorio.app'}/sitemap.xml`,

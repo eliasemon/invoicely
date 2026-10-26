@@ -289,15 +289,15 @@ export function MinimalistWithQrCodeTemplate({
           )}
         </div>
 
-        {/* N.B. Note - Immediately below table/totals, above bank details */}
-        {noteText && (
-          <div className="mb-3 pt-2 border-t border-gray-100 text-[11px] text-gray-500 whitespace-pre-line text-left break-inside-avoid template-nb-note">
-            <strong className="text-black">N.B:</strong> {noteText}
-          </div>
-        )}
-
         {/* Bank & Signature */}
-        <div>
+        <div className="template-bottom-section">
+          {/* N.B. Note - Immediately above bank details */}
+          {noteText && (
+            <div className="mb-3 pt-2 border-t border-gray-100 text-[11px] text-gray-500 whitespace-pre-line text-left break-inside-avoid template-nb-note">
+              <strong className="text-black">N.B:</strong> {noteText}
+            </div>
+          )}
+
           <div className="flex flex-row print:flex-row justify-between items-start border-t border-gray-100 pt-6">
             {/* Bank details - Only in Invoice Mode */}
             {!isPricingHidden && (profile?.bank_enabled ?? true) && (invoice.bank_name || profile?.bank_name) ? (

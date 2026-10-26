@@ -386,16 +386,17 @@ export function ModernTemplate({
             )}
           </div>
 
-          {/* N.B. Note - Immediately below table/totals */}
-          {noteText && (
-            <div className="mt-2.5 pt-1.5 border-t border-[#dce9ff] text-[10px] text-[#45464d] whitespace-pre-line text-left break-inside-avoid template-nb-note">
-              <strong className="text-black">N.B:</strong> {noteText}
-            </div>
-          )}
+          {/* Notes, N.B. and Signature */}
+          <div className="mt-3 pt-2 print:mt-2 print:pt-1.5 border-t border-[#dce9ff] break-inside-avoid template-bottom-section">
+            {/* N.B. Note */}
+            {noteText && (
+              <div className="mb-2 text-[10px] text-[#45464d] whitespace-pre-line text-left template-nb-note">
+                <strong className="text-black">N.B:</strong> {noteText}
+              </div>
+            )}
 
-          {/* Notes and Signature */}
-          <div className="mt-3 pt-2 print:mt-2 print:pt-1.5 border-t border-[#dce9ff] flex flex-row print:flex-row justify-between items-start gap-2 break-inside-avoid template-bottom-section">
-            <div className="flex-1 flex flex-col gap-2">
+            <div className="flex flex-row print:flex-row justify-between items-start gap-2">
+              <div className="flex-1 flex flex-col gap-2">
               {invoice.notes && (
                 <div>
                   <p className="text-[10px] uppercase text-[#76777d] mb-0.5">
@@ -446,6 +447,7 @@ export function ModernTemplate({
                 )}
             </div>
           </div>
+        </div>
 
 
         </div>

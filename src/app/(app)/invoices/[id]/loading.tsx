@@ -19,7 +19,7 @@ export default function InvoiceDetailLoading() {
 
       <main className="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-lg grid grid-cols-1 md:grid-cols-12 gap-gutter">
         {/* Main Content Area Skeleton */}
-        <div className="md:col-span-8 flex flex-col gap-gutter">
+        <div className="md:col-span-7 lg:col-span-7 xl:col-span-8 flex flex-col gap-gutter">
           {/* Invoice Summary Card */}
           <section className="bg-surface-container-lowest rounded-xl shadow-level1 border border-surface-variant p-md">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-lg gap-sm">
@@ -63,9 +63,9 @@ export default function InvoiceDetailLoading() {
         </div>
 
         {/* Sidebar / Financial Overview Skeleton */}
-        <div className="md:col-span-4 flex flex-col gap-gutter">
+        <div className="md:col-span-5 lg:col-span-5 xl:col-span-4 flex flex-col gap-gutter">
           {/* Financial Overview Bento */}
-          <section className="bg-surface-variant/20 rounded-xl shadow-level1 p-md flex flex-col justify-between border border-surface-variant">
+          <section className="bg-surface-variant/20 rounded-xl shadow-level1 p-4 sm:p-5 lg:p-md flex flex-col justify-between border border-surface-variant">
             <Skeleton className="h-4 w-32 rounded mb-md" />
             
             <div className="flex justify-between items-end mb-sm">
@@ -80,8 +80,12 @@ export default function InvoiceDetailLoading() {
             
             <div className="pt-sm border-t border-outline-variant/30">
               <Skeleton className="h-4 w-32 rounded mb-2" />
-              <Skeleton className="h-10 w-32 rounded" />
-              <Skeleton className="h-10 w-full rounded-lg mt-4" />
+              <Skeleton className="h-9 w-40 rounded mb-4" />
+              <div className="flex flex-col gap-2">
+                <Skeleton className="h-10 w-full rounded-lg" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+                <Skeleton className="h-16 w-full rounded-lg" />
+              </div>
             </div>
           </section>
 

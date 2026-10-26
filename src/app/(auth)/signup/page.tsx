@@ -187,6 +187,17 @@ function SignupForm() {
              </span>
           ) : 'Sign Up'}
         </button>
+
+        <p className="text-[11px] text-center text-on-surface-variant mt-3 leading-relaxed">
+          By signing up, you agree to our{' '}
+          <Link href="/terms" target="_blank" className="text-primary font-medium underline hover:text-primary-container">
+            Terms of Service
+          </Link>{' '}
+          and acknowledge our{' '}
+          <Link href="/privacy" target="_blank" className="text-primary font-medium underline hover:text-primary-container">
+            Privacy Policy
+          </Link>.
+        </p>
       </form>
 
       <div className="mt-lg text-center">

@@ -1,7 +1,7 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { MaterialIcon } from '@/components/shared/MaterialIcon';
-import { DocumentType, TextSize } from '@/components/templates/templateUtils';
+import { DocumentType, TextSize, formatDate, isoToDateInput, dateInputToISO } from '@/components/templates/templateUtils';
 import { TemplateSelector } from '@/components/templates/TemplateSelector';
 
 interface PublicInvoiceSettingsTabsProps {
@@ -37,7 +37,14 @@ interface PublicInvoiceSettingsTabsProps {
   showGroupTotals: boolean;
   setShowGroupTotals: (val: boolean) => void;
 
-  // Owner settings
+  // Owner settings: Dates
+  issuedAt?: string;
+  setIssuedAt?: (date: string) => void;
+  dueDate?: string;
+  setDueDate?: (date: string) => void;
+  onSaveDates?: (issuedAt?: string, dueDate?: string) => Promise<void>;
+
+  // Owner settings: Content & Notes
   isOwner: boolean;
   subjectEnabled: boolean;
   setSubjectEnabled: (val: boolean) => void;
@@ -82,6 +89,11 @@ export function PublicInvoiceSettingsTabs({
   setShowGroups,
   showGroupTotals,
   setShowGroupTotals,
+  issuedAt,
+  setIssuedAt,
+  dueDate,
+  setDueDate,
+  onSaveDates,
   isOwner,
   subjectEnabled,
   setSubjectEnabled,
@@ -142,7 +154,7 @@ export function PublicInvoiceSettingsTabs({
   const canShowChallan = isOwner || challanModeEnabled;
   const canShowQuotation = isOwner || quotationModeEnabled;
 
-  const tabs = [
+  const tabs = useMemo(() => [
     {
       id: 'section-doc-format',
       label: 'Document Format',
@@ -163,6 +175,13 @@ export function PublicInvoiceSettingsTabs({
     ...(isOwner
       ? [
           {
+            id: 'section-doc-dates',
+            label: 'Issue & Due Dates',
+            icon: 'calendar_month',
+            badge: 'Owner',
+            isOwnerBadge: true,
+          },
+          {
             id: 'section-doc-notes',
             label: 'Notes & Subjects',
             icon: 'edit_note',
@@ -171,7 +190,7 @@ export function PublicInvoiceSettingsTabs({
           },
         ]
       : []),
-  ];
+  ], [documentType, currentTemplate, isOwner]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -997,7 +1016,263 @@ export function PublicInvoiceSettingsTabs({
           )}
         </section>
 
-        {/* SECTION 4: NOTES & SUBJECTS (OWNER ONLY) */}
+        {/* SECTION 4: INVOICE DATES (ISSUE & DUE DATE) (OWNER ONLY) */}
+        {isOwner && setIssuedAt && setDueDate && (
+          <section
+            id="section-doc-dates"
+            className="scroll-mt-32 bg-surface border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs transition-all space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-semibold text-sm sm:text-base text-on-surface flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <MaterialIcon icon="calendar_month" className="text-[20px]" />
+                  </span>
+                  <span>Invoice Dates (Issue & Due Date)</span>
+                </h2>
+                <p className="text-xs text-on-surface-variant mt-0.5">
+                  Change the issue date and payment due date. Changes reflect immediately on preview and printed PDFs.
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 text-xs font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Owner Only</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {/* Card 1: Issue Date */}
+              <div className="bg-surface-container-low/70 border border-outline-variant/60 rounded-xl p-3.5 space-y-3 shadow-xs">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MaterialIcon icon="event" className="text-primary text-[18px]" />
+                    <span className="text-xs font-bold text-on-surface">Issue Date</span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/20">
+                    {issuedAt ? formatDate(issuedAt) : 'Not set'}
+                  </span>
+                </div>
+
+                <div>
+                  <input
+                    type="date"
+                    value={isoToDateInput(issuedAt)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val) {
+                        setIssuedAt(dateInputToISO(val));
+                      }
+                    }}
+                    className="w-full text-xs font-medium px-3 py-2 rounded-lg bg-surface border border-outline-variant/50 focus:border-primary focus:ring-1 focus:ring-primary text-on-surface outline-none transition-colors"
+                  />
+                </div>
+
+                {/* Quick Presets for Issue Date */}
+                <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                  <span className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider">Quick:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const now = new Date();
+                      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+                      setIssuedAt(today.toISOString());
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface border border-outline-variant/60 hover:border-primary text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
+                  >
+                    Today
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const now = new Date();
+                      const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 12, 0, 0);
+                      setIssuedAt(yesterday.toISOString());
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface border border-outline-variant/60 hover:border-primary text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
+                  >
+                    Yesterday
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const base = issuedAt ? new Date(issuedAt) : new Date();
+                      const prevDay = new Date(base.getFullYear(), base.getMonth(), base.getDate() - 1, 12, 0, 0);
+                      setIssuedAt(prevDay.toISOString());
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface border border-outline-variant/60 hover:border-primary text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
+                    title="Subtract 1 day from current issue date"
+                  >
+                    -1 Day
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const base = issuedAt ? new Date(issuedAt) : new Date();
+                      const nextDay = new Date(base.getFullYear(), base.getMonth(), base.getDate() + 1, 12, 0, 0);
+                      setIssuedAt(nextDay.toISOString());
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface border border-outline-variant/60 hover:border-primary text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
+                    title="Add 1 day to current issue date"
+                  >
+                    +1 Day
+                  </button>
+                </div>
+                <p className="text-[10px] text-on-surface-variant">
+                  Official invoice creation/billing date shown on the document header.
+                </p>
+              </div>
+
+              {/* Card 2: Due Date */}
+              <div className="bg-surface-container-low/70 border border-outline-variant/60 rounded-xl p-3.5 space-y-3 shadow-xs">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MaterialIcon icon="event_available" className="text-primary text-[18px]" />
+                    <span className="text-xs font-bold text-on-surface">Payment Due Date</span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/20">
+                    {dueDate ? formatDate(dueDate) : 'Not set'}
+                  </span>
+                </div>
+
+                <div>
+                  <input
+                    type="date"
+                    value={isoToDateInput(dueDate)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val) {
+                        setDueDate(dateInputToISO(val));
+                      }
+                    }}
+                    className={`w-full text-xs font-medium px-3 py-2 rounded-lg bg-surface border text-on-surface outline-none transition-colors ${
+                      issuedAt && dueDate && new Date(dueDate) < new Date(issuedAt)
+                        ? 'border-error focus:border-error focus:ring-1 focus:ring-error'
+                        : 'border-outline-variant/50 focus:border-primary focus:ring-1 focus:ring-primary'
+                    }`}
+                  />
+                </div>
+
+                {/* Quick Presets for Due Date */}
+                <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                  <span className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider">Terms:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (issuedAt) setDueDate(issuedAt);
+                      else {
+                        const now = new Date();
+                        setDueDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0).toISOString());
+                      }
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface border border-outline-variant/60 hover:border-primary text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
+                    title="Due upon receipt (same as issue date)"
+                  >
+                    On Receipt
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const base = issuedAt ? new Date(issuedAt) : new Date();
+                      const next = new Date(base.getFullYear(), base.getMonth(), base.getDate() + 7, 12, 0, 0);
+                      setDueDate(next.toISOString());
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface border border-outline-variant/60 hover:border-primary text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
+                    title="Net 7 days from issue date"
+                  >
+                    +7 Days
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const base = issuedAt ? new Date(issuedAt) : new Date();
+                      const next = new Date(base.getFullYear(), base.getMonth(), base.getDate() + 15, 12, 0, 0);
+                      setDueDate(next.toISOString());
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface border border-outline-variant/60 hover:border-primary text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
+                    title="Net 15 days from issue date"
+                  >
+                    +15 Days
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const base = issuedAt ? new Date(issuedAt) : new Date();
+                      const next = new Date(base.getFullYear(), base.getMonth(), base.getDate() + 30, 12, 0, 0);
+                      setDueDate(next.toISOString());
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface border border-outline-variant/60 hover:border-primary text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
+                    title="Net 30 days from issue date"
+                  >
+                    +30 Days
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const base = issuedAt ? new Date(issuedAt) : new Date();
+                      const next = new Date(base.getFullYear(), base.getMonth() + 1, 0, 12, 0, 0);
+                      setDueDate(next.toISOString());
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface border border-outline-variant/60 hover:border-primary text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
+                    title="End of the current issue month"
+                  >
+                    End of Month
+                  </button>
+                </div>
+                <p className="text-[10px] text-on-surface-variant">
+                  Payment deadline communicated to the customer on the invoice.
+                </p>
+              </div>
+            </div>
+
+            {/* Validation warning if due date < issue date */}
+            {issuedAt && dueDate && new Date(dueDate) < new Date(issuedAt) && (
+              <div className="flex items-center justify-between gap-2 bg-error-container/40 text-on-error-container border border-error/30 rounded-xl px-3.5 py-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <MaterialIcon icon="warning" className="text-error text-[18px]" />
+                  <span>Due date cannot be before the issue date.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const base = new Date(issuedAt);
+                    const next = new Date(base.getFullYear(), base.getMonth(), base.getDate() + 30, 12, 0, 0);
+                    setDueDate(next.toISOString());
+                  }}
+                  className="px-2 py-1 rounded-md bg-surface text-error font-semibold hover:bg-error/10 border border-error/30 cursor-pointer"
+                >
+                  Set to +30 Days
+                </button>
+              </div>
+            )}
+
+            {/* Save Dates Row */}
+            <div className="flex items-center justify-between pt-1">
+              {settingsSavedMessage ? (
+                <div className="text-xs font-medium text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                  {settingsSavedMessage}
+                </div>
+              ) : (
+                <div />
+              )}
+
+              <button
+                type="button"
+                onClick={() => onSaveDates ? onSaveDates(issuedAt, dueDate) : onSaveSettings()}
+                disabled={isSavingSettings || Boolean(issuedAt && dueDate && new Date(dueDate) < new Date(issuedAt))}
+                className="px-4 py-2 bg-primary text-on-primary rounded-xl text-xs font-semibold hover:opacity-90 active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-xs"
+              >
+                {isSavingSettings ? (
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <MaterialIcon icon="save" className="text-[16px]" />
+                )}
+                <span>{isSavingSettings ? 'Saving Dates...' : 'Save Dates'}</span>
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 5: NOTES & SUBJECTS (OWNER ONLY) */}
         {isOwner && (
           <section
             id="section-doc-notes"

@@ -918,6 +918,8 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
   note_enabled?: boolean;
   note_text?: string | null;
   template?: string;
+  issued_at?: string | null;
+  due_date?: string | null;
 }) {
   const userId = await getUserId();
   if (!userId) {
@@ -929,7 +931,7 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
   // Security guard: verify that the caller is the owner of the invoice
   const { data: inv, error: fetchErr } = await supabaseAdmin
     .from('invoices')
-    .select('id, profile_id, invoice_mode_enabled, challan_mode_enabled, quotation_mode_enabled')
+    .select('id, profile_id, status, logs, invoice_mode_enabled, challan_mode_enabled, quotation_mode_enabled, issued_at, due_date')
     .eq('id', invoiceId)
     .single();
 
@@ -954,6 +956,20 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
     ...settings,
     updated_at: new Date().toISOString()
   };
+
+  // Add audit log for non-draft invoices if dates changed
+  if (
+    inv.status !== 'DRAFT' &&
+    ((settings.issued_at !== undefined && settings.issued_at !== inv.issued_at) ||
+     (settings.due_date !== undefined && settings.due_date !== inv.due_date))
+  ) {
+    const dateLog = {
+      type: 'EDIT',
+      date: new Date().toISOString(),
+      note: 'Invoice dates updated'
+    };
+    updatePayload.logs = [...(inv.logs || []), dateLog];
+  }
 
   let { data, error } = await supabaseAdmin
     .from('invoices')
@@ -985,6 +1001,7 @@ export async function updateInvoiceSettings(invoiceId: string, settings: {
   try {
     revalidatePath(`/public/invoice/${invoiceId}`);
     revalidatePath(`/invoices/${invoiceId}`);
+    revalidatePath('/invoices');
   } catch (revErr) {
     console.warn('Revalidation warning:', revErr);
   }

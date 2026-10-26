@@ -393,78 +393,81 @@ export function ElegantTemplate({
           )}
         </div>
 
-        {/* N.B. Note - Immediately below table/totals, above bank details */}
-        {noteText && (
-          <div className="border-t border-[#dce9ff] pt-2 mt-2 mb-2 text-left print:pt-1.5 print:mt-1.5 print:mb-1.5 break-inside-avoid template-nb-note">
-            <div className="text-[11px] text-[#565e74] whitespace-pre-line">
-              <strong className="text-black">N.B:</strong> {noteText}
-            </div>
-          </div>
-        )}
-
-        {/* Footer */}
-        <footer className="flex flex-row print:flex-row justify-between items-end print:items-end gap-3 mt-2 w-full pt-2.5 print:mt-1.5 print:pt-2 border-t border-[#dce9ff] break-inside-avoid template-bottom-section">
-          <div className="w-1/2 print:w-1/2 space-y-2">
-            {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
-              <div className="whitespace-pre-wrap">
-                <h4
-                  className="text-[11px] text-[#76777d] mb-1 uppercase tracking-wider font-semibold"
-                  style={{ fontFamily: "Work Sans, sans-serif" }}
-                >
-                  TERMS & CONDITIONS
-                </h4>
-                <p className="text-[#565e74] text-[10px] leading-relaxed">
-                  {invoice.terms_and_conditions || profile?.terms_and_conditions}
-                </p>
+        {/* Bottom Section: N.B. Note, Footer with Bank Details & Signature */}
+        <div className="w-full break-inside-avoid template-bottom-section">
+          {/* N.B. Note - Immediately above bank details */}
+          {noteText && (
+            <div className="border-t border-[#dce9ff] pt-2 mb-2 text-left print:pt-1.5 print:mb-1.5 break-inside-avoid template-nb-note">
+              <div className="text-[11px] text-[#565e74] whitespace-pre-line">
+                <strong className="text-black">N.B:</strong> {noteText}
               </div>
-            )}
-            {!isPricingHidden && (profile?.bank_enabled ?? true) &&
-              (invoice.bank_name || profile?.bank_name) && (
-                <div>
-                  <h4 className="text-[11px] text-[#76777d] mb-1 uppercase tracking-wider font-semibold">
-                    BANK DETAILS
-                  </h4>
-                  <div className="text-xs text-[#565e74] space-y-0.5">
-                    <p>
-                      <span className="font-semibold text-black">Bank:</span>{" "}
-                      {invoice.bank_name || profile?.bank_name}
-                    </p>
-                    {(invoice.bank_account_holder || profile?.bank_account_holder) && (
+            </div>
+          )}
+
+          {/* Footer */}
+          <footer className="flex flex-row print:flex-row justify-between items-end print:items-end gap-3 w-full pt-2.5 print:pt-2 border-t border-[#dce9ff]">
+            <div className="w-1/2 print:w-1/2 space-y-2">
+              {/* Bank Details - Directly below N.B. Note */}
+              {!isPricingHidden && (profile?.bank_enabled ?? true) &&
+                (invoice.bank_name || profile?.bank_name) && (
+                  <div>
+                    <h4 className="text-[11px] text-[#76777d] mb-1 uppercase tracking-wider font-semibold" style={{ fontFamily: "Work Sans, sans-serif" }}>
+                      BANK DETAILS
+                    </h4>
+                    <div className="text-xs text-[#565e74] space-y-0.5">
                       <p>
-                        <span className="font-semibold text-black">
-                          Account Holder:
-                        </span>{" "}
-                        {invoice.bank_account_holder || profile?.bank_account_holder}
+                        <span className="font-semibold text-black">Bank:</span>{" "}
+                        {invoice.bank_name || profile?.bank_name}
                       </p>
-                    )}
-                    {(invoice.bank_account_number || profile?.bank_account_number) && (
-                      <p>
-                        <span className="font-semibold text-black">
-                          Account Number:
-                        </span>{" "}
-                        {invoice.bank_account_number || profile?.bank_account_number}
-                      </p>
-                    )}
-                    {(invoice.bank_swift || profile?.bank_swift) && (
-                      <p>
-                        <span className="font-semibold text-black">SWIFT:</span>{" "}
-                        {invoice.bank_swift || profile?.bank_swift}
-                      </p>
-                    )}
+                      {(invoice.bank_account_holder || profile?.bank_account_holder) && (
+                        <p>
+                          <span className="font-semibold text-black">
+                            Account Holder:
+                          </span>{" "}
+                          {invoice.bank_account_holder || profile?.bank_account_holder}
+                        </p>
+                      )}
+                      {(invoice.bank_account_number || profile?.bank_account_number) && (
+                        <p>
+                          <span className="font-semibold text-black">
+                            Account Number:
+                          </span>{" "}
+                          {invoice.bank_account_number || profile?.bank_account_number}
+                        </p>
+                      )}
+                      {(invoice.bank_swift || profile?.bank_swift) && (
+                        <p>
+                          <span className="font-semibold text-black">SWIFT:</span>{" "}
+                          {invoice.bank_swift || profile?.bank_swift}
+                        </p>
+                      )}
+                    </div>
                   </div>
+                )}
+              {((invoice.terms_and_conditions_enabled ?? profile?.terms_and_conditions_enabled ?? true) && (invoice.terms_and_conditions || profile?.terms_and_conditions)) && (
+                <div className="whitespace-pre-wrap">
+                  <h4
+                    className="text-[11px] text-[#76777d] mb-1 uppercase tracking-wider font-semibold"
+                    style={{ fontFamily: "Work Sans, sans-serif" }}
+                  >
+                    TERMS & CONDITIONS
+                  </h4>
+                  <p className="text-[#565e74] text-[10px] leading-relaxed">
+                    {invoice.terms_and_conditions || profile?.terms_and_conditions}
+                  </p>
                 </div>
               )}
-            {invoice.notes && (
-              <div>
-                <h4 className="text-[11px] text-[#76777d] mb-1 uppercase tracking-wider font-semibold">
-                  NOTES
-                </h4>
-                <p className="text-[#565e74] text-[10px] leading-relaxed">
-                  {invoice.notes}
-                </p>
-              </div>
-            )}
-          </div>
+              {invoice.notes && (
+                <div>
+                  <h4 className="text-[11px] text-[#76777d] mb-1 uppercase tracking-wider font-semibold">
+                    NOTES
+                  </h4>
+                  <p className="text-[#565e74] text-[10px] leading-relaxed">
+                    {invoice.notes}
+                  </p>
+                </div>
+              )}
+            </div>
           <div className="w-1/2 print:w-1/2 flex justify-end print:justify-end">
             <div className="flex flex-row items-end gap-3 justify-end print:justify-end w-auto shrink-0">
               {(profile?.signature_enabled ?? true) &&
@@ -495,6 +498,7 @@ export function ElegantTemplate({
             </div>
           </div>
         </footer>
+      </div>
 
 
       </main>

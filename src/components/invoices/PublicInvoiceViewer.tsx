@@ -102,6 +102,18 @@ export function PublicInvoiceViewer({
   };
 
   // Owner settings state
+  const [issuedAt, setIssuedAt] = useState<string>(
+    invoice.issued_at || invoice.created_at || invoice.createdAt || new Date().toISOString()
+  );
+  const [dueDate, setDueDate] = useState<string>(
+    invoice.due_date ||
+      (() => {
+        const base = new Date(invoice.issued_at || invoice.created_at || invoice.createdAt || new Date());
+        base.setDate(base.getDate() + 30);
+        return base.toISOString();
+      })()
+  );
+
   const [subjectEnabled, setSubjectEnabled] = useState<boolean>(invoice.subject_enabled ?? true);
   const [subjectInvoice, setSubjectInvoice] = useState<string>(invoice.subject_invoice || invoice.subject || 'Bill for Items/Services');
   const [subjectChallan, setSubjectChallan] = useState<string>(invoice.subject_challan || invoice.subject || 'Delivery Challan for Items/Services');
@@ -230,12 +242,37 @@ export function PublicInvoiceViewer({
     }
   };
 
+  const handleSaveDates = async (newIssuedAt?: string, newDueDate?: string) => {
+    if (!effectiveIsOwner || !invoice?.id) return;
+    const targetIssuedAt = newIssuedAt !== undefined ? newIssuedAt : issuedAt;
+    const targetDueDate = newDueDate !== undefined ? newDueDate : dueDate;
+
+    setIsSavingSettings(true);
+    setSettingsSavedMessage(null);
+    try {
+      await updateInvoiceSettings(invoice.id, {
+        issued_at: targetIssuedAt,
+        due_date: targetDueDate,
+      });
+      setSettingsSavedMessage('Invoice dates saved successfully!');
+      setTimeout(() => setSettingsSavedMessage(null), 3000);
+    } catch (err: any) {
+      console.error('Failed to save invoice dates:', err);
+      setSettingsSavedMessage('Failed to save dates. Please try again.');
+      setTimeout(() => setSettingsSavedMessage(null), 3500);
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
   const handleSaveSettings = async () => {
     if (!effectiveIsOwner || !invoice?.id) return;
     setIsSavingSettings(true);
     setSettingsSavedMessage(null);
     try {
       await updateInvoiceSettings(invoice.id, {
+        issued_at: issuedAt,
+        due_date: dueDate,
         subject_enabled: subjectEnabled,
         subject_invoice: subjectInvoice,
         subject_challan: subjectChallan,
@@ -262,6 +299,8 @@ export function PublicInvoiceViewer({
 
   const effectiveInvoice = {
     ...invoice,
+    issued_at: issuedAt,
+    due_date: dueDate,
     template: currentTemplate,
     subject_enabled: subjectEnabled,
     subject_invoice: subjectInvoice,
@@ -620,6 +659,11 @@ export function PublicInvoiceViewer({
               setShowGroups={setShowGroups}
               showGroupTotals={showGroupTotals}
               setShowGroupTotals={setShowGroupTotals}
+              issuedAt={issuedAt}
+              setIssuedAt={setIssuedAt}
+              dueDate={dueDate}
+              setDueDate={setDueDate}
+              onSaveDates={handleSaveDates}
               isOwner={effectiveIsOwner}
               subjectEnabled={subjectEnabled}
               setSubjectEnabled={setSubjectEnabled}

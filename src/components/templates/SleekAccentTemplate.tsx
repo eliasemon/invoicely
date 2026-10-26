@@ -297,15 +297,17 @@ export function SleekAccentTemplate({
             </div>
           </section>
 
-          {/* N.B. Note - Immediately below table/items, above payment & bank details */}
-          {noteText && (
-            <div className="mb-4 pt-2 border-t border-gray-200 text-[11px] text-gray-600 whitespace-pre-line text-left break-inside-avoid template-nb-note">
-              <strong className="text-[#0b1b3d]">N.B:</strong> {noteText}
-            </div>
-          )}
+          {/* Bottom Section: N.B. Note, Payment/Bank & Totals, Footer */}
+          <div className="mt-auto template-bottom-section">
+            {/* N.B. Note - Immediately above payment & bank details */}
+            {noteText && (
+              <div className="mb-4 pt-2 border-t border-gray-200 text-[11px] text-gray-600 whitespace-pre-line text-left break-inside-avoid template-nb-note">
+                <strong className="text-[#0b1b3d]">N.B:</strong> {noteText}
+              </div>
+            )}
 
-          {/* Payment & Totals */}
-          <section className="flex flex-row print:flex-row justify-between items-start mt-auto gap-8">
+            {/* Payment & Totals */}
+            <section className="flex flex-row print:flex-row justify-between items-start gap-8">
             <div className="w-1/2 print:w-1/2">
               {!isPricingHidden && (
                 <>
@@ -464,6 +466,7 @@ export function SleekAccentTemplate({
             {profile?.website && <div>{profile.website}</div>}
             {profile?.tax_id && <div>TAX-ID-{profile.tax_id}</div>}
           </footer>
+          </div>
         </div>
 
         {/* Decorative elements - absolute positioned */}

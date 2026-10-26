@@ -96,7 +96,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
 
       <main className="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-lg grid grid-cols-1 md:grid-cols-12 gap-gutter">
         {/* Main Content Area */}
-        <div className="md:col-span-8 flex flex-col gap-gutter">
+        <div className="md:col-span-7 lg:col-span-7 xl:col-span-8 flex flex-col gap-gutter">
           {/* Invoice Summary Card */}
           <section className="bg-surface-container-lowest rounded-xl shadow-level1 border border-surface-variant p-md">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-lg gap-sm">
@@ -179,54 +179,54 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* Sidebar / Financial Overview */}
-        <div className="md:col-span-4 flex flex-col gap-gutter">
+        <div className="md:col-span-5 lg:col-span-5 xl:col-span-4 flex flex-col gap-gutter">
           {/* Financial Overview Bento */}
-          <section className="bg-primary text-on-primary rounded-xl shadow-level1 p-md flex flex-col justify-between relative overflow-hidden">
+          <section className="bg-primary text-on-primary rounded-xl shadow-level1 p-4 sm:p-5 lg:p-md flex flex-col justify-between relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container rounded-full blur-2xl opacity-50 -mr-10 -mt-10 pointer-events-none"></div>
             
             <h3 className="font-label-caps text-label-caps text-inverse-primary mb-md uppercase relative z-10">Financial Overview</h3>
             
             {hasBreakdown && (
-              <div className="mb-sm relative z-10 space-y-1">
-                <div className="flex justify-between items-end">
-                  <p className="font-body-sm text-inverse-primary/70">Subtotal</p>
-                  <p className="font-body-sm text-on-primary/80">
+              <div className="mb-sm relative z-10 space-y-1.5">
+                <div className="flex justify-between items-baseline gap-2">
+                  <p className="font-body-sm text-inverse-primary/70 shrink-0">Subtotal</p>
+                  <p className="font-body-sm text-on-primary/80 font-medium text-right truncate">
                     <CurrencyDisplay amount={subtotal} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
                   </p>
                 </div>
                 {discountAmount > 0 && (
-                  <div className="flex justify-between items-end">
-                    <p className="font-body-sm text-inverse-primary/70">Discount {discountType === 'percentage' ? `(${discountValue}%)` : ''}</p>
-                    <p className="font-body-sm text-on-primary/80">-<CurrencyDisplay amount={discountAmount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} /></p>
+                  <div className="flex justify-between items-baseline gap-2">
+                    <p className="font-body-sm text-inverse-primary/70 truncate">Discount {discountType === 'percentage' ? `(${discountValue}%)` : ''}</p>
+                    <p className="font-body-sm text-on-primary/80 font-medium text-right shrink-0">-<CurrencyDisplay amount={discountAmount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} /></p>
                   </div>
                 )}
                 {shippingCost > 0 && (
-                  <div className="flex justify-between items-end">
-                    <p className="font-body-sm text-inverse-primary/70">Shipping</p>
-                    <p className="font-body-sm text-on-primary/80">+<CurrencyDisplay amount={shippingCost} currency={finalCurrency} currencySymbol={finalCurrencySymbol} /></p>
+                  <div className="flex justify-between items-baseline gap-2">
+                    <p className="font-body-sm text-inverse-primary/70 shrink-0">Shipping</p>
+                    <p className="font-body-sm text-on-primary/80 font-medium text-right truncate">+<CurrencyDisplay amount={shippingCost} currency={finalCurrency} currencySymbol={finalCurrencySymbol} /></p>
                   </div>
                 )}
                 <div className="h-px bg-primary-container/50 my-1"></div>
               </div>
             )}
 
-            <div className="flex justify-between items-end mb-sm relative z-10">
-              <p className="font-body-md text-body-md text-inverse-primary">Total Amount</p>
-              <p className="font-body-lg text-body-lg text-on-primary">
+            <div className="flex justify-between items-baseline gap-2 mb-sm relative z-10">
+              <p className="font-body-md text-body-md text-inverse-primary shrink-0">Total Amount</p>
+              <p className="font-body-lg text-body-lg text-on-primary font-semibold text-right truncate">
                 <CurrencyDisplay amount={totalAmount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
               </p>
             </div>
             
-            <div className="flex justify-between items-end mb-lg relative z-10">
-              <p className="font-body-md text-body-md text-inverse-primary">Paid to Date</p>
-              <p className="font-body-lg text-body-lg text-tertiary-fixed-dim">
+            <div className="flex justify-between items-baseline gap-2 mb-lg relative z-10">
+              <p className="font-body-md text-body-md text-inverse-primary shrink-0">Paid to Date</p>
+              <p className="font-body-lg text-body-lg text-tertiary-fixed-dim font-semibold text-right truncate">
                 <CurrencyDisplay amount={invoice.amount_paid || 0} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
               </p>
             </div>
             
             <div className="pt-sm border-t border-primary-container relative z-10">
               <p className="font-label-caps text-label-caps text-inverse-primary mb-1 uppercase">Remaining Balance</p>
-              <p className="font-headline-lg text-headline-lg text-on-primary font-bold">
+              <p className="font-headline-lg text-2xl sm:text-3xl xl:text-headline-lg text-on-primary font-bold tracking-tight break-words">
                 <CurrencyDisplay amount={remainingAmount} currency={finalCurrency} currencySymbol={finalCurrencySymbol} />
               </p>
               
